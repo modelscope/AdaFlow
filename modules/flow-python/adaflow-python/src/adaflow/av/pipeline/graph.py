@@ -41,11 +41,11 @@ class Node:
 
     def __rshift__(self, other: NodeType) -> NodeType:
         self._parent_graph.add_edge(self.get_name(), other.get_name())
-        return self
+        return other
 
     def __lshift__(self, other: NodeType) -> NodeType:
         self._parent_graph.add_edge(other.get_name(), self.get_name())
-        return self
+        return other
 
     def env_attr(self, name: str, env_name: str, kind: AttributeValueType) -> NodeType:
         self._attributes.append(EnvAttribute(name, env_name, kind))

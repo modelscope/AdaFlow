@@ -70,12 +70,11 @@ class PipelineComposer:
         self._nodes[name] = node
         return node
 
-    def branch(self, name: str) -> BranchNode:
-        if name in self._nodes:
-            # return node with same node
-            return self._nodes[name]
-        node = BranchNode(name, self._root_graph)
-        self._nodes[name] = node
+    def branch_of(self, trunk_name: str, branch_name: str) -> BranchNode:
+        if trunk_name not in self._nodes:
+            raise RuntimeError("trunk %s doesn't exist" % trunk_name)
+        node = BranchNode(branch_name, self._root_graph)
+        self._nodes[trunk_name] >> node
         return node
 
     def dump_json(self) -> str:
@@ -84,12 +83,8 @@ class PipelineComposer:
     def visualize(self):
         import matplotlib.pyplot as plt
         nx.draw_networkx(self._root_graph, **{
-            "font_size": 10,
-            "node_size": 3000,
             "node_color": "white",
             "edgecolors": "black",
-            "linewidths": 2,
-            "width": 5,
         })
         plt.draw()
         plt.show()

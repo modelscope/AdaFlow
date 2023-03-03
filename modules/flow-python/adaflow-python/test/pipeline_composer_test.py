@@ -27,11 +27,11 @@ class PipelineComposerTest(unittest.TestCase):
             >> c.trunk("tee1").kind("tee") >> c.node("f") >> c.node("g") \
                     >> c.node("l")
 
-            with c.branch("branch1").of("tee1") as branch1:
+            with c.branch_of("tee1", "branch1") as branch1:
                 # route two
                 branch1 >> c.node("h") >> c.node("i") >> c.node("l")
 
-            with c.branch("branch2").of("tee2") as branch2:
+            with c.branch_of("tee1", "branch2") as branch2:
                 # route three
                 branch2 >> c.node("j") >> c.node("k")
 
