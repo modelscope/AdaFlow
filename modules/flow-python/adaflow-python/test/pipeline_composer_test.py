@@ -1,9 +1,20 @@
 import unittest
 
-from av.pipeline.pipeline_composer import PipelineComposer
-
+from adaflow.av.pipeline import PipelineComposer
+import networkx as nx
+import matplotlib.pyplot as plt
 
 class PipelineComposerTest(unittest.TestCase):
+
+    def test_graph_visualize(self):
+        DG = nx.DiGraph()
+        DG.add_node("a")
+        DG.add_node("b")
+        nx.draw_networkx(DG)
+        plt.draw()
+        plt.show()
+
+
 
     def test_composing(self):
         with PipelineComposer() as c:
@@ -24,6 +35,8 @@ class PipelineComposerTest(unittest.TestCase):
                 # route three
                 branch2 >> c.node("j") >> c.node("k")
 
+            print(c.get_nodes())
+            print(c.get_edges())
             # display
             c.visualize()
 

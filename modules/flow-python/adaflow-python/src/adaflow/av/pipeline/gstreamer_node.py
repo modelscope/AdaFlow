@@ -1,4 +1,4 @@
-from graph import Node
+from .graph import Node
 
 
 class AdaptiveSource(Node):

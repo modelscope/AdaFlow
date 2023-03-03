@@ -1,8 +1,9 @@
 from typing import Dict, TypeVar
 import networkx as nx
-from attribute import Attribute
-from graph import Node, TrunkNode, BranchNode
+from .attribute import Attribute
+from .graph import Node, TrunkNode, BranchNode
 from enum import Enum
+
 
 PipelineComposerType = TypeVar("PipelineComposerType", bound="PipelineComposer")
 
@@ -16,7 +17,7 @@ class PipelineComposer:
     def from_json_str(json_str: str) -> PipelineComposerType:
         pass
 
-    def __init__(self) -> None:
+    def __init__(self):
         super().__init__()
         self._root_graph = nx.DiGraph(name="root")
         self._nodes = {}
@@ -24,6 +25,18 @@ class PipelineComposer:
         self._desc = ""
         self._backend = BackendType.GSTREMAER
         self._schema_version = 1
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        return self
+
+    def get_nodes(self):
+        return list(self._root_graph.nodes)
+
+    def get_edges(self):
+        return list(self._root_graph.edges)
 
     def maintainer(self, name: str, email: str) -> PipelineComposerType:
         self._maintainers.append({"name": name, "email": email})
@@ -49,12 +62,6 @@ class PipelineComposer:
         self._nodes[name] = node
         return node
 
-    def dump_json(self) -> str:
-        pass
-
-    def visualize(self, file):
-        pass
-
     def trunk(self, name: str) -> TrunkNode:
         if name in self._nodes:
             # return node with same node
@@ -70,3 +77,19 @@ class PipelineComposer:
         node = BranchNode(name, self._root_graph)
         self._nodes[name] = node
         return node
+
+    def dump_json(self) -> str:
+        pass
+
+    def visualize(self):
+        import matplotlib.pyplot as plt
+        nx.draw_networkx(self._root_graph, **{
+            "font_size": 10,
+            "node_size": 3000,
+            "node_color": "white",
+            "edgecolors": "black",
+            "linewidths": 2,
+            "width": 5,
+        })
+        plt.draw()
+        plt.show()

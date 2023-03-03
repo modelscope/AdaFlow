@@ -1,19 +1,22 @@
 import networkx as nx
 from typing import Dict, TypeVar
-from attribute import Attribute, AttributeValueType, EnvAttribute, ParameterSourceAttribute
+from .attribute import Attribute, AttributeValueType, EnvAttribute, ParameterSourceAttribute
+from contextlib import contextmanager
 
 NodeType = TypeVar("NodeType", bound="Node")
 BranchNodeType = TypeVar("BranchNodeType", bound="BranchNode")
+TrunkNodeType = TypeVar("TrunkNodeType", bound="TrunkNode")
+
 
 class Node:
 
-    def __init__(self, name: str, graph: nx.DiGraph, kind: str, attributes: [Attribute], **kwargs) -> None:
+    def __init__(self, name: str, graph: nx.DiGraph, **kwargs) -> None:
         super().__init__()
         self._name = name
-        self._kind = kind
-        self._attributes = attributes
+        self._kind = None
+        self._attributes = []
         self._parent_graph = graph
-        graph.add_node(self.name, **kwargs)
+        graph.add_node(name, **kwargs)
 
     def get_name(self) -> str:
         return self._name
@@ -37,11 +40,11 @@ class Node:
         return self
 
     def __rshift__(self, other: NodeType) -> NodeType:
-        self._parent_graph.add_edge(self.get_name(), other.name)
+        self._parent_graph.add_edge(self.get_name(), other.get_name())
         return self
 
     def __lshift__(self, other: NodeType) -> NodeType:
-        self._parent_graph.add_edge(other.get_name(), self)
+        self._parent_graph.add_edge(other.get_name(), self.get_name())
         return self
 
     def env_attr(self, name: str, env_name: str, kind: AttributeValueType) -> NodeType:
@@ -55,16 +58,20 @@ class Node:
 
 class TrunkNode(Node):
 
-    def __init__(self, name: str, graph: nx.DiGraph, kind: str, attributes: [Attribute], **kwargs) -> None:
-        super().__init__(name, graph, kind, attributes, **kwargs)
-        if kind:
-            assert kind in ["tee", "demux"]
+    def __init__(self, name: str, graph: nx.DiGraph, **kwargs) -> None:
+        super().__init__(name, graph, **kwargs)
 
 
 class BranchNode(Node):
-    def __init__(self, name: str, graph: nx.DiGraph, kind: str, attributes: [Attribute], **kwargs) -> None:
-        super().__init__(name, graph, kind, attributes, **kwargs)
+    def __init__(self, name: str, graph: nx.DiGraph, **kwargs) -> None:
+        super().__init__(name, graph, **kwargs)
         self._trunk_name = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        return self
 
     def of(self, trunk_name: str) -> BranchNodeType:
         self._trunk_name = trunk_name
@@ -72,5 +79,4 @@ class BranchNode(Node):
 
     def get_truck_name(self) -> str:
         return self._trunk_name
-
 

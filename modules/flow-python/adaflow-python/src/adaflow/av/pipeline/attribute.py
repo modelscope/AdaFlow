@@ -10,14 +10,14 @@ class AttributeValueType(Enum):
 class Attribute:
 
     def __init__(self, name: str, kind: AttributeValueType) -> None:
-        self.name = name
-        self.kind = type
+        self._name = name
+        self._kind = kind
 
     def get_name(self):
-        return self.name
+        return self._name
 
     def get_kind(self):
-        return self.kind
+        return self._kind
 
 
 class EnvAttribute(Attribute):
