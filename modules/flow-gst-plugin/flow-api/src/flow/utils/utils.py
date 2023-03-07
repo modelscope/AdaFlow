@@ -4,6 +4,8 @@ import gi
 gi.require_version('Gst', '1.0')
 gi.require_version('GstVideo', '1.0')
 from gi.repository import Gst, GstVideo  # noqa:F401,F402
+import json
+import numpy as np
 
 BITS_PER_BYTE = 8
 
@@ -50,6 +52,10 @@ def gst_video_format_from_string(frmt: str) -> GstVideo.VideoFormat:
     return GstVideo.VideoFormat.from_string(frmt)
 
 
-
+class NumpyArrayEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return json.JSONEncoder.default(self, obj)
 
 
