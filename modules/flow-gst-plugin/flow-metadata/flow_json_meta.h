@@ -61,6 +61,7 @@ void set_json_message(GstFLOWJSONMeta *meta, const gchar *message);
 
 GstFLOWJSONMeta * gst_buffer_add_json_info_meta(GstBuffer *buffer, const gchar *message);
 gchar* gst_buffer_get_json_info_meta(GstBuffer *buffer);
+gboolean gst_buffer_remove_json_info_meta(GstBuffer *buffer);
 
 G_END_DECLS
 

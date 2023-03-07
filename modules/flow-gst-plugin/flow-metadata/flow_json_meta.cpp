@@ -96,3 +96,19 @@ gchar* gst_buffer_get_json_info_meta(GstBuffer *buffer)
   GstFLOWJSONMeta* meta = (GstFLOWJSONMeta*)gst_buffer_get_meta((buffer), gst_flow_json_meta_api_get_type());
   return meta->message;
 }
+
+gboolean gst_buffer_remove_json_info_meta(GstBuffer *buffer)
+{
+  g_return_val_if_fail(GST_IS_BUFFER(buffer), NULL);
+
+  GstFLOWJSONMeta* meta = (GstFLOWJSONMeta*)gst_buffer_get_meta((buffer), gst_flow_json_meta_api_get_type());
+
+  if (meta == NULL)
+    return TRUE;
+
+  if ( !gst_buffer_is_writable(buffer))
+    return FALSE;
+
+  // https://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstBuffer.html#gst-buffer-remove-meta
+  return gst_buffer_remove_meta(buffer, &meta->meta);
+}

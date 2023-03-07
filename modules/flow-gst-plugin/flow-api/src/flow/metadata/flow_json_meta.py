@@ -28,9 +28,17 @@ libgst.gst_buffer_add_json_info_meta.restype = c_void_p
 libgst.gst_buffer_get_json_info_meta.argtypes = [c_void_p]
 libgst.gst_buffer_get_json_info_meta.restype = c_char_p
 
-def gst_meta_write(buffer, message):
+libgst.gst_buffer_remove_json_info_meta.argtypes = [c_void_p]
+libgst.gst_buffer_remove_json_info_meta.restype = c_bool
+
+def flow_meta_add(buffer, message):
      _ = libgst.gst_buffer_add_json_info_meta(hash(buffer), message)
 
-def gst_meta_get(buffer):
+def flow_meta_get(buffer):
     res = libgst.gst_buffer_get_json_info_meta(hash(buffer))
     return res.decode('utf-8')
+
+def flow_meta_remove(buffer):
+    libgst.gst_buffer_remove_json_info_meta(hash(buffer))
+
+
