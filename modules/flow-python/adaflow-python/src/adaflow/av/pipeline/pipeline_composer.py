@@ -41,11 +41,13 @@ class PipelineComposer:
 
         return self
 
-    def get_nodes(self):
-        return list(self._root_graph.nodes)
+    @property
+    def graph(self):
+        return self._root_graph
 
-    def get_edges(self):
-        return list(self._root_graph.edges)
+    @property
+    def nodes(self):
+        return self._nodes
 
     def get_name(self):
         return self._name
