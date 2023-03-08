@@ -7,15 +7,10 @@
     mass_model task=domain-specific-object-detection id = damo/cv_tinynas_human-detection_damoyolo ! \
     videoconvert ! jpegenc ! filesink location=/xxx/detection_result.jpg
 """
-from flow.register.constants import XSTPluginName, XSTPropertiesName
-from flow.utils import gst_video_format_from_string, get_num_channels, NumpyArrayEncoder
-from flow.metadata.flow_json_meta import flow_meta_add, flow_meta_get, flow_meta_remove
+from flow.utils.video_frame import AVDataPacket
 from gi.repository import Gst, GObject, GstBase
-import numpy as np
-import json
 import imp
-import inspect
-
+import yaml
 import gi
 
 gi.require_version('Gst', '1.0')
@@ -27,7 +22,7 @@ FORMATS = "{RGB, RGBA, I420, NV12, NV21}"
 
 class FlowMassModelPostprocess(GstBase.BaseTransform):
 
-    GST_PLUGIN_NAME = XSTPluginName.MASS_MODEL_POST
+    GST_PLUGIN_NAME = 'mass_model_post'
 
     __gstmetadata__ = (GST_PLUGIN_NAME,
                        "mass model postprocess route",
@@ -49,24 +44,37 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
 
     __gproperties__ = {
 
-        XSTPropertiesName.INPUT: (GObject.TYPE_STRING,  # type
+        "input": (GObject.TYPE_STRING,  # type
                                   "input",  # nick
                                   "input file or file name",  # blurb
                                   "",  # default
                                   GObject.ParamFlags.READWRITE  # flags
                                   ),
-        XSTPropertiesName.OUTPUT: (GObject.TYPE_STRING,  # type
+        "output": (GObject.TYPE_STRING,  # type
                                    "output",  # nick
                                    "out file or file name",  # blurb
                                    "",  # default
                                    GObject.ParamFlags.READWRITE  # flags
                                    ),
-        XSTPropertiesName.MODULE: (GObject.TYPE_STRING,  # type
+        "module": (GObject.TYPE_STRING,  # type
                                     "Python module name",  # nick
                                     "Python module name",  # blurb
                                      "",  # default
                                      GObject.ParamFlags.READWRITE  # flags
                                     ),
+        "class": (GObject.TYPE_STRING,  # type
+                   "(optional) Python class name",  # nick
+                   "Python class name",  # blurb
+                   "",  # default
+                   GObject.ParamFlags.READWRITE  # flags
+                   ),
+
+        "function": (GObject.TYPE_STRING,  # type
+                   "Python function name",  # nick
+                   "Python function name",  # blurb
+                   "postprocess",  # default
+                   GObject.ParamFlags.READWRITE  # flags
+                   ),
 
     }
 
@@ -77,78 +85,80 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
         self.input = None
         self.output = None
         self.mass_module = None
+        self.mass_class = None
+        self.mass_function = 'postprocess'
         self.mass_post_processor = None
 
     def do_get_property(self, prop: GObject.GParamSpec):
-        if prop.name == XSTPropertiesName.INPUT:
+        if prop.name == 'input':
             return self.input
 
-        elif prop.name == XSTPropertiesName.OUTPUT:
+        elif prop.name == 'output':
             return self.output
 
-        elif prop.name == XSTPropertiesName.MODULE:
+        elif prop.name == 'module':
             return self.mass_module
+
+        elif prop.name == 'class':
+            return self.mass_class
+
+        elif prop.name == 'function':
+            return self.mass_function
 
         else:
             raise AttributeError('unknown property %s' % prop.name)
 
     def do_set_property(self, prop: GObject.GParamSpec, value):
-        if prop.name == XSTPropertiesName.INPUT:
+        if prop.name == 'input':
             self.input = value
-            if self.mass_module is not None:
-                self._create_mass_post_processor()
-        elif prop.name == XSTPropertiesName.OUTPUT:
+        elif prop.name == 'output':
             self.output = value
-        elif prop.name == XSTPropertiesName.MODULE:
+        elif prop.name == 'module':
             self.mass_module = value
-            if self.input is not None:
-                self._create_mass_post_processor()
+        elif prop.name == 'class':
+            self.mass_class = value
+        elif prop.name == 'function':
+            self.mass_function = value
         else:
             raise AttributeError('unknown property %s' % prop.name)
 
     def do_set_caps(self, incaps: Gst.Caps, outcaps: Gst.Caps) -> bool:
-        struct = incaps.get_structure(0)
-        self.width = struct.get_int("width").value
-        self.height = struct.get_int("height").value
-        video_format = gst_video_format_from_string(struct.get_value('format'))
-        self.channel = get_num_channels(video_format)
-
-        self.mass_post_processor.videoinfo(height=self.height, width=self.width, channel=self.channel)
+        self.caps = incaps
 
         return True
 
-    def _create_mass_post_processor(self):
+    def parse_input(self, yaml_path: str):
+        with open(yaml_path, "r") as f:
+            data = yaml.load(f, Loader=yaml.FullLoader)
+        return data
+
+    def _run_mass_post_processor(self, avdatapacket, data):
 
         function = imp.load_source('flow', self.mass_module)
-        #find class name
-        class_obj = []
-        for name, obj in inspect.getmembers(function):
-            if inspect.isclass(obj):
-                class_obj.append(obj)
+        import flow
 
-        self.mass_post_processor = class_obj[1]()
+        if self.mass_class is not None:
+            class_name = getattr(flow, self.mass_class)
+            class_name_re = class_name()
+            func_name = getattr(class_name_re, self.mass_function)
+            self.mass_post_processor = func_name(avdatapacket, data)
 
-        if self.input is not None:
-            self.mass_post_processor.parse_input(self.input)
-
+        else:
+            func_name = getattr(flow, self.mass_function)
+            self.mass_post_processor = func_name(avdatapacket, data)
 
     def do_transform_ip(self, buffer: Gst.Buffer) -> Gst.FlowReturn:
         try:
-            with buffer.map(Gst.MapFlags.READ | Gst.MapFlags.WRITE) as info:
-                image = np.ndarray(
-                    shape=(self.height, self.width, self.channel),
-                    dtype=np.uint8, buffer=info.data)
+            avdatapacket = AVDataPacket(buffer, caps= self.caps).iterate()
+            if self.input is not None:
+                data = self.parse_input(self.input)
+            else:
+                data =[]
 
-                get_message_str = flow_meta_get(buffer)
-                get_message = json.loads(get_message_str)
+            self._run_mass_post_processor(avdatapacket, data)
 
-                outres = self.mass_post_processor.process(get_message, image)
+            return Gst.FlowReturn.OK
 
-                json_new_message = json.dumps(outres['metadata'], cls=NumpyArrayEncoder)
-                flow_meta_remove(buffer)
-                flow_meta_add(buffer, json_new_message.encode('utf-8'))
-
-                return Gst.FlowReturn.OK
         except Gst.MapError as e:
             Gst.error("Mapping error: %s" % e)
             return Gst.FlowReturn.ERROR

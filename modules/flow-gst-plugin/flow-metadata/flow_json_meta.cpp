@@ -3,7 +3,6 @@
 //
 
 #include <string.h>
-
 #include "flow_json_meta.h"
 
 #define UNUSED(x) (void)(x)
