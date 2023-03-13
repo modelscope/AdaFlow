@@ -7,7 +7,7 @@
     mass_model task=domain-specific-object-detection id = damo/cv_tinynas_human-detection_damoyolo ! \
     videoconvert ! jpegenc ! filesink location=/xxx/detection_result.jpg
 """
-from flow.utils.video_frame import AVDataPacket
+from adaflow.utils.video_frame import AVDataPacket
 from gi.repository import Gst, GObject, GstBase
 import imp
 import yaml

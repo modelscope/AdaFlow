@@ -8,12 +8,11 @@
     videoconvert ! jpegenc ! filesink location=/xxx/detection_result.jpg
 """
 from modelscope.pipelines import pipeline
-from flow.utils import gst_video_format_from_string, get_num_channels,NumpyArrayEncoder
-from flow.metadata.flow_json_meta import flow_meta_add_key
+from adaflow.utils import gst_video_format_from_string, get_num_channels,NumpyArrayEncoder
+from adaflow.metadata.flow_json_meta import flow_meta_add_key
 from gi.repository import Gst, GObject, GstBase
 from absl import logging
 import numpy as np
-import json
 
 import gi
 

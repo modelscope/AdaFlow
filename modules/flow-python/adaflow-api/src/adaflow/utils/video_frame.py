@@ -7,8 +7,8 @@ gi.require_version("GstVideo", "1.0")
 gi.require_version('GObject', '2.0')
 
 from gi.repository import GObject, Gst, GstVideo
-from flow.metadata.flow_json_meta import flow_meta_add, flow_meta_get, flow_meta_remove
-from flow.utils import gst_video_format_from_string, get_num_channels, NumpyArrayEncoder
+from adaflow.metadata.flow_json_meta import flow_meta_add, flow_meta_get, flow_meta_remove
+from adaflow.utils import gst_video_format_from_string, get_num_channels, NumpyArrayEncoder
 
 
 class AVDataFrame:

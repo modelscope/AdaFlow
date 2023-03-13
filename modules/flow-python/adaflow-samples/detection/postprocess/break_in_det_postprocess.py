@@ -1,13 +1,13 @@
 """
 break in detection post process
 """
-from flow.utils.video_frame import AVDataPacket
+from adaflow.utils.video_frame import AVDataPacket
 import numpy as np
 import cv2
 import gi
 import os
 import json
-from flow.utils import NumpyArrayEncoder
+from adaflow.utils import NumpyArrayEncoder
 
 gi.require_version('Gst', '1.0')
 gi.require_version('GstBase', '1.0')
@@ -58,7 +58,6 @@ class BreakInDetPostprocess:
 
                 ##add new meta with key
                 frame.add_json_meta(self.meta_data, 'BreakInDetPost')
-
 
             idx+=1
 
