@@ -7,14 +7,12 @@
     mass_model task=domain-specific-object-detection id = damo/cv_tinynas_human-detection_damoyolo ! \
     videoconvert ! jpegenc ! filesink location=/xxx/detection_result.jpg
 """
-from flow.register.constants import XSTPluginName, XSTPropertiesName
 from modelscope.pipelines import pipeline
-from flow.utils import gst_video_format_from_string, get_num_channels,NumpyArrayEncoder
-from flow.metadata.flow_json_meta import flow_meta_add, flow_meta_get
+from adaflow.utils import gst_video_format_from_string, get_num_channels,NumpyArrayEncoder
+from adaflow.metadata.flow_json_meta import flow_meta_add_key
 from gi.repository import Gst, GObject, GstBase
 from absl import logging
 import numpy as np
-import json
 
 import gi
 
@@ -27,7 +25,7 @@ FORMATS = "{RGB, RGBA, I420, NV12, NV21}"
 
 class FlowMassModelPlugin(GstBase.BaseTransform):
 
-    GST_PLUGIN_NAME = XSTPluginName.MASS_MODEL
+    GST_PLUGIN_NAME = 'mass_model'
 
     __gstmetadata__ = (GST_PLUGIN_NAME,
                        "almighty plugin for mass model pipeline",
@@ -48,25 +46,32 @@ class FlowMassModelPlugin(GstBase.BaseTransform):
                                                 f"video/x-raw,format={FORMATS}")))
 
     __gproperties__ = {
-        XSTPropertiesName.MASS_MODEL_TASK: (GObject.TYPE_STRING,  # type
+                       "task": (GObject.TYPE_STRING,  # type
                                             "model task",  # nick
                                             "mass tasks",  # blurb
                                             "",  # default
                                             GObject.ParamFlags.READWRITE
                                             # flags
                                             ),
-        XSTPropertiesName.MASS_MODEL_ID: (GObject.TYPE_STRING,  # type
+                       "id": (GObject.TYPE_STRING,  # type
                                           "model id on the mass",  # nick
                                           "model id",  # blurb
                                           "",  # default
                                           GObject.ParamFlags.READWRITE  # flags
                                           ),
-        XSTPropertiesName.INPUT: (GObject.TYPE_STRING,  # type
+                       "input": (GObject.TYPE_STRING,  # type
                                   "image or video input path",  # nick
                                   "input path",  # blurb
                                   "",  # default
                                   GObject.ParamFlags.READWRITE  # flags
                                   ),
+
+                       "meta-key": (GObject.TYPE_STRING,  # type
+                                 "image or video input path",  # nick
+                                 "input path",  # blurb
+                                 "",  # default
+                                 GObject.ParamFlags.READWRITE  # flags
+                                 ),
     }
 
     def __init__(self):
@@ -76,25 +81,30 @@ class FlowMassModelPlugin(GstBase.BaseTransform):
         self.task = None
         self.id = None
         self.input = None
-        self.meta_type = None
+        self.meta_key = 'modelout'
+
 
     def do_get_property(self, prop: GObject.GParamSpec):
-        if prop.name == XSTPropertiesName.MASS_MODEL_TASK:
+        if prop.name == 'task':
             return self.task
-        elif prop.name == XSTPropertiesName.MASS_MODEL_ID:
+        elif prop.name == 'id':
             return self.id
-        elif prop.name == XSTPropertiesName.INPUT:
+        elif prop.name == 'input':
             return self.input
+        elif prop.name == 'meta-key':
+            return self.meta_key
         else:
             raise AttributeError('unknown property %s' % prop.name)
 
     def do_set_property(self, prop: GObject.GParamSpec, value):
-        if prop.name == XSTPropertiesName.MASS_MODEL_TASK:
+        if prop.name == 'task':
             self.task = value
-        elif prop.name == XSTPropertiesName.MASS_MODEL_ID:
+        elif prop.name == 'id':
             self.id = value
-        elif prop.name == XSTPropertiesName.INPUT:
+        elif prop.name == 'input':
             self.input = value
+        elif prop.name == 'meta-key':
+            self.meta_key = value
         else:
             raise AttributeError('unknown property %s' % prop.name)
 
@@ -119,14 +129,12 @@ class FlowMassModelPlugin(GstBase.BaseTransform):
                     shape=(self.height, self.width, self.channel),
                     dtype=np.uint8, buffer=info.data)
                 if self.input is not None:
-                    # 临时方案
                     det_res = self.mass_pipeline(self.input)
                     logging.debug(f'{det_res}')
                 else:
                     det_res = self.mass_pipeline(image)
-                    json_message = json.dumps(det_res, cls=NumpyArrayEncoder)
 
-                flow_meta_add(buffer, json_message.encode('utf-8'))
+                    flow_meta_add_key(buffer, det_res, self.meta_key)
 
                 return Gst.FlowReturn.OK
         except Gst.MapError as e:

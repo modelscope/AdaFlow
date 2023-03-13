@@ -1,79 +1,67 @@
 """
 break in detection post process
 """
-from flow.baseprocess.base_postprocess import BasePostprocess
+from adaflow.utils.video_frame import AVDataPacket
 import numpy as np
 import cv2
-import yaml
 import gi
 import os
 import json
-from flow.utils import NumpyArrayEncoder
+from adaflow.utils import NumpyArrayEncoder
 
 gi.require_version('Gst', '1.0')
 gi.require_version('GstBase', '1.0')
 gi.require_version('GObject', '2.0')
 
-class BreakInDetPostprocess(BasePostprocess):
+class BreakInDetPostprocess:
     def __init__(self):
-        super().__init__()
-        self.inyaml = ''
+        pass
+    def postprocess(self, frames: AVDataPacket, kwargs):
+        ##user parameter
         self.outyaml = 'mass_smoke_det_res.yaml'
-        self.output_path = None
-        self.vis_flag = None
-        self.is_video = None
-        self.region_polygon = None
-        self.frame_rate = None
-        self.det_thres = None
-        self.meta_data = None
-        self.databuf = None
+        self.output_path = kwargs['output_path']
+        self.vis_flag = kwargs['vis_flag']
+        self.is_video = kwargs['deploy']['rules']['is_video']
+        self.region_polygon = kwargs['deploy']['rules']['region_polygon']
+        self.frame_rate = kwargs['deploy']['rules']['frame_rate']
+        self.det_thres = kwargs['deploy']['rules']['det_thres']
 
-    def parse_input(self, yaml_path: str):
-        with open(yaml_path, "r") as f:
-            data = yaml.load(f, Loader=yaml.FullLoader)
-        self.output_path = data['output_path']
-        self.vis_flag = data['vis_flag']
+        ##frame by frame
+        idx = 0
+        for frame in frames:
+            ## interval processing
+            if idx % self.frame_rate ==0:
+                self.meta_data = frame.get_json_meta('modelout')
+                self.image = frame.data()
+                scores = self.meta_data['scores']
+                self.meta_data['alarms'] = []
+                #private-postprocess
+                for i, score in enumerate(scores):
+                    if score >= self.det_thres:
+                        box = self.meta_data['boxes'][i]
+                        if self._check_box_status(box):
+                            self.meta_data['alarms'].append(True)
+                        else:
+                            self.meta_data['alarms'].append(False)
 
-        self.is_video = data['deploy']['rules']['is_video']
-        self.region_polygon = data['deploy']['rules']['region_polygon']
-        self.frame_rate = data['deploy']['rules']['frame_rate']
-        self.det_thres = data['deploy']['rules']['det_thres']
+                self.meta_data['alarms'] = np.array(self.meta_data['alarms'])
 
-        return True
+                if (self.vis_flag):
+                    self._visualize(self.meta_data, self.image)
 
+                ##write_result_json
+                res = {
+                      0: self.meta_data
+                }
 
+                self._write_result_yaml(self.output_path, res, self.frame_rate)
 
-    def videoinfo(self, **kwargs):
-        self.height = kwargs['height']
-        self.width = kwargs['width']
-        self.channel = kwargs['channel']
-        return True
+                ##add new meta with key
+                frame.add_json_meta(self.meta_data, 'BreakInDetPost')
 
-    def process(self, metadata, image):
-        self.meta_data = metadata
-        scores = self.meta_data.get('scores')
-        self.meta_data['alarms'] = []
-        for i, score in enumerate(scores):
-            if score >= self.det_thres:
-                box = self.meta_data['boxes'][i]
-                if self._check_box_status(box):
-                    self.meta_data['alarms'].append(True)
-                else:
-                    self.meta_data['alarms'].append(False)
+            idx+=1
 
-        self.meta_data['alarms'] = np.array(self.meta_data['alarms'])
-
-        if (self.vis_flag):
-            outimage = self._visualize(self.meta_data, image)
-
-        ##write_result_json
-        res = {
-            0: self.meta_data
-        }
-
-        self._write_result_yaml(self.output_path, res, self.frame_rate)
-
-        return {'outimage': outimage, 'metadata': self.meta_data}
+            return True
 
     # ----------------------------private-------------------------------
 
@@ -110,7 +98,7 @@ class BreakInDetPostprocess(BasePostprocess):
                         f'{labels[i]}_{scores[i]:<.2f}_{alarms[i]}',
                         (int(x1), int(y1) - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.75, color, 2)
-        return image
+        return True
 
     def _write_result_yaml(self, output_path, res, interval):
         json_path = os.path.join(output_path, self.outyaml)

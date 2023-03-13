@@ -51,11 +51,13 @@ def get_num_channels(fmt: GstVideo.VideoFormat):
 def gst_video_format_from_string(frmt: str) -> GstVideo.VideoFormat:
     return GstVideo.VideoFormat.from_string(frmt)
 
-
 class NumpyArrayEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
         return json.JSONEncoder.default(self, obj)
+
+
+
 
 
