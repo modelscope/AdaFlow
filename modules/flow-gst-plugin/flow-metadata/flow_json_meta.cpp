@@ -93,7 +93,12 @@ GstFLOWJSONMeta* gst_buffer_add_json_info_meta(GstBuffer *buffer, const gchar *m
 gchar* gst_buffer_get_json_info_meta(GstBuffer *buffer)
 {
   GstFLOWJSONMeta* meta = (GstFLOWJSONMeta*)gst_buffer_get_meta((buffer), gst_flow_json_meta_api_get_type());
-  return meta->message;
+
+  gchar* has_meta = "NULL";
+  if (meta == NULL)
+    return has_meta;
+  else
+    return meta->message;
 }
 
 gboolean gst_buffer_remove_json_info_meta(GstBuffer *buffer)

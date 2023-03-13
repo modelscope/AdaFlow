@@ -9,7 +9,7 @@
 """
 from modelscope.pipelines import pipeline
 from flow.utils import gst_video_format_from_string, get_num_channels,NumpyArrayEncoder
-from flow.metadata.flow_json_meta import flow_meta_add, flow_meta_get
+from flow.metadata.flow_json_meta import flow_meta_add_key
 from gi.repository import Gst, GObject, GstBase
 from absl import logging
 import numpy as np
@@ -134,12 +134,8 @@ class FlowMassModelPlugin(GstBase.BaseTransform):
                     logging.debug(f'{det_res}')
                 else:
                     det_res = self.mass_pipeline(image)
-                    json_key_v = dict()
-                    json_key_v[self.meta_key] = []
-                    json_key_v[self.meta_key].append(det_res)
-                    json_message = json.dumps(json_key_v, cls=NumpyArrayEncoder)
 
-                flow_meta_add(buffer, json_message.encode('utf-8'))
+                    flow_meta_add_key(buffer, det_res, self.meta_key)
 
                 return Gst.FlowReturn.OK
         except Gst.MapError as e:
