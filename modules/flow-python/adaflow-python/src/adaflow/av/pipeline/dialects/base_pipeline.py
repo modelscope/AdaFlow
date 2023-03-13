@@ -3,19 +3,20 @@ from typing import Dict
 from ..pipeline_composer import PipelineComposer
 from ..model.task import Task
 from abc import ABCMeta, abstractmethod
+from ..model.pipeline import Pipeline
 
 
 class BasePipeline(metaclass=ABCMeta):
     """
     Backend specific pipeline handler
     """
-    def __init__(self, pipeline_composer: PipelineComposer) -> None:
+    def __init__(self, pipeline: Pipeline) -> None:
         super().__init__()
-        self._composer = pipeline_composer
+        self._pipeline = pipeline
 
     @property
-    def composer(self):
-        return self._composer
+    def pipeline(self):
+        return self._pipeline
 
     @abstractmethod
     def startup(self, task: Dict[str, any]):

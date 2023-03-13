@@ -36,15 +36,15 @@ class PipelineComposerTest(unittest.TestCase):
             # route three
             branch2 >> c.node("j").kind("model") >> c.node("k")
 
-        print(c.get_nodes())
-        print(nx.all_simple_edge_paths(c._root_graph))
+        # print(c.get_nodes())
+        # print(nx.all_simple_edge_paths(c._root_graph))
         # print(c.get_edges())
         # for n in c._root_graph.neighbors("b"):
         #     print("node=" + n)
         #     logging.info("suc=%s" % n)
-        print(c.dump_json())
+        # print(c.dump_json())
         # display
-        # c.visualize()
+        c.visualize()
 
 
 if __name__ == '__main__':
