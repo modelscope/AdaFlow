@@ -3,13 +3,8 @@ reid person in detection post process
 """
 from adaflow.utils.video_frame import AVDataPacket
 import numpy as np
-import gi
 import logging
 logging.basicConfig(level=logging.DEBUG)
-
-gi.require_version('Gst', '1.0')
-gi.require_version('GstBase', '1.0')
-gi.require_version('GObject', '2.0')
 
 class ReidPersonPostprocess:
     def __init__(self):

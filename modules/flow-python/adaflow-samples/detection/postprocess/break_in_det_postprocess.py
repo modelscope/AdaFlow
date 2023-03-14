@@ -4,14 +4,9 @@ break in detection post process
 from adaflow.utils.video_frame import AVDataPacket
 import numpy as np
 import cv2
-import gi
 import os
 import json
 from adaflow.utils import NumpyArrayEncoder
-
-gi.require_version('Gst', '1.0')
-gi.require_version('GstBase', '1.0')
-gi.require_version('GObject', '2.0')
 
 class BreakInDetPostprocess:
     def __init__(self):

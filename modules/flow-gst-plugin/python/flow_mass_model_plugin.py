@@ -134,7 +134,7 @@ class FlowMassModelPlugin(GstBase.BaseTransform):
                 else:
                     det_res = self.mass_pipeline(image)
 
-                    flow_meta_add_key(buffer, det_res, self.meta_key)
+                flow_meta_add_key(buffer, det_res, self.meta_key)
 
                 return Gst.FlowReturn.OK
         except Gst.MapError as e:
