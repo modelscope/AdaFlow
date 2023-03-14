@@ -11,6 +11,7 @@ from gi.repository import Gst, GObject, GstBase, GLib
 from adaflow.metadata.flow_json_meta import flow_meta_add, flow_meta_get, flow_meta_remove
 from adaflow.utils import gst_video_format_from_string, get_num_channels, NumpyArrayEncoder
 
+
 class BlendData:
     def __init__(self,outimg):
         self.outimg = outimg
@@ -42,6 +43,19 @@ class GstMetaAgg(GstBase.Aggregator):
                                        GstBase.AggregatorPad.__gtype__)
     )
 
+    __gproperties__ = {
+
+        "frame-num": (GObject.TYPE_INT64,  # type
+                   "frame number pass",  # nick
+                   "frame number pass",  # blurb
+                   1,  # min
+                   GLib.MAXINT,  # max
+                   1,  # default
+                   GObject.ParamFlags.READWRITE  # flags
+                   )
+    }
+
+
     def __init__(self):
 
         super(GstMetaAgg, self).__init__()
@@ -50,6 +64,8 @@ class GstMetaAgg(GstBase.Aggregator):
         self.vid_caps = None
         self.width = 720
         self.height = 360
+        self.channel = 3
+        self.frame_num = 1
 
     def ensure_pads_found(self):
         if self.vid_pad and self.inf_pad:
@@ -63,6 +79,7 @@ class GstMetaAgg(GstBase.Aggregator):
             self.height = struct.get_int("height").value
             video_format = gst_video_format_from_string(struct.get_value('format'))
             self.channel = get_num_channels(video_format)
+
             self.vid_pad = pad
             self.vid_caps = caps
 
@@ -70,18 +87,22 @@ class GstMetaAgg(GstBase.Aggregator):
 
     def do_fixate_src_caps (self, caps):
         self.ensure_pads_found()
+        self.size = self.height * self.width * self.channel
         return self.vid_caps
 
     def mix_buffers(self, agg, pad, bdata):
 
         if(GstBase.AggregatorPad.has_buffer(pad)):
-            buf = pad.pop_buffer()
-            detection_info = flow_meta_get(buf)
+            self.buf = pad.pop_buffer()
+            detection_info = flow_meta_get(self.buf)
             self.metadata.append(detection_info)
-            with buf.map(Gst.MapFlags.READ) as info:
-                img = np.ndarray(shape=(self.height, self.width, self.channel), dtype=np.uint8, buffer=info.data)
+            with self.buf.map(Gst.MapFlags.READ) as info:
+                img = np.ndarray(shape = (self.height, self.width, self.channel), dtype = np.uint8, buffer = info.data)
+                if(self.frame_num>1):
+                    self.databuf = np.ndarray(shape = self.size * (self.frame_num-1), dtype = np.uint8, buffer = info.data, offset = self.size)
+
             bdata.outimg = img
-            bdata.pts = buf.pts
+            bdata.pts = self.buf.pts
             bdata.eos = False
 
         return True
@@ -92,10 +113,12 @@ class GstMetaAgg(GstBase.Aggregator):
         self.metadata = []
         self.foreach_sink_pad(self.mix_buffers, bdata)
 
+        outbuf = Gst.Buffer.new_allocate(None, self.size * self.frame_num, None)
         data = bdata.outimg.tobytes()
-
-        outbuf = Gst.Buffer.new_allocate(None, len(data), None)
         outbuf.fill(0, data)
+        if(self.frame_num>1):
+            outbuf.fill(self.size, self.databuf.tobytes())
+
         outbuf.pts = bdata.pts
 
         if(self.metadata):
@@ -105,10 +128,8 @@ class GstMetaAgg(GstBase.Aggregator):
                 key = list(get_message.keys())[0]
                 json_key_v[key] = []
                 json_key_v[key].append(get_message[key][0])
-
             json_message = json.dumps(json_key_v, cls=NumpyArrayEncoder)
             flow_meta_add(outbuf, json_message.encode('utf-8'))
-
             self.finish_buffer(outbuf)
 
         # We are EOS when no pad was ready to be aggregated,
@@ -119,12 +140,23 @@ class GstMetaAgg(GstBase.Aggregator):
         return Gst.FlowReturn.OK
 
 
+    def do_get_property(self, prop: GObject.GParamSpec):
+
+        if prop.name == 'frame-num':
+            return self.frame_num
+
+        else:
+            raise AttributeError('unknown property %s' % prop.name)
+
+    def do_set_property(self, prop: GObject.GParamSpec, value):
+        if prop.name == 'frame-num':
+            self.frame_num = value
+
+        else:
+            raise AttributeError('unknown property %s' % prop.name)
+
+
+
 GObject.type_register(GstMetaAgg)
 __gstelementfactory__ = ("meta_aggregator", Gst.Rank.NONE, GstMetaAgg)
-
-
-
-
-
-
 
