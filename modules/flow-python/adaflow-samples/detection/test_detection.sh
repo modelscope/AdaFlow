@@ -21,3 +21,13 @@ meta_aggregator name = mixer ! mass_model_post input=/Users/jingyao/Documents/23
 filesrc location=/Users/jingyao/Documents/23S1/test-img/src/image_reid_person.jpg ! \
 decodebin ! videoconvert ! videoscale ! video/x-raw,format=RGB ! \
 mass_model task=image-reid-person id = damo/cv_passvitb_image-reid-person_market meta-key=model2 ! mixer.
+
+#smoke-det
+gst-launch-1.0 filesrc location=/Users/jingyao/Documents/23S1/test-img/src/test04.mp4 ! \
+decodebin ! videoconvert ! videoscale ! video/x-raw,format=RGB ! \
+tee name=mytee \
+mytee. ! queue ! mass_model task=domain-specific-object-detection id = damo/cv_tinynas_human-detection_damoyolo meta-key=human ! \
+meta_aggregator name = mixer ! \
+mass_model_post input=/Users/jingyao/Documents/23S1/test-img/src/smoke_det_deploy.yaml module=/Users/jingyao/Documents/23S1/AdaFlow/modules/flow-python/adaflow-samples/detection/postprocess/smoke_det_postprocess.py class= SmokeDetPostprocess ! \
+videoconvert ! videoscale ! video/x-raw,format=I420 ! x264enc ! mp4mux ! filesink location=/Users/jingyao/Documents/23S1/test-img/res/smoke_det_res.mp4 \
+mytee. ! queue ! mass_model task=domain-specific-object-detection id = damo/cv_tinynas_object-detection_damoyolo_cigarette  meta-key=cigare ! mixer.
