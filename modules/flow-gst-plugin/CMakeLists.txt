@@ -11,7 +11,7 @@ pkg_search_module(GST_VIDEO REQUIRED gstreamer-video-1.0)
 pkg_search_module(GST_AUDIO REQUIRED gstreamer-audio-1.0)
 
 set(FLOW_GST_BACKEND_TARGET_NAMES ${FLOW_GST_BACKEND_CORE_DY_LIB_NAME})
-set(FLOW_GST_BACKEND_SOURCE_FILES elements/flow_python_extension.h elements/flow_python_extension.c)
+set(FLOW_GST_BACKEND_SOURCE_FILES elements/flow_video_aggregate.c elements/flow_video_aggregate.h register/adaflow.c)
 add_library(${FLOW_GST_BACKEND_TARGET_NAMES} SHARED ${FLOW_GST_BACKEND_SOURCE_FILES})
 foreach(TARGET_NAME ${FLOW_GST_BACKEND_TARGET_NAMES})
     # add include dirs of local source files
@@ -38,7 +38,7 @@ foreach(TARGET_NAME ${FLOW_GST_BACKEND_TARGET_NAMES})
 
     install(TARGETS ${TARGET_NAME}
             EXPORT ${TARGET_NAME}_TARGETS
-            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}lib/gstreamer-1.0
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
             RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
             PUBLIC_HEADER DESTINATION include
