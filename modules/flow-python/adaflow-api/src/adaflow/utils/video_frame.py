@@ -56,7 +56,6 @@ class AVDataFrame:
     def data(self, flag=Gst.MapFlags.READ | Gst.MapFlags.WRITE) -> numpy.ndarray:
         with self.__buffer.map(flag) as info:
             image = numpy.ndarray(shape=(self.height, self.width, self.channel),dtype=numpy.uint8, buffer=info.data, offset=self.__offset)
-
             return image
 
 

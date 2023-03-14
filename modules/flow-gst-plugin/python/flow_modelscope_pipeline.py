@@ -1,11 +1,5 @@
 """
-    mass_model plugin
-
-    example:
-    gst-launch-1.0 filesrc location=/xxx/image_smoke.jpg ! \
-    decodebin ! videoconvert ! videoscale ! video/x-raw,format=RGB ! \
-    mass_model task=domain-specific-object-detection id = damo/cv_tinynas_human-detection_damoyolo ! \
-    videoconvert ! jpegenc ! filesink location=/xxx/detection_result.jpg
+    maas_model plugin
 """
 from modelscope.pipelines import pipeline
 from adaflow.utils import gst_video_format_from_string, get_num_channels,NumpyArrayEncoder
@@ -25,10 +19,10 @@ FORMATS = "{RGB, RGBA, I420, NV12, NV21}"
 
 class FlowMassModelPlugin(GstBase.BaseTransform):
 
-    GST_PLUGIN_NAME = 'mass_model'
+    GST_PLUGIN_NAME = 'maas_model'
 
     __gstmetadata__ = (GST_PLUGIN_NAME,
-                       "almighty plugin for mass model pipeline",
+                       "almighty plugin for maas model pipeline",
                        "almighty plugin",
                        "JingYao")
 
@@ -48,13 +42,13 @@ class FlowMassModelPlugin(GstBase.BaseTransform):
     __gproperties__ = {
                        "task": (GObject.TYPE_STRING,  # type
                                             "model task",  # nick
-                                            "mass tasks",  # blurb
+                                            "maas tasks",  # blurb
                                             "",  # default
                                             GObject.ParamFlags.READWRITE
                                             # flags
                                             ),
                        "id": (GObject.TYPE_STRING,  # type
-                                          "model id on the mass",  # nick
+                                          "model id on the maas",  # nick
                                           "model id",  # blurb
                                           "",  # default
                                           GObject.ParamFlags.READWRITE  # flags
@@ -118,7 +112,7 @@ class FlowMassModelPlugin(GstBase.BaseTransform):
         if self.task is None or self.id is None:
             raise ValueError(f'id = {self.id} or task = {self.task} is error ')
 
-        self.mass_pipeline = pipeline(self.task, model=self.id)
+        self.maas_pipeline = pipeline(self.task, model=self.id)
 
         return True
 
@@ -129,10 +123,10 @@ class FlowMassModelPlugin(GstBase.BaseTransform):
                     shape=(self.height, self.width, self.channel),
                     dtype=np.uint8, buffer=info.data)
                 if self.input is not None:
-                    det_res = self.mass_pipeline(self.input)
+                    det_res = self.maas_pipeline(self.input)
                     logging.debug(f'{det_res}')
                 else:
-                    det_res = self.mass_pipeline(image)
+                    det_res = self.maas_pipeline(image)
 
                 flow_meta_add_key(buffer, det_res, self.meta_key)
 

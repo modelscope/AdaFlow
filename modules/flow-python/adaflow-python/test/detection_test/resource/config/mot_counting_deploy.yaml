@@ -1,0 +1,21 @@
+_BASE_: [
+  '../base.yaml',
+]
+
+input_path:
+  '../resource/data/MOT17-03-partial.mp4'
+
+output_path:
+  '../resource/data/maas_test_detection_ok.avi'
+
+vis_flag:
+  True
+
+deploy:
+  type: MOTCounting
+  model_id: 'damo/cv_yolov5_video-multi-object-tracking_fairmot'
+  rules:
+    is_video: True
+    horizontal: True
+    coord: 200
+    in_flag: True
