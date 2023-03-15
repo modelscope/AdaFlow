@@ -15,7 +15,7 @@ FORMATS = "{RGB, RGBA, I420, NV12, NV21}"
 
 class FlowMassModelPostprocess(GstBase.BaseTransform):
 
-    GST_PLUGIN_NAME = 'maas_model_post'
+    GST_PLUGIN_NAME = 'flow_python_extension'
 
     __gstmetadata__ = (GST_PLUGIN_NAME,
                        "maas model postprocess route",

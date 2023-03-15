@@ -19,7 +19,7 @@ FORMATS = "{RGB, RGBA, I420, NV12, NV21}"
 
 class FlowMassModelPlugin(GstBase.BaseTransform):
 
-    GST_PLUGIN_NAME = 'maas_model'
+    GST_PLUGIN_NAME = 'flow_modelscope_pipeline'
 
     __gstmetadata__ = (GST_PLUGIN_NAME,
                        "almighty plugin for maas model pipeline",

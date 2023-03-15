@@ -15,7 +15,7 @@ gi.require_version('GstVideo', '1.0')
 
 class MetaDataSink(GstBase.BaseSink):
 
-    GST_PLUGIN_NAME = 'metasink'
+    GST_PLUGIN_NAME = 'flow_metasink'
 
     __gstmetadata__ = (GST_PLUGIN_NAME,
                        "File metadata publisher",
