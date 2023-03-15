@@ -1,11 +1,5 @@
 """
-    mass model postprocess plugin ,only use route subplugin
-
-    example:
-    gst-launch-1.0 filesrc location=/xxx/image_smoke.jpg ! \
-    decodebin ! videoconvert ! videoscale ! video/x-raw,format=RGB ! \
-    mass_model task=domain-specific-object-detection id = damo/cv_tinynas_human-detection_damoyolo ! \
-    videoconvert ! jpegenc ! filesink location=/xxx/detection_result.jpg
+    maas model postprocess plugin ,only use route subplugin
 """
 from adaflow.utils.video_frame import AVDataPacket
 from gi.repository import Gst, GObject, GstBase
@@ -17,16 +11,15 @@ gi.require_version('Gst', '1.0')
 gi.require_version('GstBase', '1.0')
 gi.require_version('GstVideo', '1.0')
 
-
 FORMATS = "{RGB, RGBA, I420, NV12, NV21}"
 
 class FlowMassModelPostprocess(GstBase.BaseTransform):
 
-    GST_PLUGIN_NAME = 'mass_model_post'
+    GST_PLUGIN_NAME = 'flow_python_extension'
 
     __gstmetadata__ = (GST_PLUGIN_NAME,
-                       "mass model postprocess route",
-                       "mass model postprocess",
+                       "maas model postprocess route",
+                       "maas model postprocess",
                        "JingYao")
 
     __gsttemplates__ = (Gst.PadTemplate.new("src",
@@ -84,10 +77,10 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
 
         self.input = None
         self.output = None
-        self.mass_module = None
-        self.mass_class = None
-        self.mass_function = 'postprocess'
-        self.mass_post_processor = None
+        self.maas_module = None
+        self.maas_class = None
+        self.maas_function = 'postprocess'
+        self.maas_post_processor = None
 
     def do_get_property(self, prop: GObject.GParamSpec):
         if prop.name == 'input':
@@ -97,13 +90,13 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
             return self.output
 
         elif prop.name == 'module':
-            return self.mass_module
+            return self.maas_module
 
         elif prop.name == 'class':
-            return self.mass_class
+            return self.maas_class
 
         elif prop.name == 'function':
-            return self.mass_function
+            return self.maas_function
 
         else:
             raise AttributeError('unknown property %s' % prop.name)
@@ -114,11 +107,11 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
         elif prop.name == 'output':
             self.output = value
         elif prop.name == 'module':
-            self.mass_module = value
+            self.maas_module = value
         elif prop.name == 'class':
-            self.mass_class = value
+            self.maas_class = value
         elif prop.name == 'function':
-            self.mass_function = value
+            self.maas_function = value
         else:
             raise AttributeError('unknown property %s' % prop.name)
 
@@ -132,20 +125,20 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
             data = yaml.load(f, Loader=yaml.FullLoader)
         return data
 
-    def _run_mass_post_processor(self, avdatapacket, data):
+    def _run_maas_post_processor(self, avdatapacket, data):
 
-        function = imp.load_source('flow', self.mass_module)
+        function = imp.load_source('flow', self.maas_module)
         import flow
 
-        if self.mass_class is not None:
-            class_name = getattr(flow, self.mass_class)
+        if self.maas_class is not None:
+            class_name = getattr(flow, self.maas_class)
             class_name_re = class_name()
-            func_name = getattr(class_name_re, self.mass_function)
-            self.mass_post_processor = func_name(avdatapacket, data)
+            func_name = getattr(class_name_re, self.maas_function)
+            self.maas_post_processor = func_name(avdatapacket, data)
 
         else:
-            func_name = getattr(flow, self.mass_function)
-            self.mass_post_processor = func_name(avdatapacket, data)
+            func_name = getattr(flow, self.maas_function)
+            self.maas_post_processor = func_name(avdatapacket, data)
 
     def do_transform_ip(self, buffer: Gst.Buffer) -> Gst.FlowReturn:
         try:
@@ -155,7 +148,7 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
             else:
                 data =[]
 
-            self._run_mass_post_processor(avdatapacket, data)
+            self._run_maas_post_processor(avdatapacket, data)
 
             return Gst.FlowReturn.OK
 
