@@ -11,5 +11,3 @@ class Task(SimpleNamespace):
     def sink(self, sink_name: str):
         pass
 
-    def parameters(self) -> Dict[str, any]:
-        pass
