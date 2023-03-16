@@ -1,8 +1,7 @@
 import gi
-from ..model.pipeline import Pipeline
-from ..model.task import Task
 from .base_pipeline import BasePipeline
 from .gstreamer_pipeline import GStreamerPipeline
+from ..model.struct import Struct
 
 gi.require_version("Gst", "1.0")
 gi.require_version("GstApp", "1.0")
@@ -22,11 +21,11 @@ class DelegateGStreamerPipeline(BasePipeline):
         return self._delegate
 
     @property
-    def pipeline(self) -> Pipeline:
+    def pipeline(self) -> Struct:
         return self._delegate.pipeline
 
     @property
-    def task(self) -> Task:
+    def task(self) -> Struct:
         return self._delegate.task
 
     def startup(self) -> None:

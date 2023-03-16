@@ -1,21 +1,15 @@
 import pathlib
 from typing import Dict, TypeVar
 
-import pyee
-from pyee import EventEmitter
-from .pipeline_composer import PipelineComposer
-from .dialects.gstreamer_pipeline import GStreamerPipeline
-from .model.task import Task
 from .dialects.readable_gstreamer_pipeline import ReadableGStreamerPipeline, ReadableGStreamerPipelineBuilder
 from .dialects.writable_gstreamer_pipeline import WritableGstreamerPipeline, WritableGstreamerPipelineBuilder
 from .dialects.duplex_gstreamer_pipeline import DuplexGstreamerPipeline, DuplexGstreamerPipelineBuilder
 from .model.pipeline import Pipeline
 import json
 
-PipelineFactoryType = TypeVar("PipelineFactory", bound="PipelineFactory")
+PipelineFactoryType = TypeVar("PipelineFactoryType", bound="PipelineFactory")
 
 PIPELINE_DSL_FILE_NAME = "pipeline.json"
-
 
 
 class PipelineFactory:
@@ -32,8 +26,8 @@ class PipelineFactory:
         json_filepath = self._path.joinpath(id, PIPELINE_DSL_FILE_NAME)
         if json_filepath.exists():
             with open(json_filepath) as j:
-                return json.load(j, object_hook=lambda x: Pipeline(**x))
                 j.seek(0)
+                return json.load(j, object_hook=lambda x: Pipeline(**x))
         else:
             raise RuntimeError("pipeline id %s doesn't exist" % id)
 

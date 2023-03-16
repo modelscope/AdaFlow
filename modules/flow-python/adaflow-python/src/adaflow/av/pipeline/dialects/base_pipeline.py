@@ -1,9 +1,9 @@
 from typing import Dict
 
 from ..pipeline_composer import PipelineComposer
-from ..model.task import Task
+
 from abc import ABCMeta, abstractmethod
-from ..model.pipeline import Pipeline
+from ..model.struct import Struct
 
 
 class BasePipeline(metaclass=ABCMeta):
@@ -15,12 +15,12 @@ class BasePipeline(metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def pipeline(self) -> Pipeline:
+    def pipeline(self) -> Struct:
         pass
 
     @property
     @abstractmethod
-    def task(self) -> Task:
+    def task(self) -> Struct:
         pass
 
     @abstractmethod

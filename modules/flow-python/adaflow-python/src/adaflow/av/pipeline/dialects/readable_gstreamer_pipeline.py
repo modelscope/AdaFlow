@@ -1,18 +1,13 @@
 import queue
 
-from delegate_gstreamer_pipeline import DelegateGStreamerPipeline
-from gstreamer_pipeline import GStreamerPipeline, GStreamerPipelineBuilder
-import gi
-from ..model.pipeline import Pipeline
-from ..model.task import Task
-
+from .delegate_gstreamer_pipeline import DelegateGStreamerPipeline
+from .gstreamer_pipeline import GStreamerPipeline, GStreamerPipelineBuilder
 import typing as typ
-
-
+import gi
 gi.require_version("Gst", "1.0")
 gi.require_version("GstApp", "1.0")
 gi.require_version("GstVideo", "1.0")
-from gi.repository import Gst, GLib, GObject, GstApp, GstVideo
+from gi.repository import Gst, GLib, GObject, GstApp, GstVideo  # noqa:F401,F402
 
 
 class ReadableGStreamerPipeline(DelegateGStreamerPipeline):

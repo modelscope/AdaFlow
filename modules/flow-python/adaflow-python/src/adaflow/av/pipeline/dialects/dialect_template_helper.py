@@ -1,4 +1,4 @@
-from ..model.task import Task
+from ..model.struct import Struct
 
 SINK_TEMPLATES = {
     "application": "appsink name=%(name)s $(properties_string)s",
@@ -19,7 +19,7 @@ SOURCE_TEMPLATES = {
 
 
 class GStreamerTemplateHelper:
-    def __init__(self, task: Task) -> None:
+    def __init__(self, task: Struct) -> None:
         super().__init__()
         self._task = task
 

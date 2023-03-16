@@ -1,27 +1,21 @@
 import threading
 from typing import Dict, Callable, List
 
-import networkx as nx
-from adaflow.av.pipeline import PipelineComposer
 from .base_pipeline import BasePipeline
-from ..model.pipeline import Pipeline
-from ..model.task import Task
-from abc import ABCMeta, abstractmethod
+from ..model.struct import Struct
 import os
-from jinja2 import Template, Environment
-
+from jinja2 import Environment
+from .dialect_template_helper import GStreamerTemplateHelper
+import logging
 import gi
 gi.require_version("Gst", "1.0")
 gi.require_version("GstApp", "1.0")
 gi.require_version("GstVideo", "1.0")
 from gi.repository import Gst, GLib, GObject, GstApp, GstVideo
-import logging
-from dialect_template_helper import GStreamerTemplateHelper
-import gst_tools
 
 
 class GStreamerPipeline(BasePipeline):
-    def __init__(self, pipeline: Pipeline, task: Task, pipeline_configure: Callable[[BasePipeline], None]=None) -> None:
+    def __init__(self, pipeline: Struct, task: Struct, pipeline_configure: Callable[[BasePipeline], None]=None) -> None:
         super().__init__()
         self._pipeline = pipeline
         self._task = task
@@ -44,7 +38,6 @@ class GStreamerPipeline(BasePipeline):
         self.log.debug("starting pipeline %s", self)
         self._gst_pipeline = Gst.parse_launch(self.command)
 
-
         self.log.debug("set pipeline %s to READY", self)
         self._gst_pipeline.set_state(Gst.State.READY)
         self._terminal_event.clear()
@@ -66,11 +59,11 @@ class GStreamerPipeline(BasePipeline):
         return "GStreamerPipeline[name=%s]" % self._pipeline.name
 
     @property
-    def pipeline(self) -> Pipeline:
+    def pipeline(self) -> Struct:
         return self._pipeline
 
     @property
-    def task(self) -> Task:
+    def task(self) -> Struct:
         return self._task
 
     @property
@@ -81,15 +74,16 @@ class GStreamerPipeline(BasePipeline):
 
     @property
     def parameters(self) -> Dict[str, any]:
+        if self._pipeline.parameters is None:
+            return {}
         assert self._pipeline.parameters.type == "object"
-        parameters = self._task.parameters.copy()
+        print(self._task)
+        parameters = dict(self._task.parameters)
         for k, v_schema in self.pipeline.parameters.properties:
             if k not in parameters and v_schema.default:
                 parameters[k] = self._template_env.from_string(
                     v_schema.default,
-                    {
-                        "envs": os.environ
-                    }).render()
+                    {"envs": os.environ}).render()
         return parameters
 
     @property
@@ -141,7 +135,6 @@ class GStreamerPipeline(BasePipeline):
         """
         return self._gst_pipeline.get_by_name(name)
 
-
     def _shutdown_pipeline(self, timeout: int = 1, eos: bool = False) -> None:
         """ Stops pipeline
         :param eos: if True -> send EOS event
@@ -185,11 +178,11 @@ class GStreamerPipelineBuilder:
         self._pipeline = None
         self._task = None
 
-    def pipeline(self, pipeline_model: Pipeline):
+    def pipeline(self, pipeline_model: Struct):
         self._pipeline = pipeline_model
         return self
 
-    def task(self, task_model: Task):
+    def task(self, task_model: Struct):
         self._task = task_model
         return self
 
