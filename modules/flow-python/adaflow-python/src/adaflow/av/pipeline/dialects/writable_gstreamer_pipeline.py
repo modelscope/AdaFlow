@@ -1,5 +1,5 @@
 from delegate_gstreamer_pipeline import DelegateGStreamerPipeline
-from gstreamer_pipeline import GStreamerPipeline
+from gstreamer_pipeline import GStreamerPipeline, GStreamerPipelineBuilder
 import typing as typ
 from fractions import Fraction
 import gi
@@ -94,3 +94,36 @@ class WritableGstreamerPipeline(DelegateGStreamerPipeline):
             self.log.debug("%s Caps: %s", self, caps)
             if caps is not None:
                 self._src.set_property("caps", Gst.Caps.from_string(caps))
+
+
+class WritableGstreamerPipelineBuilder(GStreamerPipelineBuilder):
+    def __init__(self) -> None:
+        super().__init__()
+        self._width = None
+        self._height = None
+        self._fps = None
+        self._video_type = None
+        self._video_frmt = None
+
+    def caps_filter(self,
+                    width: int,
+                    height: int,
+                    fps: typ.Union[Fraction, int] = Fraction("30/1"),
+                    video_type: VideoType = VideoType.VIDEO_RAW,
+                    video_frmt: GstVideo.VideoFormat = GstVideo.VideoFormat.RGB):
+        self._width = width
+        self._height = height
+        self._fps = fps
+        self._video_type = video_type
+        self._video_frmt = video_frmt
+        return self
+
+    def build(self) -> WritableGstreamerPipeline:
+        return WritableGstreamerPipeline(
+            GStreamerPipeline(self._pipeline, self._task),
+            self._width,
+            self._height,
+            self._fps,
+            self._video_type,
+            self._video_frmt
+        )

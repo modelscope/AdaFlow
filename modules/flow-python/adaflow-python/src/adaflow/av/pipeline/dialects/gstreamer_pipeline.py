@@ -164,3 +164,21 @@ class GStreamerPipeline(BasePipeline):
 
 
 
+
+class GStreamerPipelineBuilder:
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._pipeline = None
+        self._task = None
+
+    def pipeline(self, pipeline_model: Pipeline):
+        self._pipeline = pipeline_model
+        return self
+
+    def task(self, task_model: Task):
+        self._task = task_model
+        return self
+
+    def build(self) -> GStreamerPipelineBuilder:
+        return GStreamerPipelineBuilder(self._pipeline, self._task)

@@ -10,14 +10,12 @@ SINK_TEMPLATES = {
 
 SOURCE_TEMPLATES = {
     "application": "appsrc name=%(name)s $(properties_string)s",
-    "file": "urisourcebin name=%(name)s uri=%(uri)s $(properties_string)s",
-    "rtsp": "urisourcebin name=%(name)s uri=%(uri)s $(properties_string)s",
-    "camera": "v4l2src name=%(name)s device=%(device)s $(properties_string)s",
-    "uri": "urisourcebin name=%(name)s uri=%(uri)s $(properties_string)s",
-    "gst": "$(element)s $(properties_string)s"
+    "file": "urisourcebin name=%(name)s uri=%(uri)s %(properties_string)s ! decodebin ! videoconvert",
+    "rtsp": "urisourcebin name=%(name)s uri=%(uri)s %(properties_string)s ! decodebin ! videoconvert",
+    "camera": "v4l2src name=%(name)s device=%(device)s %(properties_string)s ! videoconvert",
+    "uri": "urisourcebin name=%(name)s uri=%(uri)s %(properties_string)s ! videoconvert",
+    "gst": "%(element)s %(properties_string)s"
 }
-
-DECODER_AND_FILTER_TEMPLATE = "! decodebin ! %{filter}s"
 
 
 class GStreamerTemplateHelper:
@@ -27,26 +25,32 @@ class GStreamerTemplateHelper:
 
     def sink(self, name: str):
         for k, sink in self._task.sinks:
-            type_name = sink["type"]
-            properties_string = ["%s=%s" % (k, v) for k, v in sink.get("properties", {})]
-            variables = dict(sink)
-            variables["properties_string"] = properties_string
-            if type_name in SINK_TEMPLATES:
-                return SINK_TEMPLATES[type_name] % variables
-            else:
-                raise RuntimeError("sink type %s not supported" % type_name)
-        raise RuntimeError("no sink named %s is found in task definition" % name)
+            if sink["name"] == name:
+                type_name = sink["type"]
+                properties_string = ["%s=%s" % (k, v) for k, v in sink.get("properties", {})]
+                variables = dict(sink)
+                variables["properties_string"] = properties_string
+                if type_name in SINK_TEMPLATES:
+                    return SINK_TEMPLATES[type_name] % variables
+                else:
+                    raise ValueError("sink type %s not supported" % type_name)
+        raise ValueError("no sink named %s is found in task definition" % name)
 
     def source(self, name: str):
         for k, source in self._task.sources:
-            type_name = source["type"]
-            properties_string = ["%s=%s" % (k, v) for k, v in source.get("properties", {})]
-            variables = dict(source)
-            variables["properties_string"] = properties_string
-            if type_name in SOURCE_TEMPLATES:
-                return SOURCE_TEMPLATES[type_name] % variables
-            else:
-                raise RuntimeError("source type %s not supported" % type_name)
-        raise RuntimeError("no source named %s is found in task defini")
-
+            if source["name"] == name:
+                type_name = source["type"]
+                properties_string = ["%s=%s" % (k, v) for k, v in source.get("properties", {})]
+                variables = dict(source)
+                variables["properties_string"] = properties_string
+                if type_name in SOURCE_TEMPLATES:
+                    output = SOURCE_TEMPLATES[type_name] % variables
+                    if source["filter"]:
+                        output += " ! " + source["filter"]
+                    if source["post_process"]:
+                        output += " ! " + source["post_process"]
+                    return output
+                else:
+                    raise ValueError("source type %s not supported" % type_name)
+        raise ValueError("no source named %s is found in task definition" % name)
 

@@ -1,8 +1,11 @@
 import queue
 
 from delegate_gstreamer_pipeline import DelegateGStreamerPipeline
-from gstreamer_pipeline import GStreamerPipeline
+from gstreamer_pipeline import GStreamerPipeline, GStreamerPipelineBuilder
 import gi
+from ..model.pipeline import Pipeline
+from ..model.task import Task
+
 import typing as typ
 
 
@@ -101,5 +104,19 @@ class ReadableGStreamerPipeline(DelegateGStreamerPipeline):
                 pass
 
         return buffer
+
+
+class ReadableGStreamerPipelineBuilder(GStreamerPipelineBuilder):
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._max_buffers_size = None
+
+    def max_buffers_size(self, size):
+        self._max_buffers_size = size
+        return self
+
+    def build(self) -> ReadableGStreamerPipeline:
+        return ReadableGStreamerPipeline(GStreamerPipeline(self._pipeline, self._task), self._max_buffers_size)
 
 

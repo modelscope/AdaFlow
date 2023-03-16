@@ -1,4 +1,4 @@
-from adaflow.av.pipeline.dialects.gstreamer_pipeline import GStreamerPipeline
+from adaflow.av.pipeline.dialects.gstreamer_pipeline import GStreamerPipeline, GStreamerPipelineBuilder
 from delegate_gstreamer_pipeline import DelegateGStreamerPipeline
 import gi
 import typing as typ
@@ -39,4 +39,45 @@ class DuplexGstreamerPipeline(DelegateGStreamerPipeline):
 
     def pop(self, timeout: float = 0.1):
         return self._readable.pop(timeout=timeout)
+
+
+class DuplexGstreamerPipelineBuilder(GStreamerPipelineBuilder):
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._max_buffers_size = None
+        self._width = None
+        self._height = None
+        self._fps = None
+        self._video_type = None
+        self._video_frmt = None
+
+    def caps_filter(self,
+                    width: int,
+                    height: int,
+                    fps: typ.Union[Fraction, int] = Fraction("30/1"),
+                    video_type: VideoType = VideoType.VIDEO_RAW,
+                    video_frmt: GstVideo.VideoFormat = GstVideo.VideoFormat.RGB):
+        self._width = width
+        self._height = height
+        self._fps = fps
+        self._video_type = video_type
+        self._video_frmt = video_frmt
+        return self
+
+    def max_buffers_size(self, size):
+        self._max_buffers_size = size
+        return self
+
+    def build(self) -> DuplexGstreamerPipeline:
+        return DuplexGstreamerPipeline(
+            GStreamerPipeline(self._pipeline, self._task),
+            self._width,
+            self._height,
+            self._fps,
+            self._video_type,
+            self._video_frmt,
+            self._max_buffers_size
+        )
+
 
