@@ -28,7 +28,7 @@ enum {
 #define DEFAULT_FRAMES_FLUSH 0
 
 G_DEFINE_TYPE(GstFlowaggregator, gst_flowaggregator, GST_TYPE_ELEMENT);
-GST_ELEMENT_REGISTER_DEFINE(flowaggregator, "flowaggregator", GST_RANK_NONE,
+GST_ELEMENT_REGISTER_DEFINE(flow_video_aggregate, "flow_video_aggregate", GST_RANK_NONE,
                             GST_TYPE_FLOWAGGREGATOR);
 
 static void gst_tensor_aggregator_reset(GstFlowaggregator* self);
@@ -290,8 +290,8 @@ static void gst_flowaggregator_class_init(GstFlowaggregatorClass* klass) {
                         0, G_MAXUINT, DEFAULT_FRAMES_FLUSH,
                         G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
-  gst_element_class_set_details_simple(element_class, "flowaggregator",
-                                       "AdaFlow", "flowaggregator",
+  gst_element_class_set_details_simple(element_class, "flow_video_aggregate",
+                                       "AdaFlow", "flow_video_aggregate",
                                        "AUTHOR_NAME AUTHOR_EMAIL");
 
   gst_element_class_add_pad_template(element_class,

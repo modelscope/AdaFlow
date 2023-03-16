@@ -1,5 +1,5 @@
 """
-    AdaFlow python plugin: flow_metasink.
+    AdaFlow python plugin: flow_metadata_sink.
     Publishes the JSON metadata to files.
 """
 from adaflow.utils import NumpyArrayEncoder
@@ -16,7 +16,7 @@ gi.require_version('GstVideo', '1.0')
 
 class MetaDataSink(GstBase.BaseSink):
 
-    GST_PLUGIN_NAME = 'flow_metasink'
+    GST_PLUGIN_NAME = 'flow_metadata_sink'
 
     __gstmetadata__ = (GST_PLUGIN_NAME,
                        "File metadata publisher",

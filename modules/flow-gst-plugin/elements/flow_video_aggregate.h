@@ -1,6 +1,6 @@
 /**
 * @file flow_video_aggregate.h
-* @brief flowaggregator is a plugin to aggregate the frame using GstAdapter
+* @brief flow_video_aggregate is a plugin to aggregate the frame using GstAdapter
 */
 
 #ifndef FLOW_FLOW_VIDEO_AGGREGATE_H
@@ -63,7 +63,7 @@ struct _GstFlowaggregatorClass {
   GstElementClass parent_class; /**< parent class */
 };
 
-GST_ELEMENT_REGISTER_DECLARE(flowaggregator);
+GST_ELEMENT_REGISTER_DECLARE(flow_video_aggregate);
 
 G_END_DECLS
 

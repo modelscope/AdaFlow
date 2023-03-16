@@ -11,7 +11,7 @@
  */
 static gboolean plugin_init(GstPlugin* plugin) {
   gboolean ret = FALSE;
-  ret |= GST_ELEMENT_REGISTER(flowaggregator, plugin);
+  ret |= GST_ELEMENT_REGISTER(flow_video_aggregate, plugin);
   return ret;
 }
 

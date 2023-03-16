@@ -29,7 +29,7 @@ class GstMetaAgg(GstBase.Aggregator):
     SRC_CAPS = 'video/x-raw,format=RGB,width=[1,{max_int}],height=[1,{max_int}]'
     SRC_CAPS = Gst.Caps.from_string(SRC_CAPS.format(max_int=GLib.MAXINT))
 
-    __gstmetadata__ = ('flow_meta_aggregator',
+    __gstmetadata__ = ('flow_metadata_aggregate',
                        'plugin to aggregator more buffer metadata',
                        'aggregates inference results from multiple pipeline branches',
                        'JingYao')
@@ -162,5 +162,5 @@ class GstMetaAgg(GstBase.Aggregator):
 
 
 GObject.type_register(GstMetaAgg)
-__gstelementfactory__ = ("flow_meta_aggregator", Gst.Rank.NONE, GstMetaAgg)
+__gstelementfactory__ = ("flow_metadata_aggregate", Gst.Rank.NONE, GstMetaAgg)
 
