@@ -1,4 +1,5 @@
-from typing import Dict
+import threading
+from typing import Dict, Callable, List
 
 import networkx as nx
 from adaflow.av.pipeline import PipelineComposer
@@ -18,27 +19,30 @@ import logging
 from dialect_template_helper import GStreamerTemplateHelper
 import gst_tools
 
+
 class GStreamerPipeline(BasePipeline):
-    def __init__(self, pipeline: Pipeline, task: Task, pipeline_configurer: Callable[[BasePipeline], None]=None) -> None:
-        super().__init__(pipeline, task)
+    def __init__(self, pipeline: Pipeline, task: Task, pipeline_configure: Callable[[BasePipeline], None]=None) -> None:
+        super().__init__()
+        self._pipeline = pipeline
+        self._task = task
         self._bus = None
         self._gst_pipeline = None
         self._log = logging.getLogger("GStreamerPipeline")
         self._terminal_event = threading.Event()
         self._template_env = Environment()
-        self._template = self._template_env.from_string(self.dialect, {"F": GStreamerTemplateHelper(task)})
-        self._configurer = pipeline_configurer
+        self._template = self._template_env.from_string(pipeline.dialect, {"F": GStreamerTemplateHelper(task)})
+        self._pipeline_configure = pipeline_configure
 
     @property
     def log(self) -> logging.Logger:
         return self._log
 
-    def set_pipeline_configurer(self, pipeline_configurer: Callable[[BasePipeline], None]):
-        self._configurer = pipeline_configurer
+    def set_pipeline_configure(self, pipeline_configure: Callable[[BasePipeline], None]):
+        self._pipeline_configure = pipeline_configure
 
     def startup(self):
         self.log.debug("starting pipeline %s", self)
-        self._gst_pipeline = Gst.parse_launch(self.translate())
+        self._gst_pipeline = Gst.parse_launch(self.command)
 
 
         self.log.debug("set pipeline %s to READY", self)
@@ -52,8 +56,8 @@ class GStreamerPipeline(BasePipeline):
         self._bus.connect("message::eos", self.on_eos)
         self._bus.connect("message::warning", self.on_warning)
 
-        if self._configurer is not None:
-            self._configurer(self._gst_pipeline)
+        if self._pipeline_configure is not None:
+            self._pipeline_configure(self._gst_pipeline)
 
         self.log.debug("set pipeline %s to PLAYING", self)
         self._gst_pipeline.set_state(Gst.State.PLAYING)
@@ -62,20 +66,31 @@ class GStreamerPipeline(BasePipeline):
         return "GStreamerPipeline[name=%s]" % self._pipeline.name
 
     @property
+    def pipeline(self) -> Pipeline:
+        return self._pipeline
+
+    @property
+    def task(self) -> Task:
+        return self._task
+
+    @property
     def command(self):
-        return template.render({
-            "parameters": self._resolve_parameters()
+        return self._template.render({
+            "parameters": self.parameters
         })
 
     @property
     def parameters(self) -> Dict[str, any]:
-        assert self.pipeline.parameters.type == "object"
+        assert self._pipeline.parameters.type == "object"
         parameters = self._task.parameters.copy()
         for k, v_schema in self.pipeline.parameters.properties:
             if k not in parameters and v_schema.default:
-                parameters[k] = self._template_env.from_string(v_schema.default, {envs: os.environ}).render()
+                parameters[k] = self._template_env.from_string(
+                    v_schema.default,
+                    {
+                        "envs": os.environ
+                    }).render()
         return parameters
-
 
     @property
     def is_active(self) -> bool:
@@ -86,7 +101,7 @@ class GStreamerPipeline(BasePipeline):
         return self._terminal_event.is_set()
 
     def shutdown(self, timeout: int =1, eos: bool = False) -> None:
-        self.log.info("about to shutdown %" % self)
+        self.log.info("about to shutdown %s" % self)
         self._shutdown_pipeline(timeout=timeout, eos=eos)
         self.log.info("successfully shutdown %s" % self)
 
@@ -103,12 +118,12 @@ class GStreamerPipeline(BasePipeline):
         warn, debug = message.parse_warning()
         self.log.warning("Gstreamer.%s: %s. %s", self, warn, debug)
 
-    def get_elements_by_class(self, cls: GObject.GType) -> typ.List[Gst.Element]:
+    def get_elements_by_class(self, cls: GObject.GType) -> List[Gst.Element]:
         """ Get Gst.Element[] from pipeline by GType """
         elements = self._gst_pipeline.iterate_elements()
         if isinstance(elements, Gst.Iterator):
             # Patch "TypeError: ‘Iterator’ object is not iterable."
-            # For versions we have to get a python iterable object from Gst iterator
+            # For versions, we have to get a python iterable object from Gst iterator
             _elements = []
             while True:
                 ret, el = elements.next()
@@ -133,10 +148,10 @@ class GStreamerPipeline(BasePipeline):
             - EOS event necessary for FILESINK finishes properly
             - Use when pipeline crushes
         """
-        if self._end_stream_event.is_set():
+        if self._terminal_event.is_set():
             return
 
-        self._end_stream_event.set()
+        self._terminal_event.set()
 
         if not self.pipeline:
             return
@@ -163,8 +178,6 @@ class GStreamerPipeline(BasePipeline):
         self.log.debug("%s Gst.Pipeline successfully destroyed", self)
 
 
-
-
 class GStreamerPipelineBuilder:
 
     def __init__(self) -> None:
@@ -180,5 +193,6 @@ class GStreamerPipelineBuilder:
         self._task = task_model
         return self
 
-    def build(self) -> GStreamerPipelineBuilder:
-        return GStreamerPipelineBuilder(self._pipeline, self._task)
+    def build(self) -> GStreamerPipeline:
+        return GStreamerPipeline(self._pipeline, self._task)
+

@@ -15,7 +15,7 @@ class DelegateGStreamerPipeline(BasePipeline):
     def __init__(self, delegate: GStreamerPipeline) -> None:
         super().__init__()
         self._delegate = delegate
-        self._delegate.set_pipeline_configurer(self.configure_pipeline)
+        self._delegate.set_pipeline_configure(self.configure_pipeline)
 
     @property
     def delegate(self):
