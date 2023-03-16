@@ -14,6 +14,12 @@ class SmokeDetPostprocess:
     def __init__(self):
         pass
     def postprocess(self, frames: AVDataPacket, kwargs):
+        """
+        Post-processing the detection results.
+        :param frames:construct AVDataPacket instance
+        :param kwargs:parameters of user-defined functions
+        :return
+        """
         ##user parameter
         self.outyaml = 'mass_smoke_det_res.yaml'
         self.output_path = kwargs['output_path']
@@ -180,14 +186,11 @@ class SmokeDetPostprocess:
 
 
 def _calculate_iou(array_a, array_b):
-    """calculate the iou of two array
-
-    Args:
-        array_a (np.array): (N, 4), the 1st dim is number of bbox, the 2nd dim is the coordinate of (x1, y1, x2, y2)
-        array_b (np.array): (M, 4), the 1st dim is number of bbox, the 2nd dim is the coordinate of (x1, y1, x2, y2)
-
-    Returns:
-        np.array: (N, M), the iou matrix of array_a and array_b
+    """
+    calculate the iou of two array
+    :param array_a:(N, 4), the 1st dim is number of bbox, the 2nd dim is the coordinate of (x1, y1, x2, y2)
+    :param array_b:(M, 4), the 1st dim is number of bbox, the 2nd dim is the coordinate of (x1, y1, x2, y2)
+    :return:np.array: (N, M), the iou matrix of array_a and array_b
     """
 
     N = len(array_a)
@@ -221,14 +224,11 @@ def _calculate_iou(array_a, array_b):
 
 
 def _calculate_ioa(array_a, array_b):
-    """calculate the ioa of two array
-
-    Args:
-        array_a (np.array): (N, 4), the 1st dim is number of bbox, the 2nd dim is the coordinate of (x1, y1, x2, y2)
-        array_b (np.array): (M, 4), the 1st dim is number of bbox, the 2nd dim is the coordinate of (x1, y1, x2, y2)
-
-    Returns:
-        np.array: (N, M), the ioa matrix of array_a and array_b
+    """
+    calculate the ioa of two array
+    :param array_a:(N, 4), the 1st dim is number of bbox, the 2nd dim is the coordinate of (x1, y1, x2, y2)
+    :param array_b:(M, 4), the 1st dim is number of bbox, the 2nd dim is the coordinate of (x1, y1, x2, y2)
+    :return:np.array: (N, M), the ioa matrix of array_a and array_b
     """
 
     N = len(array_a)
@@ -261,14 +261,11 @@ def _calculate_ioa(array_a, array_b):
 
 
 def _calculate_dist(array_a, array_b):
-    """calculate the dist of two array
-
-    Args:
-        array_a (np.array): (N, 4), the 1st dim is number of bbox, the 2nd dim is the coordinate of (x1, y1, x2, y2)
-        array_b (np.array): (M, 4), the 1st dim is number of bbox, the 2nd dim is the coordinate of (x1, y1, x2, y2)
-
-    Returns:
-        np.array: (N, M), the dist matrix of array_a and array_b
+    """
+    calculate the dist of two array
+    :param array_a:(N, 4), the 1st dim is number of bbox, the 2nd dim is the coordinate of (x1, y1, x2, y2)
+    :param array_b:(M, 4), the 1st dim is number of bbox, the 2nd dim is the coordinate of (x1, y1, x2, y2)
+    :return:np.array: (N, M), the dist matrix of array_a and array_b
     """
 
     N = len(array_a)

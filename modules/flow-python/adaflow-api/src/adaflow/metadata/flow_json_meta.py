@@ -1,3 +1,6 @@
+"""
+JSON MetaData python wrapper
+"""
 from ctypes import *
 import gi
 import platform
@@ -18,12 +21,12 @@ elif "linux" in sys_platform:
 else:
     print("other platform")
 
-class GVAJSONMeta(Structure):
+class FLOWJSONMeta(Structure):
     _fields_ = [('_meta_flags', c_int),
                 ('_info', c_void_p),
                 ('_message', c_char_p)]
 
-GVAJSONMetaPtr = POINTER(GVAJSONMeta)
+FLOWJSONMetaPtr = POINTER(FLOWJSONMeta)
 
 libgst.gst_buffer_add_json_info_meta.argtypes = [c_void_p, c_char_p]
 libgst.gst_buffer_add_json_info_meta.restype = c_void_p
@@ -35,17 +38,21 @@ libgst.gst_buffer_remove_json_info_meta.argtypes = [c_void_p]
 libgst.gst_buffer_remove_json_info_meta.restype = c_bool
 
 def flow_meta_add(buffer, message):
+    #Writes json message to Gst.Buffer
      _ = libgst.gst_buffer_add_json_info_meta(hash(buffer), message)
 
 def flow_meta_get(buffer):
+    #Gets json message to Gst.Buffer
     res = libgst.gst_buffer_get_json_info_meta(hash(buffer))
     return res.decode('utf-8')
 
 def flow_meta_remove(buffer):
+    #Removes json message to Gst.Buffer
     libgst.gst_buffer_remove_json_info_meta(hash(buffer))
 
 
 def flow_meta_add_key(buffer, message, meta_key):
+    #Writes json message to Gst.Buffer with meta_key
     get_message_str = flow_meta_get(buffer)
 
     #first-to-add-metadata

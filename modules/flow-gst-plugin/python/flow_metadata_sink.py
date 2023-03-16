@@ -1,5 +1,6 @@
 """
-    metadata sink plugin
+    AdaFlow python plugin: flow_metasink.
+    Publishes the JSON metadata to files.
 """
 from adaflow.utils import NumpyArrayEncoder
 from adaflow.metadata.flow_json_meta import flow_meta_get
@@ -28,28 +29,25 @@ class MetaDataSink(GstBase.BaseSink):
                                            Gst.Caps.new_any())
 
     __gproperties__ = {
-        "method": (GObject.TYPE_STRING,  # type
-                   "Publish method",  # nick
-                   "Publishing method",  # blurb
-                   "file",  # default
+        "method": (GObject.TYPE_STRING,
+                   "Publish method",
+                   "Publishing method",
+                   "file",
                    GObject.ParamFlags.READWRITE
-                   # flags
                    ),
 
-        "filepath": (GObject.TYPE_STRING,  # type
-                   "FilePath",  # nick
-                   "Absolute path to output file for publishing inferences",  # blurb
-                   "",  # default
+        "filepath": (GObject.TYPE_STRING,
+                   "FilePath",
+                   "Absolute path to output file for publishing inferences",
+                   "",
                    GObject.ParamFlags.READWRITE
-                   # flags
                    ),
 
-        "fileformat": (GObject.TYPE_STRING,  # type
-                     "FileFormat",  # nick
-                     "Structure of JSON objects in the file",  # blurb
-                     "json",  # default
+        "fileformat": (GObject.TYPE_STRING,
+                     "FileFormat",
+                     "Structure of JSON objects in the file",
+                     "json",
                      GObject.ParamFlags.READWRITE
-                     # flags
                      ),
 
     }
@@ -90,6 +88,12 @@ class MetaDataSink(GstBase.BaseSink):
 
 
     def _write_result_yaml(self, json_path, res):
+        """
+        Publishes the JSON metadata to files.
+        :param json_path: absolute path to output file for publishing inferences.
+        :param res: detection result.
+        :return: bool
+        """
 
         if(os.path.exists(json_path)):
             with open(json_path, 'a') as f:

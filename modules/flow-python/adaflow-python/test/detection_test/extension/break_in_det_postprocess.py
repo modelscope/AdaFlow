@@ -12,6 +12,12 @@ class BreakInDetPostprocess:
     def __init__(self):
         pass
     def postprocess(self, frames: AVDataPacket, kwargs):
+        """
+        Post-processing the detection results.
+        :param frames:construct AVDataPacket instance
+        :param kwargs:parameters of user-defined functions
+        :return:
+        """
         ##user parameter
         self.outyaml = 'mass_smoke_det_res.yaml'
         self.output_path = kwargs['output_path']
@@ -61,12 +67,10 @@ class BreakInDetPostprocess:
     # ----------------------------private-------------------------------
 
     def _check_box_status(self, box) -> bool:
-        """check if bbox center in region polygon.
-        Args:
-            box (list): [x1, y1, x2, y2]
-
-        Returns:
-            True: inside region polygon. False: not inside.
+        """
+        check if bbox center in region polygon.
+        :param box: box (list): [x1, y1, x2, y2]
+        :return:True: inside region polygon. False: not inside.
         """
         pts = np.array(self.region_polygon, np.int32)
         pts = pts.reshape((-1, 1, 2))

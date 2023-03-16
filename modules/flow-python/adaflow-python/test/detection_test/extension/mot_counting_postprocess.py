@@ -11,6 +11,12 @@ from adaflow.utils import NumpyArrayEncoder
 class MotCountingPostprocess:
 
     def postprocess(self, frames: AVDataPacket, kwargs):
+        """
+        Post-processing the detection results.
+        :param frames:construct AVDataPacket instance
+        :param kwargs:parameters of user-defined functions
+        :return
+        """
         self.output_path = kwargs['output_path']
         self.input_path = kwargs['input_path']
         self.vis_flag = kwargs['vis_flag']
@@ -33,16 +39,14 @@ class MotCountingPostprocess:
     def _check_box_status(self, box, line) -> bool:
         """
         check whether input box is inside the line
-        Args:
-            box: [x1, y1, x2, y2]
-            line: the boundary line, which consists of line direction and coordinate.
-            in_flag: indicates the definition of the line.
+        :param box:[x1, y1, x2, y2]
+        :param line:the boundary line, which consists of line direction and coordinate.
+                    in_flag: indicates the definition of the line.
                     True means the box is inside when box center < coord.
                     False means the box is inside when box center > coord.
-
-        Return:
-            box_status: True means inside the line while False means outside.
+        :return:box_status: True means inside the line while False means outside.
         """
+
         x2, y2 = box[-2:]
         coord = line['coord']
         if line['horizontal']:

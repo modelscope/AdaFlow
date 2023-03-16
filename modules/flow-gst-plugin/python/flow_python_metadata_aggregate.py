@@ -1,3 +1,7 @@
+"""
+    AdaFlow python plugin: flow_meta_aggregator.
+    Aggregates inference results from multiple pipeline branches.
+"""
 import gi
 from PIL import Image
 import numpy as np
@@ -27,7 +31,7 @@ class GstMetaAgg(GstBase.Aggregator):
 
     __gstmetadata__ = ('flow_meta_aggregator',
                        'plugin to aggregator more buffer metadata',
-                       'Python metadata mixer',
+                       'aggregates inference results from multiple pipeline branches',
                        'JingYao')
 
     __gsttemplates__ = (

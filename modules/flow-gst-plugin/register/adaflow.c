@@ -1,11 +1,14 @@
-//
-// Created by JingYao on 2023/3/14.
-//
+/**
+* @file	 adaflow.c
+* @brief Registers all adaflow C-plugins for gstreamer so that we can have a single big binary
+*/
 
 #include <gst/gst.h>
 #include <elements/flow_video_aggregate.h>
 
-
+/**
+ * @brief Function to initialize all adaflow elements
+ */
 static gboolean plugin_init(GstPlugin* plugin) {
   gboolean ret = FALSE;
   ret |= GST_ELEMENT_REGISTER(flowaggregator, plugin);

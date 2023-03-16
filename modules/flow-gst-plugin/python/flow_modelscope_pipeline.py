@@ -1,5 +1,6 @@
 """
-    maas_model plugin
+    AdaFlow python plugin: flow_modelscope_pipeline.
+    Run modelscope pipeline and produce result data.
 """
 from modelscope.pipelines import pipeline
 from adaflow.utils import gst_video_format_from_string, get_num_channels,NumpyArrayEncoder
@@ -23,7 +24,7 @@ class FlowMassModelPlugin(GstBase.BaseTransform):
 
     __gstmetadata__ = (GST_PLUGIN_NAME,
                        "almighty plugin for maas model pipeline",
-                       "almighty plugin",
+                       "run modelscope pipeline and produce result data",
                        "JingYao")
 
     __gsttemplates__ = (Gst.PadTemplate.new("src",
@@ -112,6 +113,7 @@ class FlowMassModelPlugin(GstBase.BaseTransform):
         if self.task is None or self.id is None:
             raise ValueError(f'id = {self.id} or task = {self.task} is error ')
 
+        #build maas pipeline
         self.maas_pipeline = pipeline(self.task, model=self.id)
 
         return True
