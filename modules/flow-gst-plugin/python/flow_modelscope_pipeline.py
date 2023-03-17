@@ -62,9 +62,9 @@ class FlowMassModelPlugin(GstBase.BaseTransform):
                                   ),
 
                        "meta-key": (GObject.TYPE_STRING,  # type
-                                 "image or video input path",  # nick
-                                 "input path",  # blurb
-                                 "",  # default
+                                 "the keyword of the results which attach to the GstBuffer",  # nick
+                                 "the keyword of the results",  # blurb
+                                 "modelout",  # default
                                  GObject.ParamFlags.READWRITE  # flags
                                  ),
     }
