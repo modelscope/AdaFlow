@@ -8,6 +8,7 @@ from jinja2 import Environment
 from .dialect_template_helper import GStreamerTemplateHelper
 import logging
 import gi
+import copy
 gi.require_version("Gst", "1.0")
 gi.require_version("GstApp", "1.0")
 gi.require_version("GstVideo", "1.0")
@@ -77,13 +78,13 @@ class GStreamerPipeline(BasePipeline):
         if self._pipeline.parameters is None:
             return {}
         assert self._pipeline.parameters.type == "object"
-        parameters = dict(self._task.parameters)
+        parameters = copy.deepcopy(self._task.parameters)
         for k in vars(self.pipeline.parameters.properties):
             v_schema = getattr(self.pipeline.parameters.properties, k)
             if not hasattr(parameters, k) and v_schema.default:
-                parameters[k] = self._template_env.from_string(
+                setattr(parameters, k, self._template_env.from_string(
                     v_schema.default,
-                    {"envs": os.environ}).render()
+                    {"envs": os.environ}).render())
         return parameters
 
     @property
