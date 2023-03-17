@@ -77,10 +77,10 @@ class GStreamerPipeline(BasePipeline):
         if self._pipeline.parameters is None:
             return {}
         assert self._pipeline.parameters.type == "object"
-        print(self._task)
         parameters = dict(self._task.parameters)
-        for k, v_schema in self.pipeline.parameters.properties:
-            if k not in parameters and v_schema.default:
+        for k in vars(self.pipeline.parameters.properties):
+            v_schema = getattr(self.pipeline.parameters.properties, k)
+            if not hasattr(parameters, k) and v_schema.default:
                 parameters[k] = self._template_env.from_string(
                     v_schema.default,
                     {"envs": os.environ}).render()
