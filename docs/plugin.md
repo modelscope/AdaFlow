@@ -20,7 +20,7 @@
 flow_modelscope_pipeline is a plugin to run modelscope pipeline and produce result data.
 
 This plugin pulls and infers models from [ModelScope](https://modelscope.cn/home), 
-and attaches results as new GstFLOWJSONMeta instance to passed buf.
+and attaches results as new GstFLOWJSONMeta instance to passed buffer.
 
 flow_modelscope_pipeline gets the model task with ```task```, 
 gets the model id with ```id``` and attaches results to the GstBuffer with keyword ```meta-key```.
