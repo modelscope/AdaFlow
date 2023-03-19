@@ -1,10 +1,10 @@
 from adaflow.av.pipeline.dialects.gstreamer_pipeline import GStreamerPipeline, GStreamerPipelineBuilder
-from delegate_gstreamer_pipeline import DelegateGStreamerPipeline
+from .delegate_gstreamer_pipeline import DelegateGStreamerPipeline
 import gi
 import typing as typ
-from readable_gstreamer_pipeline import ReadableGStreamerPipeline
-from writable_gstreamer_pipeline import WritableGstreamerPipeline
-from gst_tools import VideoType, gst_video_format_plugin, to_gst_buffer
+from .readable_gstreamer_pipeline import ReadableGStreamerPipeline
+from .writable_gstreamer_pipeline import WritableGstreamerPipeline
+from .gst_tools import VideoType, gst_video_format_plugin, to_gst_buffer
 from fractions import Fraction
 import numpy as np
 

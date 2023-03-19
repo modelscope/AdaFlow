@@ -1,10 +1,10 @@
-from delegate_gstreamer_pipeline import DelegateGStreamerPipeline
-from gstreamer_pipeline import GStreamerPipeline, GStreamerPipelineBuilder
+from .delegate_gstreamer_pipeline import DelegateGStreamerPipeline
+from .gstreamer_pipeline import GStreamerPipeline, GStreamerPipelineBuilder
 import typing as typ
 from fractions import Fraction
 import gi
 import numpy as np
-from gst_tools import VideoType, gst_video_format_plugin, to_gst_buffer
+from .gst_tools import VideoType, gst_video_format_plugin, to_gst_buffer
 gi.require_version("Gst", "1.0")
 gi.require_version("GstApp", "1.0")
 gi.require_version("GstVideo", "1.0")
