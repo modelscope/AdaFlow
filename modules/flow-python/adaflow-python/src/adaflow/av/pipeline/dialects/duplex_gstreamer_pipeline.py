@@ -79,5 +79,3 @@ class DuplexGstreamerPipelineBuilder(GStreamerPipelineBuilder):
             self._video_frmt,
             self._max_buffers_size
         )
-
-

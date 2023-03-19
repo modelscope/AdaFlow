@@ -13,16 +13,6 @@ class BasePipeline(metaclass=ABCMeta):
     def __init__(self) -> None:
         super().__init__()
 
-    @property
-    @abstractmethod
-    def pipeline(self) -> Struct:
-        pass
-
-    @property
-    @abstractmethod
-    def task(self) -> Struct:
-        pass
-
     @abstractmethod
     def startup(self):
         pass

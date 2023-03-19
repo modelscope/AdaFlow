@@ -1,14 +1,17 @@
 import threading
 from typing import Dict, Callable, List
 
+
 from .base_pipeline import BasePipeline
 from ..model.struct import Struct
 import os
 from jinja2 import Environment
 from .dialect_template_helper import GStreamerTemplateHelper
 import logging
+from jsonschema import validate
+from jsonschema.validators import Draft202012Validator
+
 import gi
-import copy
 gi.require_version("Gst", "1.0")
 gi.require_version("GstApp", "1.0")
 gi.require_version("GstVideo", "1.0")
@@ -16,26 +19,53 @@ from gi.repository import Gst, GLib, GObject, GstApp, GstVideo
 
 
 class GStreamerPipeline(BasePipeline):
-    def __init__(self, pipeline: Struct, task: Struct, pipeline_configure: Callable[[BasePipeline], None]=None) -> None:
+    def __init__(self, pipeline_model: Dict[str, any], task_model: Dict[str, any], pipeline_configure: Callable[[BasePipeline], None] = None) -> None:
+        # TODO validate pipeline_model and task_model
         super().__init__()
-        self._pipeline = pipeline
-        self._task = task
+        self._pipeline_model = pipeline_model
+        self._task_model = task_model
         self._bus = None
         self._gst_pipeline = None
         self._log = logging.getLogger("GStreamerPipeline")
         self._terminal_event = threading.Event()
         self._template_env = Environment()
-        self._template = self._template_env.from_string(pipeline.dialect, {"F": GStreamerTemplateHelper(task)})
+
+        # convert array to string
+        template_string = pipeline_model["dialect"]
+        if isinstance(template_string, list):
+            template_string = " ! ".join(template_string)
+
+        self._template = self._template_env.from_string(template_string, {"F": GStreamerTemplateHelper(task_model)})
         self._pipeline_configure = pipeline_configure
+
+        # render parameters
+        self._parameters = self._evaluate_parameters()
 
     @property
     def log(self) -> logging.Logger:
         return self._log
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        return False
+
     def set_pipeline_configure(self, pipeline_configure: Callable[[BasePipeline], None]):
         self._pipeline_configure = pipeline_configure
 
     def startup(self):
+        # validate parameters before startup
+        validate(
+            instance=self.parameters,
+            schema=self._pipeline_model["parameters_schema"],
+            # https://python-jsonschema.readthedocs.io/en/latest/validate/#validating-formats
+            format_checker=Draft202012Validator.FORMAT_CHECKER
+        )
+        # v = Draft202012Validator(self._pipeline_model["parameters"])
+        # for error in sorted(v.iter_errors(self.parameters), key=str):
+        #     self._log.error("validation error %s" % error.message)
+
         self.log.debug("starting pipeline %s", self)
         self._gst_pipeline = Gst.parse_launch(self.command)
 
@@ -57,15 +87,7 @@ class GStreamerPipeline(BasePipeline):
         self._gst_pipeline.set_state(Gst.State.PLAYING)
 
     def __str__(self):
-        return "GStreamerPipeline[name=%s]" % self._pipeline.name
-
-    @property
-    def pipeline(self) -> Struct:
-        return self._pipeline
-
-    @property
-    def task(self) -> Struct:
-        return self._task
+        return "GStreamerPipeline[name=%s]" % self._pipeline_model["name"]
 
     @property
     def command(self):
@@ -75,17 +97,7 @@ class GStreamerPipeline(BasePipeline):
 
     @property
     def parameters(self) -> Dict[str, any]:
-        if self._pipeline.parameters is None:
-            return {}
-        assert self._pipeline.parameters.type == "object"
-        parameters = copy.deepcopy(self._task.parameters)
-        for k in vars(self.pipeline.parameters.properties):
-            v_schema = getattr(self.pipeline.parameters.properties, k)
-            if not hasattr(parameters, k) and v_schema.default:
-                setattr(parameters, k, self._template_env.from_string(
-                    v_schema.default,
-                    {"envs": os.environ}).render())
-        return parameters
+        return self._parameters
 
     @property
     def is_active(self) -> bool:
@@ -94,6 +106,22 @@ class GStreamerPipeline(BasePipeline):
     @property
     def is_done(self) -> bool:
         return self._terminal_event.is_set()
+
+    def _evaluate_parameters(self):
+        parameters = dict(self._task_model.get("parameters", {}))
+        if self._pipeline_model["parameters_schema"] is None:
+            self._log.debug("skip json validation because no schema is given in pipeline DSL")
+            return parameters
+        parameter_schema = self._pipeline_model["parameters_schema"]
+        Draft202012Validator.check_schema(parameter_schema)
+        assert parameter_schema["type"] == "object"
+        for k, v_schema in parameter_schema["properties"].items():
+            if "default" in v_schema:
+                if k not in parameters or parameters[k] is None or parameters[k] == '':
+                    parameters[k] = self._template_env.from_string(
+                        str(v_schema["default"]),
+                        {"envs": os.environ}).render()
+        return parameters
 
     def shutdown(self, timeout: int =1, eos: bool = False) -> None:
         self.log.info("about to shutdown %s" % self)
@@ -147,7 +175,7 @@ class GStreamerPipeline(BasePipeline):
 
         self._terminal_event.set()
 
-        if not self.pipeline:
+        if not self._pipeline_model:
             return
 
         self.log.debug("%s Stopping pipeline ...", self)
