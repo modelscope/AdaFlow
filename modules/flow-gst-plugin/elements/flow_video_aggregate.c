@@ -1,7 +1,3 @@
-//
-// Created by JingYao on 2023/3/14.
-//
-
 #include "flow_video_aggregate.h"
 
 #define gst_flowaggregator_parent_class parent_class
@@ -14,6 +10,9 @@ static GstStaticPadTemplate sink_factory = GST_STATIC_PAD_TEMPLATE(
 static GstStaticPadTemplate src_factory = GST_STATIC_PAD_TEMPLATE(
     "src_%u", GST_PAD_SRC, GST_PAD_SOMETIMES, GST_STATIC_CAPS(GST_CAP_DEFAULT));
 
+/**
+ * @brief flow_aggregator properties
+ */
 enum {
   PROP_0,
   PROP_FRAMES_IN,
@@ -21,23 +20,26 @@ enum {
   PROP_FRAMES_FLUSH,
 };
 
+/**
+ * @brief The number of frames in input/output/flush buffer.
+ */
 #define DEFAULT_FRAMES_IN 1
 #define DEFAULT_FRAMES_OUT 1
 #define DEFAULT_FRAMES_FLUSH 0
 
 G_DEFINE_TYPE(GstFlowaggregator, gst_flowaggregator, GST_TYPE_ELEMENT);
-GST_ELEMENT_REGISTER_DEFINE(flowaggregator, "flowaggregator", GST_RANK_NONE,
+GST_ELEMENT_REGISTER_DEFINE(flow_video_aggregate, "flow_video_aggregate", GST_RANK_NONE,
                             GST_TYPE_FLOWAGGREGATOR);
 
 static void gst_tensor_aggregator_reset(GstFlowaggregator* self);
 
+/**
+ * @brief Set for flow_aggregator properties.
+ */
 static void gst_flowaggregator_set_property(GObject* object, guint prop_id,
                                               const GValue* value,
                                               GParamSpec* pspec) {
-  // g_print("set_property() \n");
   GstFlowaggregator* self = GST_FLOWAGGREGATOR(object);
-  // g_print("[gst_flowaggregator_set_property] config = %s \n",
-  // filter->config);
 
   switch (prop_id) {
   case PROP_FRAMES_IN:
@@ -55,17 +57,15 @@ static void gst_flowaggregator_set_property(GObject* object, guint prop_id,
     break;
   }
 
-  // g_print("[gst_flowaggregator_set_property] config = %s \n",
-  // filter->config);
 }
 
+/**
+ * @brief Get for flow_aggregator properties.
+ */
 static void gst_flowaggregator_get_property(GObject* object, guint prop_id,
                                               GValue* value,
                                               GParamSpec* pspec) {
-  // g_print("get_property() \n");
   GstFlowaggregator* self = GST_FLOWAGGREGATOR(object);
-  // g_print("[gst_flowaggregator_get_property] config = %s \n",
-  // filter->config);
 
   switch (prop_id) {
   case PROP_FRAMES_IN:
@@ -83,13 +83,13 @@ static void gst_flowaggregator_get_property(GObject* object, guint prop_id,
     break;
   }
 
-  // g_print("[gst_flowaggregator_get_property] config = %s \n",
-  // filter->config);
 }
 
+/**
+ * @brief This function handles sink events.
+ */
 static gboolean gst_flowaggregator_sink_event(GstPad* pad, GstObject* parent,
                                                 GstEvent* event) {
-  // g_print("sink_event() \n");
   GstFlowaggregator* filter = GST_FLOWAGGREGATOR(parent);
 
   GstFlowaggregatorPad* filterpad =
@@ -108,6 +108,9 @@ static gboolean gst_flowaggregator_sink_event(GstPad* pad, GstObject* parent,
   return gst_pad_event_default(pad, parent, event);
 }
 
+/**
+ * @brief Chain function, this function does the actual processing.
+ */
 static GstFlowReturn gst_flowaggregator_chain(GstPad* pad, GstObject* parent,
                                                 GstBuffer* buf) {
   GstFlowaggregator* self;
@@ -206,6 +209,9 @@ static GstFlowReturn gst_flowaggregator_chain(GstPad* pad, GstObject* parent,
   return ret;
 }
 
+/**
+ * @brief Function to finalize instance.
+ */
 static void gst_flowaggregator_finalize(GObject* object) {
   GstFlowaggregator* filter = GST_FLOWAGGREGATOR(object);
 
@@ -216,9 +222,7 @@ static void gst_flowaggregator_finalize(GObject* object) {
 }
 
 static void gst_flowaggregator_init_after_props(GstFlowaggregator* filter) {
-  // g_mutex_init(&filter->mutex);
-  // cuda_set_device(filter->gpu_id);
-  // filter->Model = load_model(filter->config);
+  //pass
 }
 
 static GstPad* gst_flowaggregator_request_new_pad(GstElement* element,
@@ -227,13 +231,11 @@ static GstPad* gst_flowaggregator_request_new_pad(GstElement* element,
                                                     const GstCaps* caps) {
   GstFlowaggregator* filter = GST_FLOWAGGREGATOR(element);
 
-  // if (filter->model == NULL)
   { gst_flowaggregator_init_after_props(filter); }
 
   GstPad* pad = gst_pad_new_from_template(templ, name);
   GstFlowaggregatorPad* filterpad = g_new(GstFlowaggregatorPad, 1);
   filterpad->id = filter->pad_count++;
-  // filterpad->image_scaled = make_image(filter->net->w, filter->net->h, 3);
   gst_pad_set_element_private(pad, filterpad);
   gst_pad_set_event_function(pad, gst_flowaggregator_sink_event);
   gst_pad_set_chain_function(pad, gst_flowaggregator_chain);
@@ -247,8 +249,10 @@ static GstPad* gst_flowaggregator_request_new_pad(GstElement* element,
   return pad;
 }
 
+/**
+ * @brief Initialize the flow_aggregator's class.
+ */
 static void gst_flowaggregator_class_init(GstFlowaggregatorClass* klass) {
-  // g_print("class_init() \n");
   GObjectClass* object_class = G_OBJECT_CLASS(klass);
   GstElementClass* element_class = (GstElementClass*)klass;
 
@@ -256,6 +260,9 @@ static void gst_flowaggregator_class_init(GstFlowaggregatorClass* klass) {
   object_class->get_property = gst_flowaggregator_get_property;
   object_class->finalize = gst_flowaggregator_finalize;
 
+  /**
+   * GstFlowAggregator::frames-in:The number of frames in incoming buffer.
+   */
   g_object_class_install_property(
       object_class, PROP_FRAMES_IN,
       g_param_spec_uint("frames-in", "Frames in input",
@@ -263,6 +270,9 @@ static void gst_flowaggregator_class_init(GstFlowaggregatorClass* klass) {
                         DEFAULT_FRAMES_IN,
                         G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
+  /**
+   * GstTensorAggregator::frames-out:The number of frames in outgoing buffer.
+   */
   g_object_class_install_property(
       object_class, PROP_FRAMES_OUT,
       g_param_spec_uint("frames-out", "Frames in output",
@@ -270,6 +280,9 @@ static void gst_flowaggregator_class_init(GstFlowaggregatorClass* klass) {
                         DEFAULT_FRAMES_OUT,
                         G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
+  /**
+   * GstTensorAggregator::frames-flush:The number of frames to flush.
+   */
   g_object_class_install_property(
       object_class, PROP_FRAMES_FLUSH,
       g_param_spec_uint("frames-flush", "Frames to flush",
@@ -277,8 +290,8 @@ static void gst_flowaggregator_class_init(GstFlowaggregatorClass* klass) {
                         0, G_MAXUINT, DEFAULT_FRAMES_FLUSH,
                         G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
-  gst_element_class_set_details_simple(element_class, "flowaggregator",
-                                       "xstreamer", "flowaggregator",
+  gst_element_class_set_details_simple(element_class, "flow_video_aggregate",
+                                       "AdaFlow", "flow_video_aggregate",
                                        "AUTHOR_NAME AUTHOR_EMAIL");
 
   gst_element_class_add_pad_template(element_class,
@@ -290,8 +303,10 @@ static void gst_flowaggregator_class_init(GstFlowaggregatorClass* klass) {
   element_class->request_new_pad = gst_flowaggregator_request_new_pad;
 }
 
+/**
+ * @brief Initialize flow_aggregator element.
+ */
 static void gst_flowaggregator_init(GstFlowaggregator* self) {
-  // g_print("[trt infer] init() \n");
   /** init properties */
   self->frames_in = DEFAULT_FRAMES_IN;
   self->frames_out = DEFAULT_FRAMES_OUT;

@@ -1,12 +1,13 @@
-//
-// Created by JingYao on 2023/3/6.
-//
 
 #include <string.h>
 #include "flow_json_meta.h"
 
 #define UNUSED(x) (void)(x)
 
+/**
+ * @brief Register metadata type and returns Gtype
+ * https://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstMeta.html#gst-meta-api-type-register
+ */
 GType gst_flow_json_meta_api_get_type(void) {
   static GType type;
   static const gchar *tags[] = {NULL};
@@ -18,6 +19,9 @@ GType gst_flow_json_meta_api_get_type(void) {
   return type;
 }
 
+/**
+ *@brief Meta init function
+ */
 gboolean gst_flow_json_meta_init(GstMeta *meta, gpointer params, GstBuffer *buffer) {
   UNUSED(params);
   UNUSED(buffer);
@@ -27,6 +31,10 @@ gboolean gst_flow_json_meta_init(GstMeta *meta, gpointer params, GstBuffer *buff
   return TRUE;
 }
 
+/**
+ * @brief Meta transform function
+ * https://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstMeta.html#GstMetaTransformFunction
+ */
 gboolean gst_flow_json_meta_transform(GstBuffer *dest_buf, GstMeta *src_meta, GstBuffer *src_buf, GQuark type,
                                      gpointer data) {
   UNUSED(src_buf);
@@ -44,6 +52,9 @@ gboolean gst_flow_json_meta_transform(GstBuffer *dest_buf, GstMeta *src_meta, Gs
   return TRUE;
 }
 
+/**
+ * @brief Removes metadata (GstFLOWJSONMeta) from buffer
+ */
 void gst_flow_json_meta_free(GstMeta *meta, GstBuffer *buffer) {
   UNUSED(buffer);
 
@@ -54,6 +65,10 @@ void gst_flow_json_meta_free(GstMeta *meta, GstBuffer *buffer) {
   }
 }
 
+/**
+ * @brief GstMetaInfo provides info for specific metadata implementation
+ * https://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstMeta.html#GstMetaInfo
+ */
 const GstMetaInfo *gst_flow_json_meta_get_info(void) {
   static const GstMetaInfo *meta_info = NULL;
 
@@ -67,15 +82,24 @@ const GstMetaInfo *gst_flow_json_meta_get_info(void) {
   return meta_info;
 }
 
+/**
+ * @brief This function returns message field of _GstFLOWJSONMeta
+ */
 gchar *get_json_message(GstFLOWJSONMeta *meta) {
   return meta->message;
 }
 
+/**
+ * @brief This function sets message field of _GstFLOWJSONMeta
+ */
 void set_json_message(GstFLOWJSONMeta *meta, const gchar *message) {
   gst_flow_json_meta_free((GstMeta *)meta, NULL);
   meta->message = g_strdup(message);
 }
 
+/**
+ * @brief This function add GstFLOWJSONMeta to pass buffer
+ */
 GstFLOWJSONMeta* gst_buffer_add_json_info_meta(GstBuffer *buffer, const gchar *message)
 {
   GstFLOWJSONMeta *gst_json_info_meta = NULL;
@@ -90,6 +114,9 @@ GstFLOWJSONMeta* gst_buffer_add_json_info_meta(GstBuffer *buffer, const gchar *m
   return gst_json_info_meta;
 }
 
+/**
+ * @brief This function get meta message from pass buffer
+ */
 gchar* gst_buffer_get_json_info_meta(GstBuffer *buffer)
 {
   GstFLOWJSONMeta* meta = (GstFLOWJSONMeta*)gst_buffer_get_meta((buffer), gst_flow_json_meta_api_get_type());
@@ -101,6 +128,9 @@ gchar* gst_buffer_get_json_info_meta(GstBuffer *buffer)
     return meta->message;
 }
 
+/**
+ * @brief This function remove GstFLOWJSONMeta from pass buffer
+ */
 gboolean gst_buffer_remove_json_info_meta(GstBuffer *buffer)
 {
   g_return_val_if_fail(GST_IS_BUFFER(buffer), NULL);

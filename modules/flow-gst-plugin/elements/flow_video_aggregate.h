@@ -1,6 +1,7 @@
-//
-// Created by JingYao on 2023/3/14.
-//
+/**
+* @file flow_video_aggregate.h
+* @brief flow_video_aggregate is a plugin to aggregate the frame using GstAdapter
+*/
 
 #ifndef FLOW_FLOW_VIDEO_AGGREGATE_H
 #define FLOW_FLOW_VIDEO_AGGREGATE_H
@@ -27,6 +28,9 @@ GType gst_flowaggregator_get_type();
 typedef struct _GstFlowaggregator GstFlowaggregator;
 typedef struct _GstFlowaggregatorClass GstFlowaggregatorClass;
 
+/**
+ * @brief GstFlowaggregatorPad data structure.
+ */
 typedef struct {
   guint id;
   GstPad* srcpad;
@@ -34,7 +38,7 @@ typedef struct {
 } GstFlowaggregatorPad;
 
 /**
- * @brief GstTensorAggregator data structure.
+ * @brief GstFlowaggregator data structure.
  */
 struct _GstFlowaggregator {
   GstElement element; /**< parent object */
@@ -47,24 +51,20 @@ struct _GstFlowaggregator {
   guint frames_out;   /**< number of frames in output buffer */
   guint frames_flush; /**< number of frames to flush */
 
-  gboolean tensor_configured; /**< True if already successfully configured
-                                 tensor metadata */
-  guint pad_count;
+  guint pad_count;    /**< number of pad */
 
-  GstAdapter* adapter;
+  GstAdapter* adapter; /**< adapt incoming tensor */
 };
 
 /**
- * @brief GstTensorAggregatorClass data structure.
+ * @brief GstFlowaggregatorClass data structure.
  */
 struct _GstFlowaggregatorClass {
   GstElementClass parent_class; /**< parent class */
 };
 
-GST_ELEMENT_REGISTER_DECLARE(flowaggregator);
+GST_ELEMENT_REGISTER_DECLARE(flow_video_aggregate);
 
 G_END_DECLS
-
-
 
 #endif // FLOW_FLOW_VIDEO_AGGREGATE_H

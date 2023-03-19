@@ -10,6 +10,12 @@ class ReidPersonPostprocess:
     def __init__(self):
         pass
     def postprocess(self, frames: AVDataPacket, kwargs):
+        """
+        Post-processing the reid person results.
+        :param frames:construct AVDataPacket instance
+        :param kwargs:parameters of user-defined functions
+        :return
+        """
         ##frame by frame
         for frame in frames:
             feat_1 = frame.get_json_meta('model1')['img_embedding'][0]

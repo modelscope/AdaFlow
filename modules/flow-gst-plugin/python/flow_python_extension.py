@@ -1,5 +1,7 @@
 """
-    maas model postprocess plugin ,only use route subplugin
+    AdaFlow python plugin: flow_python_extension.
+    Provides a callback to execute user-defined Python functions on every frame.
+    Can be used for metadata conversion, inference post-processing, and other tasks.
 """
 from adaflow.utils.video_frame import AVDataPacket
 from gi.repository import Gst, GObject, GstBase
@@ -18,8 +20,8 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
     GST_PLUGIN_NAME = 'flow_python_extension'
 
     __gstmetadata__ = (GST_PLUGIN_NAME,
-                       "maas model postprocess route",
-                       "maas model postprocess",
+                       "extension route plugin",
+                       "execute user-defined Python functions on every frame",
                        "JingYao")
 
     __gsttemplates__ = (Gst.PadTemplate.new("src",
@@ -121,11 +123,22 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
         return True
 
     def parse_input(self, yaml_path: str):
+        """
+        Parsing parameters of user-defined functions.
+        :param yaml_path: user-defined parameter file path
+        :return: yaml data
+        """
         with open(yaml_path, "r") as f:
             data = yaml.load(f, Loader=yaml.FullLoader)
         return data
 
     def _run_maas_post_processor(self, avdatapacket, data):
+        """
+        A callback to execute user-defined Python functions
+        :param avdatapacket: construct VideoFrame
+        :param data: yaml data
+        :return:True
+        """
 
         function = imp.load_source('flow', self.maas_module)
         import flow
@@ -139,6 +152,8 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
         else:
             func_name = getattr(flow, self.maas_function)
             self.maas_post_processor = func_name(avdatapacket, data)
+
+        return True
 
     def do_transform_ip(self, buffer: Gst.Buffer) -> Gst.FlowReturn:
         try:
