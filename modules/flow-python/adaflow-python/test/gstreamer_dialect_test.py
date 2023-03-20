@@ -154,8 +154,8 @@ class GStreamerDialectTest(unittest.TestCase):
         self.assertEqual(pipeline.parameters, {})
 
     def test_parameter_validation(self):
-        pipeline = GStreamerPipeline(Pipelines["p1"], Tasks["t2"])
         with self.assertRaises(ValidationError) as context:
+            pipeline = GStreamerPipeline(Pipelines["p1"], Tasks["t2"])
             pipeline.startup()
         self.assertTrue("too short" in str(context.exception))
 

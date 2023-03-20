@@ -89,7 +89,6 @@ class GStreamerPipeline(BasePipeline):
 
     @property
     def parameters(self) -> Dict[str, any]:
-
         return self._parameters
 
     @property
@@ -111,9 +110,11 @@ class GStreamerPipeline(BasePipeline):
         for k, v_schema in parameter_schema["properties"].items():
             if "default" in v_schema:
                 if k not in parameters or parameters[k] is None or parameters[k] == '':
-                    parameters[k] = self._template_env.from_string(
-                        str(v_schema["default"]),
+                    if isinstance(v_schema["default"], str):
+                        parameters[k] = self._template_env.from_string(v_schema["default"],
                         {"envs": os.environ}).render()
+                    else:
+                        parameters[k] = v_schema["default"]
         # validate parameters before startup
         validate(
             instance=parameters,
