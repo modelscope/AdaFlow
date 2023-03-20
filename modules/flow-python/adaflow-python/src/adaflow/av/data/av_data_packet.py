@@ -36,7 +36,7 @@ class AVDataPacket:
         return self
 
     def __next__(self):
-        if self.i < self.frame_size:
+        if self.i < self.frame_num:
             frame = AVDataFrame(buffer=self.__buffer, caps=self.__caps, offset=self.i * self.frame_size)
             self.i += 1
             return frame
