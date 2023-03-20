@@ -1,7 +1,7 @@
 """
 reid person in detection post process
 """
-from adaflow.av.utils.video_frame import AVDataPacket
+from adaflow.av.data.av_data_packet import AVDataPacket
 import numpy as np
 import logging
 logging.basicConfig(level=logging.DEBUG)

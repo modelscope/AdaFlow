@@ -39,3 +39,4 @@ flow_modelscope_pipeline task=image-object-detection id = damo/cv_cspnet_image-o
 flow_python_extension input=../resource/config/real_detector.yaml module=real_detector_vis.py class= RealDetectorPost function= postprocess ! \
 videoconvert ! jpegenc ! filesink location=../resource/data/maas_test_detection_vis.jpg
 
+
