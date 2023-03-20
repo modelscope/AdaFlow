@@ -42,17 +42,11 @@ class GStreamerPipeline(BasePipeline):
         # render parameters
         self._parameters = self._evaluate_parameters()
 
+        self.log.debug("init pipeline with command %s" % self.command)
+
     @property
     def log(self) -> logging.Logger:
         return self._log
-
-    def __enter__(self):
-        self.startup()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.shutdown()
-        return False
 
     def set_pipeline_configure(self, pipeline_configure: Callable[[BasePipeline], None]):
         self._pipeline_configure = pipeline_configure

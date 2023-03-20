@@ -13,6 +13,14 @@ class BasePipeline(metaclass=ABCMeta):
     def __init__(self) -> None:
         super().__init__()
 
+    def __enter__(self):
+        self.startup()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.shutdown()
+        return False
+
     @abstractmethod
     def startup(self):
         pass
