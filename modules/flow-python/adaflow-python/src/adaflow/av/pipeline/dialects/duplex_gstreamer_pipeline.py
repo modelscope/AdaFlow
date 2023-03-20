@@ -65,11 +65,13 @@ class DuplexGstreamerPipelineBuilder(GStreamerPipelineBuilder):
         self._video_frmt = video_frmt
         return self
 
-    def max_buffers_size(self, size):
+    def max_buffers_size(self, size: int = 100):
         self._max_buffers_size = size
         return self
 
     def build(self) -> DuplexGstreamerPipeline:
+        assert self._width
+        assert self._height
         return DuplexGstreamerPipeline(
             GStreamerPipeline(self._pipeline, self._task),
             self._width,
