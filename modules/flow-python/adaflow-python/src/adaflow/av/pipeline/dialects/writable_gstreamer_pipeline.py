@@ -1,5 +1,6 @@
 from .delegate_gstreamer_pipeline import DelegateGStreamerPipeline
 from .gstreamer_pipeline import GStreamerPipeline, GStreamerPipelineBuilder
+from adaflow.av.data.av_data_packet import AVDataPacket
 import typing as typ
 from fractions import Fraction
 import gi
@@ -19,14 +20,14 @@ class WritableGstreamerPipeline(DelegateGStreamerPipeline):
                  height: int,
                  fps: typ.Union[Fraction, int] = Fraction("30/1"),
                  video_type: VideoType = VideoType.VIDEO_RAW,
-                 video_frmt: GstVideo.VideoFormat = GstVideo.VideoFormat.RGB
+                 video_format: GstVideo.VideoFormat = GstVideo.VideoFormat.RGB
                  ) -> None:
         super().__init__(delegate)
         self._fps = Fraction(fps)
         self._width = width
         self._height = height
         self._video_type = video_type  # VideoType
-        self._video_frmt = video_frmt  # GstVideo.VideoFormat
+        self._video_format = video_format  # GstVideo.VideoFormat
 
         self._pts = 0
         self._dts = GLib.MAXUINT64
@@ -34,12 +35,13 @@ class WritableGstreamerPipeline(DelegateGStreamerPipeline):
 
         self._src = None  # GstApp.AppSrc
 
-    def video_frmt(self):
-        return self._video_frmt
+    @property
+    def video_format(self):
+        return self.video_format
 
     def push(
             self,
-            buffer: typ.Union[Gst.Buffer, np.ndarray],
+            buffer: typ.Union[Gst.Buffer, np.ndarray, AVDataPacket],
             *,
             pts: typ.Optional[int] = None,
             dts: typ.Optional[int] = None,
@@ -88,7 +90,7 @@ class WritableGstreamerPipeline(DelegateGStreamerPipeline):
                 height=self._height,
                 fps=self._fps,
                 video_type=self._video_type,
-                video_frmt=self._video_frmt,
+                video_frmt=self._video_format,
             )
 
             self.log.debug("%s Caps: %s", self, caps)
@@ -101,9 +103,9 @@ class WritableGstreamerPipelineBuilder(GStreamerPipelineBuilder):
         super().__init__()
         self._width = None
         self._height = None
-        self._fps = None
-        self._video_type = None
-        self._video_frmt = None
+        self._fps = Fraction("30/1")
+        self._video_type = VideoType.VIDEO_RAW
+        self._video_frmt = GstVideo.VideoFormat.RGB
 
     def caps_filter(self,
                     width: int,
@@ -119,6 +121,8 @@ class WritableGstreamerPipelineBuilder(GStreamerPipelineBuilder):
         return self
 
     def build(self) -> WritableGstreamerPipeline:
+        assert self._width
+        assert self._height
         return WritableGstreamerPipeline(
             GStreamerPipeline(self._pipeline, self._task),
             self._width,

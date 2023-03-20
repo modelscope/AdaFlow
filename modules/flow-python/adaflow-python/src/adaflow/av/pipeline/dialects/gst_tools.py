@@ -1,6 +1,7 @@
 import typing as typ
 from fractions import Fraction
 from enum import Enum
+from adaflow.av.data.av_data_packet import AVDataPacket
 import gi
 gi.require_version("Gst", "1.0")
 gi.require_version("GstApp", "1.0")
@@ -76,7 +77,7 @@ def gst_video_format_plugin(
 
 
 def to_gst_buffer(
-        buffer: typ.Union[Gst.Buffer, np.ndarray],
+        buffer: typ.Union[Gst.Buffer, np.ndarray, AVDataPacket],
         *,
         pts: typ.Optional[int] = None,
         dts: typ.Optional[int] = None,
@@ -90,6 +91,9 @@ def to_gst_buffer(
     gst_buffer = buffer
     if isinstance(gst_buffer, np.ndarray):
         gst_buffer = Gst.Buffer.new_wrapped(bytes(buffer))
+
+    if isinstance(buffer, AVDataPacket):
+        gst_buffer = buffer[0].buffer
 
     if not isinstance(gst_buffer, Gst.Buffer):
         raise ValueError(

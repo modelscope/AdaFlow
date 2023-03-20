@@ -19,16 +19,16 @@ class AVDataPacket:
         """
         self.__buffer = buffer
         self.__caps = caps
-        #cal frame size
+        # cal frame size
         struct = caps.get_structure(0)
         self.width = struct.get_int("width").value
         self.height = struct.get_int("height").value
         video_format = gst_video_format_from_string(struct.get_value('format'))
         self.channel = get_num_channels(video_format)
         self.frame_size = self.width * self.height * self.channel
-        #cal buffer size
+        # cal buffer size
         self.buffer_size = Gst.Buffer.get_size(self.__buffer)
-        #cal frame num
+        # cal frame num
         self.frame_num = int(self.buffer_size/self.frame_size)
         self.i = 0
 
@@ -42,6 +42,9 @@ class AVDataPacket:
             return frame
         else:
             raise StopIteration
+
+    def __getitem__(self, i):
+        return AVDataFrame(buffer=self.__buffer, caps=self.__caps, offset=i * self.frame_size)
 
     def __len__(self):
         return self.frame_num

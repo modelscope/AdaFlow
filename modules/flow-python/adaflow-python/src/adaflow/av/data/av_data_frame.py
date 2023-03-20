@@ -2,6 +2,9 @@ import logging
 
 import numpy
 import json
+
+import numpy as np
+
 from adaflow.av.utils import gst_video_format_from_string, get_num_channels, NumpyArrayEncoder
 from adaflow.av.metadata.flow_json_meta import flow_meta_add, flow_meta_get, flow_meta_remove
 
@@ -26,7 +29,7 @@ class AVDataFrame:
         self.__buffer = buffer
         self.__offset = offset
 
-        ##video info
+        # video info
         struct = caps.get_structure(0)
         self.width = struct.get_int("width").value
         self.height = struct.get_int("height").value
@@ -38,6 +41,10 @@ class AVDataFrame:
     @property
     def log(self):
         return self._log
+
+    @property
+    def buffer(self) -> Gst.Buffer:
+        return self.__buffer
 
     def get_json_meta(self, meta_key):
         """
@@ -58,7 +65,7 @@ class AVDataFrame:
         """
         get_message_str = flow_meta_get(self.__buffer)
 
-        #first-to-add-metadata
+        # first-to-add-metadata
         if get_message_str == "NULL":
             json_key_v = dict()
             json_key_v[meta_key] = []
@@ -83,7 +90,7 @@ class AVDataFrame:
         """
         flow_meta_remove(self.__buffer)
 
-    def data(self, flag=Gst.MapFlags.READ | Gst.MapFlags.WRITE):
+    def data(self, flag=Gst.MapFlags.READ | Gst.MapFlags.WRITE) -> np.ndarray:
         """
         Get buffer data wrapped by numpy.ndarray.
         :param flag:
