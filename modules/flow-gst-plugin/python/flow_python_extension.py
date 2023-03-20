@@ -3,7 +3,7 @@
     Provides a callback to execute user-defined Python functions on every frame.
     Can be used for metadata conversion, inference post-processing, and other tasks.
 """
-from adaflow.av.utils.video_frame import AVDataPacket
+from adaflow.av.data.av_data_packet import AVDataPacket
 from gi.repository import Gst, GObject, GstBase
 import imp
 import yaml
@@ -157,7 +157,7 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
 
     def do_transform_ip(self, buffer: Gst.Buffer) -> Gst.FlowReturn:
         try:
-            avdatapacket = AVDataPacket(buffer, caps= self.caps).iterate()
+            avdatapacket = AVDataPacket(buffer, caps= self.caps)
             if self.input is not None:
                 data = self.parse_input(self.input)
             else:

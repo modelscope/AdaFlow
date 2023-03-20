@@ -1,12 +1,12 @@
 """
 break in detection post process
 """
-from adaflow.av.utils.video_frame import AVDataPacket
+from adaflow.av.data.av_data_packet import AVDataPacket
 import numpy as np
 import cv2
 import os
 import json
-from adaflow.utils import NumpyArrayEncoder
+from adaflow.av.utils import NumpyArrayEncoder
 
 class BreakInDetPostprocess:
     def __init__(self):

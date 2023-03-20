@@ -1,12 +1,9 @@
 """
     mot counting model postprocess
 """
-from adaflow.av.utils.video_frame import AVDataPacket
-import numpy as np
+from adaflow.av.data.av_data_packet import AVDataPacket
 import cv2
-import os
-import json
-from adaflow.av.utils import NumpyArrayEncoder
+
 
 class MotCountingPostprocess:
 
