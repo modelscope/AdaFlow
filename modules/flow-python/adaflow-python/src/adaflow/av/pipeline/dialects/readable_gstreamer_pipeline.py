@@ -2,6 +2,8 @@ import queue
 
 from .delegate_gstreamer_pipeline import DelegateGStreamerPipeline
 from .gstreamer_pipeline import GStreamerPipeline, GStreamerPipelineBuilder
+from adaflow.av.data.av_data_packet import AVDataPacket
+
 import typing as typ
 import gi
 gi.require_version("Gst", "1.0")
@@ -40,8 +42,10 @@ class ReadableGStreamerPipeline(DelegateGStreamerPipeline):
 
         sample = sink.emit("pull-sample")
         if isinstance(sample, Gst.Sample):
-            self._queue.put(self._extract_buffer(sample))
-            self._counter += 1
+            data_packet = self._extract_buffer(sample)
+            if data_packet is not None:
+                self._queue.put(data_packet)
+                self._counter += 1
 
             return Gst.FlowReturn.OK
 
@@ -53,7 +57,7 @@ class ReadableGStreamerPipeline(DelegateGStreamerPipeline):
         )
         return Gst.FlowReturn.ERROR
 
-    def _extract_buffer(self, sample: Gst.Sample):
+    def _extract_buffer(self, sample: Gst.Sample) -> [AVDataPacket, None]:
         buffer = sample.get_buffer()
         caps = sample.get_caps()
 
@@ -67,8 +71,7 @@ class ReadableGStreamerPipeline(DelegateGStreamerPipeline):
             self.log.warning("%s No Gst.Memory in Gst.Buffer", self)
             return None
 
-        # TODO convert to AVDataFrame
-        return buffer
+        return AVDataPacket(buffer, caps)
 
     def _clean_queue(self, q: queue.Queue):
         while not q.empty():
@@ -86,8 +89,8 @@ class ReadableGStreamerPipeline(DelegateGStreamerPipeline):
         super().shutdown()
         self._clean_queue(self._queue)
 
-    def pop(self, timeout: float = 0.1):
-        """ Pops GstBuffer """
+    def pop(self, timeout: float = 0.1) -> AVDataPacket:
+        """ Pops AVDataPacket """
         if not self._sink:
             raise RuntimeError("Sink {} is not initialized".format(Gst.AppSink))
 
@@ -105,9 +108,9 @@ class ReadableGStreamerPipelineBuilder(GStreamerPipelineBuilder):
 
     def __init__(self) -> None:
         super().__init__()
-        self._max_buffers_size = None
+        self._max_buffers_size = 100
 
-    def max_buffers_size(self, size):
+    def max_buffers_size(self, size: int = 100):
         self._max_buffers_size = size
         return self
 

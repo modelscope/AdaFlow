@@ -32,7 +32,7 @@ class GStreamerTemplateHelper:
         for sink in self._task["sinks"]:
             if sink["name"] == name:
                 type_name = sink["type"]
-                properties_string = ", ".join(["%s=%s" % (k, v) for k, v in sink.get("properties", {}).items()]).strip()
+                properties_string = " ".join(["%s=%s" % (k, v) for k, v in sink.get("properties", {}).items()]).strip()
                 variables = dict(sink)
                 variables["properties_string"] = properties_string
                 if type_name in SINK_TEMPLATES:
@@ -45,7 +45,7 @@ class GStreamerTemplateHelper:
         for source in self._task["sources"]:
             if source["name"] == name:
                 type_name = source["type"]
-                properties_string = ", ".join(
+                properties_string = " ".join(
                     ["%s=%s" % (k, v) for k, v in source.get("properties", {}).items()]).strip()
                 variables = dict(source)
                 variables["properties_string"] = properties_string

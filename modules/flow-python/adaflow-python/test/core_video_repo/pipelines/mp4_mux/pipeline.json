@@ -3,8 +3,6 @@
   "backend": "GStreamer",
   "dialect": [
     "{{F.source('src1')}}",
-    "x264enc",
-    "mp4mux",
     "{{F.sink('sink1')}}"
   ]
 }

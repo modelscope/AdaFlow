@@ -48,8 +48,10 @@ _ALL_VIDEO_FORMAT_CHANNELS = {fmt: _get_num_channels(fmt) for fmt in _ALL_VIDEO_
 def get_num_channels(fmt: GstVideo.VideoFormat):
     return _ALL_VIDEO_FORMAT_CHANNELS[fmt]
 
+
 def gst_video_format_from_string(frmt: str) -> GstVideo.VideoFormat:
     return GstVideo.VideoFormat.from_string(frmt)
+
 
 class NumpyArrayEncoder(json.JSONEncoder):
     def default(self, obj):

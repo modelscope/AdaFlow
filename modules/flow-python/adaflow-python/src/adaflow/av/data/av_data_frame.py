@@ -1,7 +1,4 @@
-"""
-This file contains AVDataFrame class to control particular inferenced frame
-and attached FLOWJSONMeta instances
-"""
+import logging
 
 import numpy
 import json
@@ -33,6 +30,11 @@ class AVDataFrame:
         video_format = gst_video_format_from_string(struct.get_value('format'))
         self.channel = get_num_channels(video_format)
         self.frame_size = self.width * self.height * self.channel
+        self._log = logging.Logger("AVDataFrame")
+
+    @property
+    def log(self):
+        return self._log
 
     def get_json_meta(self, meta_key):
         """
@@ -63,7 +65,7 @@ class AVDataFrame:
         else:
             get_message = json.loads(get_message_str)
             if meta_key in get_message:
-                logging.error(f'%s is duplicate definition, change a new key '% (meta_key))
+                self.log.error(f'%s is duplicate definition, change a new key '% (meta_key))
             else:
                 get_message[meta_key] = []
                 get_message[meta_key].append(message)
@@ -85,7 +87,12 @@ class AVDataFrame:
         :return:numpy array instance
         """
         with self.__buffer.map(flag) as info:
-            image = numpy.ndarray(shape=(self.height, self.width, self.channel),dtype=numpy.uint8, buffer=info.data, offset=self.__offset)
+            image = numpy.ndarray(
+                shape=(self.height, self.width, self.channel),
+                dtype=numpy.uint8,
+                buffer=info.data,
+                offset=self.__offset
+            )
             return image
 
 
