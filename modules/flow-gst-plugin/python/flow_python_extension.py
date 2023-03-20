@@ -3,7 +3,7 @@
     Provides a callback to execute user-defined Python functions on every frame.
     Can be used for metadata conversion, inference post-processing, and other tasks.
 """
-from adaflow.utils.video_frame import AVDataPacket
+from adaflow.av.utils.video_frame import AVDataPacket
 from gi.repository import Gst, GObject, GstBase
 import imp
 import yaml

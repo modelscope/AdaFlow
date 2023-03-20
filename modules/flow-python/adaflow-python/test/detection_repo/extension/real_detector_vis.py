@@ -1,7 +1,7 @@
 """
 visualization after realtime detector
 """
-from adaflow.utils.video_frame import AVDataPacket
+from adaflow.av.utils.video_frame import AVDataPacket
 import cv2
 
 class RealDetectorPost:

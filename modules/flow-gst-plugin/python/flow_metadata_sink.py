@@ -2,8 +2,8 @@
     AdaFlow python plugin: flow_metadata_sink.
     Publishes the JSON metadata to files.
 """
-from adaflow.utils import NumpyArrayEncoder
-from adaflow.metadata.flow_json_meta import flow_meta_get
+from adaflow.av.utils import NumpyArrayEncoder
+from adaflow.av.metadata.flow_json_meta import flow_meta_get
 from gi.repository import Gst, GObject, GstBase
 import gi
 import json

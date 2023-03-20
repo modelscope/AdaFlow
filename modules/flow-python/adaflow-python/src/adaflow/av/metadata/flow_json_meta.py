@@ -7,7 +7,7 @@ import platform
 import os
 from absl import logging
 import json
-from adaflow.utils import NumpyArrayEncoder
+from adaflow.av.utils import NumpyArrayEncoder
 gi.require_version('GstVideo', '1.0')
 gi.require_version('GstAudio', '1.0')
 gi.require_version('GLib', '2.0')

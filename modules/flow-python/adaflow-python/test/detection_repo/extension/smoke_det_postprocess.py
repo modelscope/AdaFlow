@@ -1,14 +1,14 @@
 """
 smoke detection post process
 """
-from adaflow.utils.video_frame import AVDataPacket
+from adaflow.av.utils.video_frame import AVDataPacket
 import numpy as np
 import cv2
 import copy
 import operator
 import os
 import json
-from adaflow.utils import NumpyArrayEncoder
+from adaflow.av.utils import NumpyArrayEncoder
 
 class SmokeDetPostprocess:
     def __init__(self):

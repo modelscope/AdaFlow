@@ -3,8 +3,8 @@
     Run modelscope pipeline and produce result data.
 """
 from modelscope.pipelines import pipeline
-from adaflow.utils import gst_video_format_from_string, get_num_channels,NumpyArrayEncoder
-from adaflow.metadata.flow_json_meta import flow_meta_add_key
+from adaflow.av.utils import gst_video_format_from_string, get_num_channels,NumpyArrayEncoder
+from adaflow.av.metadata.flow_json_meta import flow_meta_add_key
 from gi.repository import Gst, GObject, GstBase
 from absl import logging
 import numpy as np
