@@ -3,3 +3,4 @@ networkx
 PyGObject
 jinja2
 matplotlib
+jsonschema
