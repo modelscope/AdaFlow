@@ -8,6 +8,11 @@ from adaflow.av.pipeline.pipeline_factory import PipelineFactory
 from adaflow.av.pipeline.dialects.gst_context import GstContext
 from pathlib import Path
 
+import gi
+gi.require_version('Gst', '1.0')
+
+from gi.repository import Gst
+
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -61,8 +66,8 @@ class CoreVideoPipelinesTest(unittest.TestCase):
                         self.assertEqual(av_packet.width, 800)
                         self.assertEqual(av_packet.height, 600)
                         self.assertEqual(av_packet.channel, 3)
-                        # self.assertEqual(av_packet[0].data().shape, (600, 800, 3))
-                        # self.assertTrue(av_packet[0].get_json_meta("foo"))
+                        self.assertEqual(av_packet[0].data(flag=Gst.MapFlags.READ).shape, (600, 800, 3))
+                        self.assertTrue(av_packet[0].get_json_meta("foo"))
 
                     else:
                         logging.info("None is popped")

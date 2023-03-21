@@ -53,7 +53,17 @@ class AVDataFrame:
         :return:json mesage
         """
         get_message_str = flow_meta_get(self.__buffer)
-        get_message = json.loads(get_message_str)[meta_key][0]
+        if get_message_str == "NULL":
+            self.log.error(f'AVDataFrame has not %s metadata'% (meta_key))
+            return "NULL"
+
+        else:
+            get_message_json = json.loads(get_message_str)
+            if meta_key not in get_message_json:
+                self.log.error(f'AVDataFrame has not %s metadata'% (meta_key))
+
+            get_message = get_message_json[meta_key][0]
+
         return get_message
 
     def add_json_meta(self, message, meta_key):
