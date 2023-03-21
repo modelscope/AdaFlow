@@ -1,7 +1,7 @@
 """
 visualization after realtime detector
 """
-#from adaflow.av.data.av_data_packet import AVDataPacket
+
 from adaflow.av.data.av_data_packet import AVDataPacket
 import cv2
 

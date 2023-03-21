@@ -26,5 +26,6 @@ class ReidPersonPostprocess:
             feat_norm_2 = feat_2 / np.linalg.norm(feat_2)
             score = np.dot(feat_norm_1, feat_norm_2)
             logging.info(f'cosine score is: {score}')
+            print('cosine score is:', score)
 
             return True

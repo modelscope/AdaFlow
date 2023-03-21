@@ -19,7 +19,7 @@ class BreakInDetPostprocess:
         :return:
         """
         ##user parameter
-        self.outyaml = 'mass_smoke_det_res.yaml'
+        self.outyaml = 'mass_break_in_res.yaml'
         self.output_path = kwargs['output_path']
         self.vis_flag = kwargs['vis_flag']
         self.is_video = kwargs['deploy']['rules']['is_video']
@@ -55,7 +55,7 @@ class BreakInDetPostprocess:
                       0: self.meta_data
                 }
 
-                self._write_result_yaml(self.output_path, res, self.frame_rate)
+                #self._write_result_yaml(self.output_path, res, self.frame_rate)
 
                 ##add new meta with key
                 frame.add_json_meta(self.meta_data, 'BreakInDetPost')

@@ -1,0 +1,16 @@
+{
+  "name": "break_in_detection",
+  "description": "break in detection post process",
+  "backend": "GStreamer",
+  "dialect": [
+    "{{F.source('src1')}}",
+    "videoconvert",
+    "videoscale",
+    "video/x-raw,format=RGB",
+    "flow_modelscope_pipeline task=domain-specific-object-detection id = damo/cv_tinynas_human-detection_damoyolo",
+    "flow_python_extension input=./detection_repo/resource/config/break_in_count_deploy.yaml module=./detection_repo/extension/break_in_det_postprocess.py class= BreakInDetPostprocess function = postprocess",
+    "videoconvert",
+    "jpegenc",
+    "{{F.sink('sink1')}}"
+  ]
+}
