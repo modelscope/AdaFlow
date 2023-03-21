@@ -7,12 +7,14 @@ SINK_TEMPLATES = {
     "oss_bucket": "flow_oss_upload_sink name=%(name)s location=%(location)s %(properties_string)s",
     "file": "filesink name=%(name)s location=%(location)s %(properties_string)s",
     "multifile": "multifilesink name=%(name)s location=%(location)s %(properties_string)s",
-    "gst": "%(element)s %(properties_string)s"
+    "gst": "%(element)s %(properties_string)s",
+    "fakesink": "fakesink "
 }
 
 SOURCE_TEMPLATES = {
     "application": "appsrc name=%(name)s %(properties_string)s",
-    "file": "filesrc name=%(name)s %(properties_string)s ! decodebin",
+    #"file": "filesrc name=%(name)s %(properties_string)s ! decodebin",
+    "file": "filesrc name=%(name)s location=%(location)s %(properties_string)s ! decodebin",
     "camera": "v4l2src name=%(name)s device=%(device)s %(properties_string)s",
     "uri": "urisourcebin name=%(name)s uri=%(uri)s %(properties_string)s ! decodebin",
     "gst": "%(element)s %(properties_string)s"

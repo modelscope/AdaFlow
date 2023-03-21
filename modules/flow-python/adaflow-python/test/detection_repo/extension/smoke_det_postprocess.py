@@ -48,7 +48,7 @@ class SmokeDetPostprocess:
                              smoke_res=smoke_det_res),  # frame index with 0
                     }
 
-                self._write_result_yaml(self.output_path, res, self.frame_rate)
+                #self._write_result_yaml(self.output_path, res, self.frame_rate)
                 if (self.vis_flag):
                     self._visualize(self.image, res)
 
