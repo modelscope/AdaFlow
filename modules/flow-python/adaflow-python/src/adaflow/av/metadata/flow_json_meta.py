@@ -15,7 +15,8 @@ gi.require_version('Gst', '1.0')
 
 logger = logging.getLogger("JSONMetadata")
 sys_platform = platform.platform().lower()
-if "macos" in sys_platform:
+
+if "macos" in sys_platform or "darwin" in sys_platform:
     libgst = CDLL(os.getenv("LIB_GSTREAMER_PATH", "libflowmetadata.dylib"))
 elif "linux" in sys_platform:
     libgst = CDLL(os.getenv("LIB_GSTREAMER_PATH", "libflowmetadata.so"))
