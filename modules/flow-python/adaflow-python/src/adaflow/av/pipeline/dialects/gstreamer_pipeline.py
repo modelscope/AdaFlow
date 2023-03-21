@@ -21,6 +21,13 @@ Gst.init(sys.argv if hasattr(sys, "argv") else None)
 
 class GStreamerPipeline(BasePipeline):
     def __init__(self, pipeline_model: Dict[str, any], task_model: Dict[str, any], pipeline_configure: Callable[[BasePipeline], None] = None) -> None:
+        """
+        Default constructor for a plain GStreamerPipeline
+        Args:
+            pipeline_model: Pipeline definition dict object
+            task_model: Task definition dict object
+            pipeline_configure: Pipeline configuration function
+        """
         # TODO validate pipeline_model and task_model
         super().__init__()
         self._pipeline_model = pipeline_model
@@ -49,6 +56,15 @@ class GStreamerPipeline(BasePipeline):
         return self._log
 
     def set_pipeline_configure(self, pipeline_configure: Callable[[BasePipeline], None]):
+        """
+        setter for pipeline configuration function.
+
+        Args:
+            pipeline_configure:
+
+        Returns:
+
+        """
         self._pipeline_configure = pipeline_configure
 
     def startup(self):
@@ -77,12 +93,14 @@ class GStreamerPipeline(BasePipeline):
 
     @property
     def command(self):
+        """final command after parameter substitutions"""
         return self._template.render({
             "parameters": self.parameters
         })
 
     @property
     def parameters(self) -> Dict[str, any]:
+        """resolved parameter dict"""
         return self._parameters
 
     @property
@@ -196,6 +214,7 @@ class GStreamerPipeline(BasePipeline):
 
 
 class GStreamerPipelineBuilder:
+    """Builder for GStreamerPipeline"""
 
     def __init__(self) -> None:
         super().__init__()
@@ -203,30 +222,45 @@ class GStreamerPipelineBuilder:
         self._task = {}
 
     def pipeline(self, pipeline_model: Dict[str, any]):
+        """set pipeline model dict"""
         self._pipeline = pipeline_model
         return self
 
     def task(self, task_model: Dict[str, any]):
+        """set task model dict"""
         self._task = task_model
         return self
 
     def sink(self, sink_model: Dict[str, any]):
+        """append a `sink model` dict to task definition model. `task model` data will be initialized as `list` if not already set"""
         if "sinks" not in self._task or self._task["sinks"] is None:
             self._task["sinks"] = []
         self._task["sinks"].append(sink_model)
         return self
 
     def source(self, source_model: Dict[str, any]):
+        """append a `source model` dict to task definition model. `task model` data will be initialized as `list` if not already set"""
         if "sources" not in self._task or self._task["sources"] is None:
             self._task["sources"] = []
         self._task["sources"].append(source_model)
         return self
 
     def parameter(self, parameters: Dict[str, any]):
+        """
+        set `parameter` data of task definition
+
+        Args:
+            parameters: dict for parameter values
+
+        Returns:
+            self reference
+
+        """
         if "parameters" not in self._task or parameters is not None:
             self._task["parameters"] = parameters
         return self
 
     def build(self) -> GStreamerPipeline:
+        """Return the pipeline object"""
         return GStreamerPipeline(self._pipeline, self._task)
 

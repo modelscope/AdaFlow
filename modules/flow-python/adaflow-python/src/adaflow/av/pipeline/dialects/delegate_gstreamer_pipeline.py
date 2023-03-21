@@ -18,20 +18,13 @@ class DelegateGStreamerPipeline(BasePipeline):
 
     @property
     def delegate(self):
+        """delegated pipeline object"""
         return self._delegate
-
-    @property
-    def pipeline(self) -> Struct:
-        return self._delegate.pipeline
-
-    @property
-    def task(self) -> Struct:
-        return self._delegate.task
 
     def startup(self) -> None:
         self._delegate.startup()
 
-    def shutdown(self) -> None:
+    def shutdown(self, timeout: int =1, eos: bool = False) -> None:
         self._delegate.shutdown()
 
     @property

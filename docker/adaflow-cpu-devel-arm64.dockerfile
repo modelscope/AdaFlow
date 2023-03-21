@@ -25,6 +25,7 @@ ENV PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig:/usr/local/lib64/
 ENV GI_TYPELIB_PATH="${ADAFLOW_PREFIX}/lib64/girepository-1.0"
 ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64:/usr/lib:/usr/lib64:${ADAFLOW_PREFIX}/lib:${ADAFLOW_PREFIX}/lib64"
 ENV PATH=$PATH:${ADAFLOW_PREFIX}/bin
+ENV PYTHONPATH ${ADAFLOW_PREFIX}/lib/python3.8/site-packages/
 
 SHELL ["/bin/bash", "--login", "-c"]
 
@@ -49,7 +50,7 @@ RUN yum remove -y python3 python3-devel &&  \
 RUN wget -q https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/Python-${PYTHON_VERSION}.tgz && \
     tar -xzf Python-${PYTHON_VERSION}.tgz && \
     cd Python-3.8.14 && \
-    ./configure --enable-optimizations --enable-shared && \
+    ./configure --enable-optimizations --enable-shared --prefix=${ADAFLOW_PREFIX} && \
     make install
 
 # install meson
