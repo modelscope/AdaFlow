@@ -27,6 +27,7 @@ class DuplexGstreamerPipeline(DelegateGStreamerPipeline):
         super().__init__(delegate)
         self._readable = ReadableGStreamerPipeline(delegate, max_buffers_size)
         self._writable = WritableGstreamerPipeline(delegate, width, height, fps, video_type, video_frmt)
+        delegate.set_pipeline_configure(self.configure_pipeline)
 
     def push(self,
              buffer: typ.Union[Gst.Buffer, np.ndarray],
@@ -40,17 +41,21 @@ class DuplexGstreamerPipeline(DelegateGStreamerPipeline):
     def pop(self, timeout: float = 0.1):
         return self._readable.pop(timeout=timeout)
 
+    def configure_pipeline(self, gst_pipeline: Gst.Pipeline):
+        self._readable.configure_pipeline(gst_pipeline)
+        self._writable.configure_pipeline(gst_pipeline)
+
 
 class DuplexGstreamerPipelineBuilder(GStreamerPipelineBuilder):
 
     def __init__(self) -> None:
         super().__init__()
-        self._max_buffers_size = None
+        self._max_buffers_size = 100
         self._width = None
         self._height = None
-        self._fps = None
-        self._video_type = None
-        self._video_frmt = None
+        self._fps = Fraction("30/1")
+        self._video_type = VideoType.VIDEO_RAW
+        self._video_frmt = GstVideo.VideoFormat.RGB
 
     def caps_filter(self,
                     width: int,

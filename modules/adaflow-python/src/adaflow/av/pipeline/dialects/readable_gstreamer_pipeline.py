@@ -43,7 +43,7 @@ class ReadableGStreamerPipeline(DelegateGStreamerPipeline):
         sample = sink.emit("pull-sample")
         if isinstance(sample, Gst.Sample):
             data_packet = self._extract_buffer(sample)
-            if data_packet is not None:
+            if data_packet:
                 self._queue.put(data_packet)
                 self._counter += 1
 
@@ -92,7 +92,7 @@ class ReadableGStreamerPipeline(DelegateGStreamerPipeline):
     def pop(self, timeout: float = 0.1) -> AVDataPacket:
         """ Pops AVDataPacket """
         if not self._sink:
-            raise RuntimeError("Sink {} is not initialized".format(Gst.AppSink))
+            raise RuntimeError("Sink is not initialized for pipeline %s" % self)
 
         buffer = None
         while (self.is_active or not self._queue.empty()) and not buffer:

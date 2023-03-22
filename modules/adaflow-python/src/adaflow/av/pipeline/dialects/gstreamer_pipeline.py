@@ -20,7 +20,7 @@ Gst.init(sys.argv if hasattr(sys, "argv") else None)
 
 
 class GStreamerPipeline(BasePipeline):
-    def __init__(self, pipeline_model: Dict[str, any], task_model: Dict[str, any], pipeline_configure: Callable[[BasePipeline], None] = None) -> None:
+    def __init__(self, pipeline_model: Dict[str, any], task_model: Dict[str, any], pipeline_configure: Callable[[Gst.Pipeline], None] = None) -> None:
         """
         Default constructor for a plain GStreamerPipeline
         Args:
@@ -55,7 +55,7 @@ class GStreamerPipeline(BasePipeline):
     def log(self) -> logging.Logger:
         return self._log
 
-    def set_pipeline_configure(self, pipeline_configure: Callable[[BasePipeline], None]):
+    def set_pipeline_configure(self, pipeline_configure: Callable[[Gst.Pipeline], None]):
         """
         setter for pipeline configuration function.
 

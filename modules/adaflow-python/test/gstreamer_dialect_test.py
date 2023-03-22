@@ -4,7 +4,6 @@ from adaflow.av.pipeline.dialects.gstreamer_pipeline import GStreamerPipeline
 from adaflow.av.pipeline.model.struct import Struct
 from jsonschema import ValidationError
 
-
 Pipelines = {
     "p1": {
         "name": "test1",
@@ -105,7 +104,7 @@ Pipelines = {
 }
 
 Tasks = {
-    "t1": {"sinks": [], "sources": [], "parameters":{}},
+    "t1": {"sinks": [], "sources": [], "parameters": {}},
     "t2": {
         "sinks": [],
         "sources": [],
@@ -163,39 +162,41 @@ class GStreamerDialectTest(unittest.TestCase):
         pipeline = GStreamerPipeline(Pipelines["p3"], Tasks["t2"])
         self.assertEqual(pipeline.parameters["input_location"], "input.mp4")
         self.assertEqual(pipeline.parameters["output_location"], "output.mp4")
-        self.assertEqual(pipeline.parameters["test_path"],  os.environ["PATH"])
+        self.assertEqual(pipeline.parameters["test_path"], os.environ["PATH"])
 
     def test_adaptive_source_and_sink(self):
         p1 = GStreamerPipeline(Pipelines["p4"], Tasks["t3"])
-        self.assertEqual(p1.command, "filesrc name=src1 ! decodebin ! videoscale ! videoconvert ! "
-                                               "video/x-raw,width=800,height=600,format=RGB ! x264enc ! mp4mux ! "
-                                               "filesink location=output.mp4")
+        self.assertEqual(p1.command, "filesrc name=src1 location=file.mp4 ! decodebin ! videoscale ! videoconvert ! "
+                                     "video/x-raw,width=800,height=600,format=RGB ! x264enc ! mp4mux ! filesink "
+                                     "location=output.mp4")
 
         p2 = GStreamerPipeline(Pipelines["p4"], Tasks["t4"])
         self.assertEqual(p2.command, "urisourcebin name=src1 uri=https://example.com/input.mp4 ! decodebin "
-                                               "! videoscale ! videoconvert ! video/x-raw,width=800,height=600,"
-                                               "format=RGB ! x264enc ! mp4mux ! filesink name=sink1 "
-                                               "location=output.mp4")
+                                     "! videoscale ! videoconvert ! video/x-raw,width=800,height=600,"
+                                     "format=RGB ! x264enc ! mp4mux ! filesink name=sink1 "
+                                     "location=output.mp4")
 
         p3 = GStreamerPipeline(Pipelines["p4"], Tasks["t5"])
         self.assertEqual(p3.command, "appsrc name=src1 ! videoscale ! videoconvert ! video/x-raw,width=800,"
-                                               "height=600,format=RGB ! x264enc ! mp4mux ! multifilesink name=sink1 "
-                                               "location=output.mp4")
+                                     "height=600,format=RGB ! x264enc ! mp4mux ! multifilesink name=sink1 "
+                                     "location=output.mp4")
 
         p4 = GStreamerPipeline(Pipelines["p4"], Tasks["t6"])
-        self.assertEqual(p4.command, "filesrc name=src1 ! decodebin ! videoscale ! videoconvert ! "
-                                               "video/x-raw,width=800,height=600,format=RGB ! x264enc ! mp4mux ! "
-                                               "appsink name=sink1")
+        self.assertEqual(p4.command,
+                         "filesrc name=src1 location=file.mp4 ! decodebin ! videoscale ! videoconvert ! video/x-raw,"
+                         "width=800,height=600,format=RGB ! x264enc ! mp4mux ! appsink name=sink1")
 
         p5 = GStreamerPipeline(Pipelines["p4"], Tasks["t7"])
-        self.assertEqual(p5.command, "filesrc name=src1 ! decodebin ! videoscale ! videoconvert ! "
-                                               "video/x-raw,width=800,height=600,format=RGB ! x264enc ! mp4mux ! "
-                                               "flow_metadata_sink name=sink1 location=file:///usr/local format=json")
+        self.assertEqual(p5.command,
+                         "filesrc name=src1 location=file.mp4 ! decodebin ! videoscale ! videoconvert ! video/x-raw,"
+                         "width=800,height=600,format=RGB ! x264enc ! mp4mux ! flow_metadata_sink name=sink1 "
+                         "location=file:///usr/local format=json")
 
         p6 = GStreamerPipeline(Pipelines["p4"], Tasks["t8"])
-        self.assertEqual(p6.command, "filesrc name=src1 ! decodebin ! videoscale ! videoconvert ! "
-                                               "video/x-raw,width=800,height=600,format=RGB ! x264enc ! mp4mux ! "
-                                               "flow_oss_upload_sink name=sink1 location=oss://my-bucket/path/file.mp4")
+        self.assertEqual(p6.command,
+                         "filesrc name=src1 location=file.mp4 ! decodebin ! videoscale ! videoconvert ! video/x-raw,"
+                         "width=800,height=600,format=RGB ! x264enc ! mp4mux ! flow_oss_upload_sink name=sink1 "
+                         "location=oss://my-bucket/path/file.mp4")
 
 
 if __name__ == '__main__':
