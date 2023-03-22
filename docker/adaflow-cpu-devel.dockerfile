@@ -1,4 +1,4 @@
-# docker buildx build --platform linux/amd64,linux/arm64 --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-cpu-devel:latest -f ./docker/adaflow-cpu-devel.dockerfile .
+# docker buildx build --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-cpu-devel:$(arch)-latest -f ./docker/adaflow-cpu-devel.dockerfile .
 
 ARG OS_VERSION=7
 FROM centos:centos${OS_VERSION}

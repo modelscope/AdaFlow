@@ -23,7 +23,7 @@ For linux-like environment, Docker images for development are available for test
 ### Install prebuilt GStreamer packages
 
 ```shell
-conda create -n adaflow-dev -c conda-forge adaflow-dev python=3.10 gstreamer gst-plugins-base gst-plugins-good gst-plugins-ugly gst-plugins-bad
+conda create -y -n adaflow-dev -c conda-forge adaflow-dev python=3.10 gstreamer gst-plugins-base gst-plugins-good gst-plugins-ugly gst-plugins-bad
 ```
 
 
@@ -38,8 +38,8 @@ conda activate adaflow-dev
 For `Apple sillicon` macs, `gst-plugins-bad` is not available on .  We have to build GStreamer from source.
 
 ```shell
-# if cmake is already installed, you can remove cmake in the following line
-conda create -y -n adaflow-dev -c conda-forge python=3.10 gobject-introspection pkg-config cmake
+# if cmake and pkg-configure are already installed, you can remove them from the following line
+conda create -y -n adaflow-dev -c conda-forge python=3.10 pkg-config cmake glib
 # install python toolchains
 pip3 install pycairo pygobject meson ninja
 # checkout source code

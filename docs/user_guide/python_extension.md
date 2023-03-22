@@ -1,5 +1,7 @@
-# user-defined Python functions
-## overview
+# Writing a Python Extension
+
+## Overview
+
 `flow_python_extension` element provides a callback to execute user-defined Python functions on every frame in the 
 gstreamer pipeline, and can be used for metadata conversion, inference post-processing, and other tasks. 
 This page shows how to implement your own function coded in Python.
