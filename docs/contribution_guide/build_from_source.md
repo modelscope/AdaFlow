@@ -39,14 +39,11 @@ For `Apple sillicon` macs, `gst-plugins-bad` is not available on .  We have to b
 Be aware that `brew` installed packages sometimes conflict with `conda` packages, so mix use of `conda` and `brew` is discouraged. 
 
 ```shell
-# if cmake and pkg-configure are already installed, you can remove them from the following line
-conda create -y -n adaflow-dev -c conda-forge python=3.10 pkg-config cmake nasm
+# install build tools and prebuilt runtime dependencies which may fail in GStreamer build
+conda create -y -n adaflow-dev -c conda-forge pkg-config cmake nasm pygobject glib gobject-introspection pango libxml2 harfbuzz python=3.10
 
 # activate the env
 conda activate adaflow-dev
-
-# install prebuilt runtime dependencies which may fail in GStreamer build
-conda install -y -c conda-forge pygobject glib gobject-introspection pango libxml2 harfbuzz
 
 # install python toolchains
 pip3 install meson ninja
