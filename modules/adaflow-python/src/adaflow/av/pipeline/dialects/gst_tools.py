@@ -2,12 +2,13 @@ import typing as typ
 from fractions import Fraction
 from enum import Enum
 from adaflow.av.data.av_data_packet import AVDataPacket
+import numpy as np
 import gi
 gi.require_version("Gst", "1.0")
 gi.require_version("GstApp", "1.0")
 gi.require_version("GstVideo", "1.0")
 from gi.repository import Gst, GLib, GObject, GstApp, GstVideo  # noqa:F401,F402
-import numpy as np
+
 
 
 def fraction_to_str(fraction: Fraction) -> str:

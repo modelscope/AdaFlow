@@ -11,7 +11,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 20)
 cmake_policy(SET CMP0126 NEW)
 cmake_policy(SET CMP0077 NEW)
-
+include(GNUInstallDirs)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
     if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")

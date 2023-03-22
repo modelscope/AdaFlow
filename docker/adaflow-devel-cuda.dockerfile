@@ -1,4 +1,4 @@
-# docker buildx build --push -t xst-hk-registry.cn-hongkong.cr.aliyuncs.com/adaflow/adaflow-runtime-cuda:latest -f ./docker/adaflow-devel-cuda.dockerfile .
+# docker buildx build --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-devel-cuda:latest -f ./docker/adaflow-devel-cuda.dockerfile .
 
 # baseimage: nvidia/cuda:11.1.1-cudnn8-devel-centos7
 ARG CUDA_VERSION=11.1.1

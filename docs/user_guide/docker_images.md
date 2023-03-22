@@ -1,11 +1,23 @@
 # Official Docker images
 
+## Nightly images 
+
+| REPO                                                                   | TAG           | Description                        |
+|------------------------------------------------------------------------|---------------|------------------------------------|
+| ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-cpu-devel    | arm64-latest  | Latest images for ARM64v8 platform |
+| ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-cpu-devel    | x86_64-latest | Latest images for X86-64 platform  |
+| ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-runtime-cuda | latest        | Latest images for X86-64 with CUDA |
+
+
+## Stable images
+
+### 2023-03-22
 
 * Docker Image
-    * ivpd-registry-vpc.cn-hangzhou.cr.aliyuncs.com/xstreamer-dev/xstreamer-devel-cuda:20230223_1
-    * ivpd-registry-vpc.cn-hangzhou.cr.aliyuncs.com/xstreamer-dev/xstreamer-runtime-cuda:20230323_1
+    * ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-cpu-devel:arm64-20230223_1
+    * ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-cpu-devel:x86_64-20230223_1
+    * ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-runtime-cuda:20230223_1
 * Updates
-    * Git revision: 896fd3b01508f362c4df3744e2c0b4946cdbf469
     * System packages
         * Cuda 11.1.1
         * TensorRT 7.2.3.4
