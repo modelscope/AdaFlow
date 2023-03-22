@@ -23,9 +23,8 @@ For linux-like environment, Docker images for development are available for test
 ### Install prebuilt GStreamer packages
 
 ```shell
-conda create -y -n adaflow-dev -c conda-forge adaflow-dev python=3.10 gstreamer gst-plugins-base gst-plugins-good gst-plugins-ugly gst-plugins-bad
+conda create -y -n adaflow-dev -c conda-forge python=3.10 gstreamer=1.20.3 gst-plugins-base=1.20.3 gst-plugins-good=1.20.3 gst-plugins-ugly=1.20.3 gst-plugins-bad=1.20.3
 ```
-
 
 Remember to activate newly created conda env:
 
@@ -35,17 +34,28 @@ conda activate adaflow-dev
 
 ### Build GStreamer from source
 
-For `Apple sillicon` macs, `gst-plugins-bad` is not available on .  We have to build GStreamer from source.
+For `Apple sillicon` macs, `gst-plugins-bad` is not available on .  We have to build GStreamer from source. 
+
+Be aware that `brew` installed packages sometimes conflict with `conda` packages, so mix use of `conda` and `brew` is discouraged. 
 
 ```shell
 # if cmake and pkg-configure are already installed, you can remove them from the following line
-conda create -y -n adaflow-dev -c conda-forge python=3.10 pkg-config cmake glib
+conda create -y -n adaflow-dev -c conda-forge python=3.10 pkg-config cmake nasm
+
+# activate the env
+conda activate adaflow-dev
+
+# install prebuilt runtime dependencies which may fail in GStreamer build
+conda install -y -c conda-forge pygobject glib gobject-introspection pango libxml2 harfbuzz
+
 # install python toolchains
-pip3 install pycairo pygobject meson ninja
+pip3 install meson ninja
+
 # checkout source code
-git clone -b 1.22.0 git@github.com:GStreamer/gstreamer.git && cd gstreamer
+git clone -b 1.20.3 git@github.com:GStreamer/gstreamer.git && cd gstreamer
+
 # configure, compile and install. (this will take a while)
-meson setup builddir -Dgpl=enabled -Dexamples=disabled -Dtests=disabled --prefix=$CONDA_PREFIX && \
+meson setup builddir -Dgpl=enabled -Dexamples=disabled -Dtests=disabled -Dges=disabled --prefix=$CONDA_PREFIX && \
     meson compile -C builddir && \
     meson install -C builddir
 ```
