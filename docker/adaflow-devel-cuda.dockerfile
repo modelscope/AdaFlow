@@ -7,10 +7,10 @@ FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-devel-centos${OS_VERSION}
 
 ARG GST_TAG=1.22.0
 ARG ADAFLOW_PREFIX
-ARG XST_BUILD_TYPE=Debug
+ARG ADAFLOW_BUILD_TYPE=Release
 ARG TRT_VERSION=7.2.3.4
 ARG PYTHON_VERSION=3.7.16
-ENV ADAFLOW_PREFIX=${ADAFLOW_PREFIX:-/xst-install}
+ENV ADAFLOW_PREFIX=${ADAFLOW_PREFIX:-/adaflow-install}
 ENV TRT_VERSION=${TRT_VERSION:-7.2.3.4}
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES video,compute,utility
@@ -29,6 +29,7 @@ ENV BASH_ENV="/etc/bashrc"
 ENV PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:/usr/lib64/pkgconfig:/usr/lib/pkgconfig:${ADAFLOW_PREFIX}/lib/pkgconfig:${ADAFLOW_PREFIX}/lib64/pkgconfig"
 ENV GI_TYPELIB_PATH="${ADAFLOW_PREFIX}/lib64/girepository-1.0"
 ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64:/usr/lib:/usr/lib64:${ADAFLOW_PREFIX}/lib:${ADAFLOW_PREFIX}/lib64:/usr/local/cuda-11.1/targets/x86_64-linux/lib/:/usr/local/cuda-11.2/targets/x86_64-linux/lib/:/usr/local/cuda-11.2"
+ENV LDFLAGS="$LDFLAGS -L$ADAFLOW_PREFIX/lib -L$ADAFLOW_PREFIX/lib64"
 ENV PATH=$PATH:${ADAFLOW_PREFIX}/bin
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES video,compute,utility
@@ -109,34 +110,16 @@ RUN wget -q https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/gstreamer-$
     meson compile -C builddir && \
     meson install -C builddir
 
-# build tensorflow lite
-#RUN wget -q https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/tensorflow-2.8.3.tar.gz && \
-#    tar -xzf tensorflow-2.8.3.tar.gz && \
-#    mkdir tflite_build && \
-#    cd tflite_build && \
-#    cmake -DCMAKE_INSTALL_PREFIX=$ADAFLOW_PREFIX \
-#    -DTFLITE_ENABLE_INSTALL=ON \
-#    -DBUILD_SHARED_LIBS=OFF \
-#    -DCMAKE_BUILD_TYPE=$XST_BUILD_TYPE \
-#    ../tensorflow-2.8.3/tensorflow/lite && \
-#    cmake --build . -j$(nproc) && \
-#    cp libtensorflow-lite.so $ADAFLOW_PREFIX/lib64 && \
-#    mkdir -p $ADAFLOW_PREFIX/include/tensorflow && \
-#    cp -r ../tensorflow-2.8.3/tensorflow/lite $ADAFLOW_PREFIX/include/tensorflow/ && \
-#    cp -r ../tensorflow-2.8.3/tensorflow/core $ADAFLOW_PREFIX/include/tensorflow/ && \
-#    cp -r ./flatbuffers/include/flatbuffers $ADAFLOW_PREFIX/include
-
 # install common python packages
 RUN pip3 install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html && \
     pip3 install opencv-python==4.6.0.66 scipy==1.7.3 tensorflow==2.11.0
 
 # build adaflow
 ADD . /build/adaflow/
-RUN --mount=type=cache,target=/build/adaflow/build cd xstreamer/build && \
+RUN --mount=type=cache,target=/build/adaflow/build cd adaflow/build && \
     cmake \
-        -DCMAKE_BUILD_TYPE=$XST_BUILD_TYPE \
+        -DCMAKE_BUILD_TYPE=$ADAFLOW_BUILD_TYPE \
         -DCMAKE_INSTALL_PREFIX=$ADAFLOW_PREFIX \
          .. && \
     make -j${nproc} && make install
 
-deve
