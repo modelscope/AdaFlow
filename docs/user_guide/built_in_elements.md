@@ -1,14 +1,13 @@
-# Built-in plugins {#plugin}
+# Built-in elements
 
 
-| **plugin**                         | **description**                                                              |    
-|:-----------------------------------|:-----------------------------------------------------------------------------|
-| flow_modelscope_pipeline           | run modelscope pipeline and produce result data.                             | 
-| flow_python_extension              | provides a callback to execute user-defined python functions on every frame. |  
-| flow_metadata_aggregate            | aggregates inference results from multiple pipeline branches.                |   
-| flow_video_aggregate               | aggregate or dis-aggregate the video frame.                                  |   
-| flow_metadata_sink                 | publishes the JSON metadata to files.                                        |  
-
+| **Plugin**               | **Description**                                                              |    
+|:-------------------------|:-----------------------------------------------------------------------------|
+| flow_modelscope_pipeline | run modelscope pipeline and produce result data.                             | 
+| flow_python_extension    | provides a callback to execute user-defined python functions on every frame. |  
+| flow_metadata_aggregate  | aggregates inference results from multiple pipeline branches.                |   
+| flow_video_aggregate     | aggregate or dis-aggregate the video frame.                                  |   
+| flow_metadata_sink       | publishes the JSON metadata to files.                                        |  
 
 
 # plugins 

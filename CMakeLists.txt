@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(flow VERSION 1.0.1)
+project(adaflow VERSION 1.0.1)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
@@ -56,4 +56,4 @@ set(FLOW_GST_BACKEND_CORE_DY_LIB_NAME flow_gst_plugin)
 
 
 # add sub-modules
-add_subdirectory(modules/flow-gst-plugin)
+add_subdirectory(modules/adaflow-gst-plugin)

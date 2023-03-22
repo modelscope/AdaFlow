@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(flow-gst-plugin VERSION 1.0.1)
+project(adaflow-gst-plugin VERSION 1.0.1)
 
 # search for external dependencies
 find_package(PkgConfig)
@@ -49,8 +49,8 @@ endforeach()
 set(FLOW_META_DY_LIB_TARGET_NAME flowmetadata)
 # add source files
 list(APPEND FLOW_META_SOURCE_FILES
-        flow-metadata/flow_json_meta.h
-        flow-metadata/flow_json_meta.cpp
+        metadata/flow_json_meta.h
+        metadata/flow_json_meta.cpp
         )
 add_library(${FLOW_META_DY_LIB_TARGET_NAME} SHARED ${FLOW_META_SOURCE_FILES})
 

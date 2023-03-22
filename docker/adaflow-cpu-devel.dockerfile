@@ -1,4 +1,4 @@
-# docker buildx build --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-cpu-devel-arm64:latest -f ./docker/adaflow-cpu-devel-arm64.dockerfile .
+# docker buildx build --platform linux/amd64,linux/arm64 --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-cpu-devel:latest -f ./docker/adaflow-cpu-devel.dockerfile .
 
 ARG OS_VERSION=7
 FROM centos:centos${OS_VERSION}
@@ -90,9 +90,10 @@ RUN wget -q --no-check-certificate https://viapi-test-bj.oss-cn-beijing.aliyuncs
     make install
 
 # build gst
-RUN wget -q https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/gstreamer-$GST_VERSION.tar.gz && \
+RUN --mount=type=cache,target=/build/gstreamer-${GST_VERSION}/builddir wget -q https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/gstreamer-$GST_VERSION.tar.gz && \
     tar -xzf gstreamer-$GST_VERSION.tar.gz && \
     cd gstreamer-${GST_VERSION} && \
     meson setup builddir -Dgpl=enabled -Dexamples=disabled -Dtests=disabled --prefix=$ADAFLOW_PREFIX && \
     meson compile -C builddir && \
     meson install -C builddir
+
