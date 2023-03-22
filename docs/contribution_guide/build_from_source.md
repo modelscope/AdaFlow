@@ -23,20 +23,33 @@ For linux-like environment, Docker images for development are available for test
 ### Install prebuilt GStreamer packages
 
 ```shell
-conda create -y -n adaflow-dev -c conda-forge python=3.10 gstreamer=1.20.3 gst-plugins-base=1.20.3 gst-plugins-good=1.20.3 gst-plugins-ugly=1.20.3 gst-plugins-bad=1.20.3 cairo gobject-introspection
+conda create -y -n adaflow-dev -c conda-forge python=3.10 gstreamer=1.20.3 gst-plugins-base=1.20.3 gst-plugins-good=1.20.3 gst-plugins-ugly=1.20.3 gst-python=1.20.3 gobject-introspection
 ```
+
+`gst-plugins-bad=1.20.3` is not available for Macs, but it can be included in the script above for Linux users. And be aware that `brew` installed packages sometimes conflict with `conda` packages, so mix use of `conda` and `brew` is discouraged.
+
 
 Remember to activate newly created conda env:
 
 ```shell
+# activate the created environment
 conda activate adaflow-dev
+
+# setup env vars for building
+export PKG_CONFIG_PATH=$CONDA_PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH
+export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
+export LDFLAGS="$LDFLAGS -L$CONDA_PREFIX/lib -Wl,-rpath,$CONDA_PREFIX/lib"
+export GI_TYPELIB_PATH="$CONDA_PREFIX/lib/girepository-1.0"
+export DYLD_LIBRARY_PATH=$CONDA_PREFIX/lib:$DYLD_LIBRARY_PATH
 ```
+
+For automatically setup of these associated env vars after `conda activate`, please refer to [Manage Environments](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#activating-an-environment) on the usage of `activate.d` and `deactivate.d`. 
+
 
 ### Build GStreamer from source
 
-For `Apple sillicon` macs, `gst-plugins-bad` is not available on .  We have to build GStreamer from source. 
+As some pre-built packages are missing for `Apple-sillcon` platform,  we have to build GStreamer from source. 
 
-Be aware that `brew` installed packages sometimes conflict with `conda` packages, so mix use of `conda` and `brew` is discouraged. 
 
 ```shell
 # install build tools and prebuilt runtime dependencies which may fail in GStreamer build
