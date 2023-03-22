@@ -23,7 +23,7 @@ For linux-like environment, Docker images for development are available for test
 ### Install prebuilt GStreamer packages
 
 ```shell
-conda create -y -n adaflow-dev -c conda-forge python=3.10 gstreamer=1.20.3 gst-plugins-base=1.20.3 gst-plugins-good=1.20.3 gst-plugins-ugly=1.20.3 gst-plugins-bad=1.20.3
+conda create -y -n adaflow-dev -c conda-forge python=3.10 gstreamer=1.20.3 gst-plugins-base=1.20.3 gst-plugins-good=1.20.3 gst-plugins-ugly=1.20.3 gst-plugins-bad=1.20.3 cairo gobject-introspection
 ```
 
 Remember to activate newly created conda env:
@@ -79,5 +79,6 @@ Assuming you are on project root, you can install `adaflow-python` package as an
 
 ```shell
 cd modules/adaflow-python
+pip install -r requirements.txt
 pip install -e .
 ```
