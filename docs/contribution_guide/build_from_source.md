@@ -23,7 +23,7 @@ For linux-like environment, Docker images for development are available for test
 ### Install prebuilt GStreamer packages
 
 ```shell
-conda create -y -n adaflow-dev -c conda-forge python=3.10 gstreamer=1.20.3 gst-plugins-base=1.20.3 gst-plugins-good=1.20.3 gst-plugins-ugly=1.20.3 gst-python=1.20.3 gobject-introspection
+conda create -y -n adaflow-dev -c conda-forge python=3.10 gstreamer=1.22.0 gst-plugins-base=1.22.0 gst-plugins-good=1.22.0 gst-plugins-ugly=1.22.0 gst-python=1.22.0 gobject-introspection
 ```
 
 `gst-plugins-bad=1.20.3` is not available for Macs, but it can be included in the script above for Linux users. And be aware that `brew` installed packages sometimes conflict with `conda` packages, so mix use of `conda` and `brew` is discouraged.

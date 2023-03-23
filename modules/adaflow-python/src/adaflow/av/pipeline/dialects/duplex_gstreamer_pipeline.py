@@ -1,6 +1,6 @@
 from adaflow.av.pipeline.dialects.gstreamer_pipeline import GStreamerPipeline, GStreamerPipelineBuilder
 from .delegate_gstreamer_pipeline import DelegateGStreamerPipeline
-import gi
+
 import typing as typ
 from .readable_gstreamer_pipeline import ReadableGStreamerPipeline
 from .writable_gstreamer_pipeline import WritableGstreamerPipeline
@@ -8,10 +8,11 @@ from .gst_tools import VideoType, gst_video_format_plugin, to_gst_buffer
 from fractions import Fraction
 import numpy as np
 
+import gi
 gi.require_version("Gst", "1.0")
 gi.require_version("GstApp", "1.0")
 gi.require_version("GstVideo", "1.0")
-from gi.repository import Gst, GLib, GObject, GstApp, GstVideo
+from gi.repository import Gst, GLib, GObject, GstApp, GstVideo # noqa:F401,F402
 
 
 class DuplexGstreamerPipeline(DelegateGStreamerPipeline):
