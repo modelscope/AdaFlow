@@ -42,6 +42,9 @@ class DuplexGstreamerPipeline(DelegateGStreamerPipeline):
     def pop(self, timeout: float = 0.1):
         return self._readable.pop(timeout=timeout)
 
+    def end(self):
+        self._writable.end()
+
     def configure_pipeline(self, gst_pipeline: Gst.Pipeline):
         self._readable.configure_pipeline(gst_pipeline)
         self._writable.configure_pipeline(gst_pipeline)

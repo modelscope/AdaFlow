@@ -69,6 +69,14 @@ class WritableGstreamerPipeline(DelegateGStreamerPipeline):
         # https://lazka.github.io/pgi-docs/GstApp-1.0/classes/AppSrc.html#GstApp.AppSrc.signals.push_buffer
         self._src.emit("push-buffer", gst_buffer)
 
+    def end(self):
+        """
+        send EOS to appsrc element, which popagates to downstreams
+        :return:
+        """
+        self.log.info("send EOS")
+        self._src.emit("end-of-stream")
+
     def configure_pipeline(self, gst_pipeline: Gst.Pipeline):
         # find src element
         appsrcs = self.delegate.get_elements_by_class(GstApp.AppSrc)

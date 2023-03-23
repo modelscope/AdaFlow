@@ -1,11 +1,14 @@
 import logging
+import threading
 import time
 import unittest
 
 import numpy as np
 
 from adaflow.av.pipeline.pipeline_factory import PipelineFactory
+from adaflow.av.data.av_data_packet import AVDataPacket
 from adaflow.av.pipeline.dialects.gst_context import GstContext
+from adaflow.av.pipeline.dialects.duplex_gstreamer_pipeline import DuplexGstreamerPipeline
 from pathlib import Path
 
 import gi
@@ -127,17 +130,32 @@ class CoreVideoPipelinesTest(unittest.TestCase):
             }
         }).caps_filter(800, 600)
 
-        with builder.build() as p:
+
+        frames = []
+
+        def produce_frames(p: DuplexGstreamerPipeline) -> None:
             for _ in range(num_buffers):
                 buffer = np.random.randint(low=0, high=255, size=(
                     height, width, channels), dtype=np.uint8)
                 p.push(buffer)
-            frames = []
+            p.end()
+
+        def consume_frames(p: DuplexGstreamerPipeline) -> [AVDataPacket]:
             while not p.is_done:
                 data = p.pop()
                 if data is not None:
                     frames.append(data)
-            self.assertEqual(len(frames), num_buffers)
+
+        with GstContext():
+            with builder.build() as p:
+                consumer = threading.Thread(target=consume_frames, args=(p,))
+                producer = threading.Thread(target=produce_frames, args=(p,))
+                consumer.start()
+                producer.start()
+                producer.join()
+                consumer.join()
+                logging.info("found %s frames after join", len(frames))
+                self.assertEqual(len(frames), num_buffers)
 
 
 if __name__ == '__main__':
