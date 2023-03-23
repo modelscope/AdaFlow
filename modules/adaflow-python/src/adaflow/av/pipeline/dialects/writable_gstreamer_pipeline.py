@@ -3,14 +3,15 @@ from .gstreamer_pipeline import GStreamerPipeline, GStreamerPipelineBuilder
 from adaflow.av.data.av_data_packet import AVDataPacket
 import typing as typ
 from fractions import Fraction
-import gi
+
 import numpy as np
 from .gst_tools import VideoType, gst_video_format_plugin, to_gst_buffer
+
+import gi
 gi.require_version("Gst", "1.0")
 gi.require_version("GstApp", "1.0")
 gi.require_version("GstVideo", "1.0")
-from gi.repository import Gst, GLib, GObject, GstApp, GstVideo
-
+from gi.repository import Gst, GLib, GObject, GstApp, GstVideo  # noqa:F401,F402
 
 class WritableGstreamerPipeline(DelegateGStreamerPipeline):
 

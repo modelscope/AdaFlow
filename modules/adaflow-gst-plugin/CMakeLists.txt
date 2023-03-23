@@ -46,8 +46,13 @@ foreach(TARGET_NAME ${FLOW_GST_BACKEND_TARGET_NAMES})
 
 endforeach()
 
+
+# install gst plugins written in python
+set(PYTHON_PLUGIN_SRCS python/flow_metadata_sink.py python/flow_modelscope_pipeline.py python/flow_python_extension.py python/flow_python_metadata_aggregate.py)
+install(FILES ${PYTHON_PLUGIN_SRCS} DESTINATION ${CMAKE_INSTALL_LIBDIR}/gstreamer-1.0/python)
+
+
 set(FLOW_META_DY_LIB_TARGET_NAME flowmetadata)
-# add source files
 list(APPEND FLOW_META_SOURCE_FILES
         metadata/flow_json_meta.h
         metadata/flow_json_meta.cpp

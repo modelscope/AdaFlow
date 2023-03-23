@@ -12,9 +12,10 @@ from adaflow.av.pipeline.dialects.duplex_gstreamer_pipeline import DuplexGstream
 from pathlib import Path
 
 import gi
-gi.require_version('Gst', '1.0')
-
-from gi.repository import Gst
+gi.require_version("Gst", "1.0")
+gi.require_version("GstApp", "1.0")
+gi.require_version("GstVideo", "1.0")
+from gi.repository import Gst, GLib, GObject, GstApp, GstVideo  # noqa:F401,F402
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -129,7 +130,6 @@ class CoreVideoPipelinesTest(unittest.TestCase):
                 "sync": "false"
             }
         }).caps_filter(800, 600)
-
 
         frames = []
 
