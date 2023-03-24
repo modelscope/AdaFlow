@@ -29,7 +29,7 @@ option 2: `--task` dict of task-description command line
 build and run real detector pipeline in the detection_repo which named real_detector, the detection results visualization
 on the video
 
-![detection_repo](images/pipeline_repo.jpg)  
+![detection_repo](./images/pipeline_repo.jpg)  
 
 - run with `--task_path`
 ```bash
