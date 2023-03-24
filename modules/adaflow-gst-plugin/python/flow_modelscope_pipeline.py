@@ -7,7 +7,7 @@ from modelscope.outputs import OutputKeys
 from adaflow.av.utils import gst_video_format_from_string, get_num_channels
 from adaflow.av.metadata.flow_json_meta import flow_meta_add_key
 from gi.repository import Gst, GObject, GstBase, GstVideo
-from absl import logging
+import logging
 import numpy as np
 
 import gi
@@ -91,6 +91,7 @@ class FlowMassModelPlugin(Gst.Element):
         self.add_pad(self.sinkpad)
         self.srcpad = Gst.Pad.new_from_template(self._srcpadtemplate, 'src')
         self.add_pad(self.srcpad)
+        self.maas_pipeline = None
 
 
     def do_get_property(self, prop: GObject.GParamSpec):
@@ -112,8 +113,6 @@ class FlowMassModelPlugin(Gst.Element):
             self.task = value
         elif prop.name == 'id':
             self.id = value
-            ##init model
-            self.maas_pipeline = pipeline(self.task, model=self.id)
         elif prop.name == 'input':
             self.input = value
         elif prop.name == 'meta-key':
@@ -122,6 +121,11 @@ class FlowMassModelPlugin(Gst.Element):
             self.add_meta = value
         else:
             raise AttributeError('unknown property %s' % prop.name)
+
+        if self.id and self.task:
+            self.maas_pipeline = pipeline(self.task, model=self.id)
+            print("mass_pipeline set ?")
+            print(self.maas_pipeline)
 
     def eventfunc(self, pad, parent, event):
         # #check pars
