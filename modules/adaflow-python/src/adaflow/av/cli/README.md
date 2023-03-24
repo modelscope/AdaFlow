@@ -1,7 +1,7 @@
 # AdaFlow Command Line Tool
 ## introduction
 ### run with exist Pipeline repositroy
-![detection_repo](pipeline_repo.jpg)
+![detection_repo](../../../../../../docs/user_guide/pipeline_repo.jpg)
 ```bash
 python cli.py launch detection_repo break_in --task_path ./detection_repo/task/break_in/task.json 
 ```

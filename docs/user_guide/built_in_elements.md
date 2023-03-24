@@ -28,14 +28,22 @@ gets the model id with ```id``` and attaches results to the GstBuffer with keywo
 ### Properties
 - task: modelscope model task, support list of task types (string)
 - id: modlescope modle id
+- add-meta: whether to attach metadata to the GstBuffer(Default, True)
 - meta-key: the keyword of the results which attach to the GstBuffer
 - input: image or video input path
 
 ### Usage Examples
-- sample: [passvitb-image-reid-person](https://modelscope.cn/models/damo/cv_passvitb_image-reid-person_market/summary)
+- sample1: [passvitb-image-reid-person](https://modelscope.cn/models/damo/cv_passvitb_image-reid-person_market/summary)
 
 ```bash
 ... ! flow_modelscope_pipeline task=image-reid-person id = damo/cv_passvitb_image-reid-person_market meta-key=modelout ! ...
+```
+
+- sample2: low level CV tasks, such as super resolution, color enhance, image cartoon which are pixel process and can 
+write results to buffer pixel, set ```add-meta=False``` 
+
+```bash
+... ! flow_modelscope_pipeline task=image-super-resolution id = damo/cv_rrdb_image-super-resolution add-meta=False ! ...
 ```
 
 

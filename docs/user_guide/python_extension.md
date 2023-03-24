@@ -1,9 +1,9 @@
 # Writing a Python Extension
 
-## Overview
+## overview
 
 `flow_python_extension` element provides a callback to execute user-defined Python functions on every frame in the 
-gstreamer pipeline, and can be used for metadata conversion, inference post-processing, and other tasks. 
+adaflow pipeline, and can be used for metadata conversion, inference post-processing, and other tasks. 
 This page shows how to implement your own function coded in Python.
 
 ## samples
@@ -15,7 +15,7 @@ and then use `flow_python_extension` as port can achieve.
 #### write a python function
 
 ```bash
-from adaflow.utils.video_frame import AVDataPacket
+from adaflow.av.data.av_data_packet import AVDataPacket
 ```
 import adaflow api `AVDataPacket`, this class represents video frames - working with metadata which
 belong to this video frame (image). Metadata describes inference results on VideoFrame level.

@@ -79,8 +79,9 @@ Assuming you are on project root and `adaflow-dev` env is activated, you can mak
 mkdir build && cd build
 cmake \
       -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
-      -DCMAKE_BUILD_TYPE=Debug
-
+      -DCMAKE_BUILD_TYPE=Debug \
+      ..
+      
 # make and install
 make -j${nproc}
 make install
