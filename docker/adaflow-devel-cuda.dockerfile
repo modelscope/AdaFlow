@@ -114,6 +114,9 @@ RUN wget -q https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/gstreamer-$
 RUN pip3 install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html && \
     pip3 install opencv-python==4.6.0.66 scipy==1.7.3 tensorflow==2.11.0
 
+# install modelscope
+RUN pip3 install "modelscope[cv]" -f https://modelscope.oss-cn-beijing.aliyuncs.com/releases/repo.html
+
 # build adaflow
 ADD . /build/adaflow/
 RUN --mount=type=cache,target=/build/adaflow/build cd adaflow/build && \
