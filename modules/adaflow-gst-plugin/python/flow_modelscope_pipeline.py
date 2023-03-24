@@ -113,6 +113,10 @@ class FlowMassModelPlugin(Gst.Element):
             self.task = value
         elif prop.name == 'id':
             self.id = value
+            ##init model
+            if self.id and self.task:
+                self.maas_pipeline = pipeline(self.task, model=self.id)
+
         elif prop.name == 'input':
             self.input = value
         elif prop.name == 'meta-key':
@@ -121,11 +125,6 @@ class FlowMassModelPlugin(Gst.Element):
             self.add_meta = value
         else:
             raise AttributeError('unknown property %s' % prop.name)
-
-        if self.id and self.task:
-            self.maas_pipeline = pipeline(self.task, model=self.id)
-            print("mass_pipeline set ?")
-            print(self.maas_pipeline)
 
     def eventfunc(self, pad, parent, event):
         # #check pars
