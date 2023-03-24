@@ -1,5 +1,14 @@
 # AdaFlow Command Line Tool
 
+## Install 
+assuming you are on project root, you can install AdaFlow Command Line Tool(adaflow)
+by setuptools
+
+```bash
+cd modules/adaflow-python/src/adaflow
+python setup.py install
+```
+
 ## adaflow launch
 ### Name
 `adaflow launch` - build and run an adaflow pipeline
@@ -52,5 +61,5 @@ adaflow init [repo_name] [pipeline]
 ### Sample
 init and create standard pipeline repository named `test_repo` include pipline `testpipeline`
 ```bash
-adaflow init test_repo --task testpipeline
+adaflow init test_repo --pipeline testpipeline
 ```
