@@ -161,11 +161,11 @@ This tutorial gives a list of handy GStreamer elements that are worth knowing. M
 | [decodebin](#decodebin)       | auto-magically constructs a decoding pipeline using available decoders and demuxers via auto-plugging. |   
 | [videoscale](#videoscale)     | resizes video frames.                                                                                  |   
 | [video/x-raw](#video/x-raw)   | specify explicitly what type of data flows between elements in a gstreamer pipeline.                   |  
- | [tee](#tee)                   | splits data to multiple pads.                                                                          |
+| [tee](#tee)                   | splits data to multiple pads.                                                                          |
 | [queue](#queue)               | creates new threads of execution for some parts of the pipeline.                                       |  
 | [jpegenc](#jpegenc)           | encodes jpeg images.                                                                                   |
 | [x264enc](#x264enc)           | encodes raw video into H264 compressed data.                                                           |
-| [mp4mux](#mp4mux)             | merges streams (audio and video) into ISO MPEG-4 (.mp4) files.                                                           |
+| [mp4mux](#mp4mux)             | merges streams (audio and video) into ISO MPEG-4 (.mp4) files.                                         |
 | [filesink](#filesink)         | writes incoming data to a file in the local file system.                                               |
 | [fakesink](#fakesink)         | simply swallows any data fed to it.                                                                    |
 
