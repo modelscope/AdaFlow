@@ -10,7 +10,10 @@
       "flow_modelscope_pipeline task=image-object-detection id = damo/cv_cspnet_image-object-detection_yolox meta-key=detection",
       "flow_python_extension input=./detection_repo/resource/config/real_detector.yaml module=./detection_repo/extension/real_detector_vis.py class= RealDetectorPost function= postprocess",
       "videoconvert",
-      "jpegenc",
+      "videoscale",
+      "video/x-raw,format=I420",
+      "x264enc qp-max=15",
+      "mp4mux",
       "{{F.sink('sink1')}}"
     ]
   }

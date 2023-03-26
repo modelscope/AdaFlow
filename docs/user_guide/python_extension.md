@@ -1,18 +1,18 @@
 # Writing a Python Extension
 
-## overview
+## Overview
 
 `flow_python_extension` element provides a callback to execute user-defined Python functions on every frame in the 
-adaflow pipeline, and can be used for metadata conversion, inference post-processing, and other tasks. 
-This page shows how to implement your own function coded in Python.
+adaflow pipeline, and can be used for metadata conversion, inference post-processing, and other tasks.  
+You can support a new metadata-process or a new post-processing after AI models inference by writing a python extension.
 
-## samples
-### detection post-process
-Use AdaFlow pipeline run ModelScope [realtime detector](https://modelscope.cn/models/damo/cv_cspnet_image-object-detection_yolox/summary) 
-and get detection results(such box,labels,scores), then want to `visualize the results`. Just need to write `a python function` 
-and then use `flow_python_extension` as port can achieve.
+## Quick guide on writing a python extension
+You can start writing a python extension easily by using code-template. The following is how to 
+start writing a python extension with the template for `visualize the results` after 
+ModelScope [realtime detector](https://modelscope.cn/models/damo/cv_cspnet_image-object-detection_yolox/summary). 
+In this example, the target python extension name is `real_detector_vis.py`.
 
-#### write a python function
+### fill a python function
 
 ```bash
 from adaflow.av.data.av_data_packet import AVDataPacket
@@ -26,7 +26,7 @@ as image width, height, channels, strides, etc.).
 import cv2
 ...
 ```
-import some user-defined process related 3rd libraries.
+import libraries for additional dependencies of your own functions.
 
 ```bash
 class RealDetectorPost:
@@ -47,7 +47,7 @@ color:
 ```bash
 for frame in frames:
 ```
-per frame peocess.
+per frame process.
 
 ```bash
 self.meta_data = frame.get_json_meta('detection')
@@ -56,7 +56,8 @@ scores = self.meta_data['scores']
 boxes = self.meta_data['boxes']
 labels = self.meta_data['labels']
 ```
-get inference results and frame information.
+get inference results and frame information, and the meta name `detection` is set by user in the previous plugin
+`flow_modelscope_pipeline` as key `meta-key=detection`.
 
 ```bash
 for idx in range(len(scores)):
@@ -69,13 +70,16 @@ for idx in range(len(scores)):
     cv2.putText(self.image, score, (int(x1), int(y2) + 10),
     cv2.FONT_HERSHEY_PLAIN, 1, self.color)
 ```
-user-defined functions：inference results show on the image.
+user-defined functions：inference results show on the image, draw rectangles and put labels.
 
-> **NOTE**: source code in the modules/flow-python/adaflow-python/test/detection_repo/extension/real_detector_vis.py
+> **NOTE**: source code in the modules/adaflow-python/test/detection_repo/extension/real_detector_vis.py
 
-#### use port flow_python_extension
+### use port flow_python_extension
+run your python extension by using element `flow_python_extension` as port, the specific calls are as follows:
 ```bash
 ... ! flow_python_extension input=real_detector.yaml module=real_detector_vis.py class= RealDetectorPost function = postprocess ! ...
 ```
+> **NOTE**: source code in the  modules/adaflow-python/test/detection_repo/pipelines/real_detector/pipeline.json , and flow_python_extension supports features see in [flow_python_extension](built_in_elements.md)
+
 
 

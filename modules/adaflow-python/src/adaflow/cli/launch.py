@@ -6,7 +6,7 @@ import json
 
 from adaflow.av.pipeline.pipeline_factory import PipelineFactory
 from adaflow.av.pipeline.dialects.gst_context import GstContext
-from base import CLICommand
+from .base import CLICommand
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -41,10 +41,10 @@ class LaunchCMD(CLICommand):
         parser.set_defaults(func=subparser_func)
 
     def pipeline_build(self):
-        
+
         factory = PipelineFactory.create(Path(self.args.repo_path))
         builder = factory.pipeline(self.args.pipeline_name)
-        
+
         if self.args.task_path is not None or self.args.task is not None:
 
             if self.args.task_path is not None:
@@ -56,13 +56,13 @@ class LaunchCMD(CLICommand):
             elif self.args.task is not None:
 
                 task_content = json.loads(self.args.task)
-        
+
             ##add sources
             if "sources" in task_content:
                 sources_sinks = task_content["sources"]
                 for i in range(len(sources_sinks)):
                     builder.source(sources_sinks[i])
-            
+
             ##add sinks
             if "sinks" in task_content:
                 task_sinks = task_content["sinks"]
@@ -81,4 +81,3 @@ class LaunchCMD(CLICommand):
 
     def execute(self):
         self.pipeline_build()
-

@@ -1,7 +1,7 @@
 import argparse
 
-from launch import LaunchCMD
-from init import InitCMD
+from .launch import LaunchCMD
+from .init import InitCMD
 
 
 def run_cmd():

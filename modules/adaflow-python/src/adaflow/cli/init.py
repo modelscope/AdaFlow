@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 import logging
 import os
 
-from base import CLICommand
+from .base import CLICommand
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -24,10 +24,10 @@ class InitCMD(CLICommand):
         parser = parsers.add_parser(InitCMD.name)
         parser.add_argument('repo_name', type=str, help='Name of the repo to init.')
         parser.add_argument(
-            '--task',
+            '--pipeline',
             type=str,
-            default=None,
-            help='Name of the task to init.')
+            default='test',
+            help='Name of the pipeline to init.')
         parser.set_defaults(func=subparser_func)
 
     def init_repo(self):
@@ -41,12 +41,12 @@ class InitCMD(CLICommand):
             os.makedirs(os.path.join(self.args.repo_name, "task"))
             os.makedirs(os.path.join(self.args.repo_name, "extension"))
             os.makedirs(os.path.join(self.args.repo_name, "resource"))
-            logging.info("sucessful creat %s"%self.args.repo_name)
+            logging.info("successfully create %s"%self.args.repo_name)
 
-            if self.args.task is not None:
-                os.makedirs(os.path.join(self.args.repo_name, "pipelines", self.args.task))
-                os.makedirs(os.path.join(self.args.repo_name, "task", self.args.task))
-                logging.info("sucessful creat %s"%self.args.task)
+            if self.args.pipeline is not None:
+                os.makedirs(os.path.join(self.args.repo_name, "pipelines", self.args.pipeline))
+                os.makedirs(os.path.join(self.args.repo_name, "task", self.args.pipeline))
+                logging.info("successfully create %s"%self.args.pipeline)
 
 
     def execute(self):
