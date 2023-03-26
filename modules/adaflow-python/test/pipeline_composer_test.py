@@ -1,7 +1,7 @@
 import logging
 import unittest
 
-from adaflow.av.pipeline import PipelineComposer
+from adaflow.av.pipeline.pipeline_composer import PipelineComposer
 import networkx as nx
 import matplotlib.pyplot as plt
 

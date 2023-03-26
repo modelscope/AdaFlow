@@ -25,8 +25,8 @@
 * Updates
     * System packages
       * Cuda only packages
-          * Cuda 11.1.1
-          * TensorRT 7.2.3.4
+          * Cuda 11.6.1
+          * TensorRT 8.4.3.1
           * cudnn8
       * GStreamer 1.22.0
       * Python 3.7.16
@@ -36,9 +36,9 @@
         * meson 1.0.0
         * ninja 1.10.2
     * Python PIP packages
-        * torch 1.9.0
-        * torchvision 0.10.0
-        * torchaudio 0.9.0
+        * torch 1.13.1
+        * torchvision 1.13.1
+        * torchaudio 1.13.1
         * opencv-python 4.6.0.66
         * scipy 1.7.3
         * tensorflow 2.11.0

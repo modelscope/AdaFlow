@@ -5,7 +5,7 @@ ARG CUDA_VERSION=11.6.2
 ARG OS_VERSION=7
 FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-devel-centos${OS_VERSION}
 
-ARG GST_TAG=1.22.0
+ARG GST_TAG=1.22.1
 ARG ADAFLOW_PREFIX
 ARG ADAFLOW_BUILD_TYPE=Release
 ARG TRT_VERSION
@@ -68,7 +68,7 @@ RUN wget -q https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/Python-${PY
     make install
 
 # install meson
-RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple meson
+RUN --mount=type=cache,target=/root/.cache/pip pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple meson
 
 # update glib
 RUN wget -q https://download.gnome.org/sources/glib/2.75/glib-2.75.2.tar.xz && \
@@ -93,9 +93,9 @@ RUN wget -q https://download.gnome.org/sources/gobject-introspection/1.75/gobjec
     meson install -C builddir
 
 # instlal extra python packages
-RUN pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple pycairo pygobject
+RUN --mount=type=cache,target=/root/.cache/pip pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple pycairo pygobject
 
-# install nasm for x264
+## install nasm for x264
 RUN wget -q --no-check-certificate https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/nasm-2.15.05.tar.gz && \
     tar -zxf nasm-2.15.05.tar.gz && \
     cd nasm-2.15.05 && \
@@ -107,30 +107,35 @@ RUN wget -q --no-check-certificate https://viapi-test-bj.oss-cn-beijing.aliyuncs
 RUN wget -q https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/gstreamer-$GST_TAG.tar.gz && \
     tar -xzf gstreamer-$GST_TAG.tar.gz && \
     cd gstreamer-${GST_TAG} && \
-    meson setup builddir -Dgpl=enabled -Dexamples=disabled -Dtests=disabled --prefix=$ADAFLOW_PREFIX && \
+    meson setup builddir -Dgpl=enabled -Dexamples=disabled -Dtests=disabled -Dges=disabled --prefix=$ADAFLOW_PREFIX && \
     meson compile -C builddir && \
     meson install -C builddir
 
-
-# hotfix for tf-trt: https://github.com/tensorflow/tensorflow/issues/57679
-RUN pip3 install nvidia-pyindex && pip3 install nvidia-tensorrt==7.2.3.4
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ADAFLOW_PREFIX}/lib/python3.7/site-packages/tensorrt
-
-# install common python packages
-RUN pip3 install torch==1.13.1+cu116 torchvision==0.14.1+cu116 torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cu116 && \
-    pip3 install opencv-python==4.6.0.66 scipy==1.7.3 tensorflow==2.11.0
-
-# install modelscope
-RUN pip3 install "modelscope[cv]" -f https://modelscope.oss-cn-beijing.aliyuncs.com/releases/repo.html
-
-# build adaflow
-ADD . /build/adaflow/
-RUN rm -rf adaflow/build && mkdir -p adaflow/build && cd adaflow/build && \
-    cmake \
-        -DCMAKE_BUILD_TYPE=$ADAFLOW_BUILD_TYPE \
-        -DCMAKE_INSTALL_PREFIX=$ADAFLOW_PREFIX \
-         .. && \
-    make -j${nproc} && make install && \
-    cd .. && cd modules/adaflow-python && \
-    pip3 install .
-
+#
+## hotfix for tf-trt: https://github.com/tensorflow/tensorflow/issues/57679
+#RUN --mount=type=cache,target=/root/.cache/pip pip3 install nvidia-pyindex && pip3 install nvidia-tensorrt==7.2.3.4
+#ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ADAFLOW_PREFIX}/lib/python3.7/site-packages/tensorrt
+#
+## install common python packages
+#RUN --mount=type=cache,target=/root/.cache/pip pip3 install torch==1.13.1+cu116 torchvision==0.14.1+cu116 torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cu116 && \
+#    pip3 install opencv-python==4.6.0.66 scipy==1.7.3 tensorflow==2.11.0
+#
+## install modelscope
+#RUN --mount=type=cache,target=/root/.cache/pip pip3 install "modelscope[cv]" -f https://modelscope.oss-cn-beijing.aliyuncs.com/releases/repo.html
+#
+#RUN --mount=type=cache,target=/root/.cache/pip python3 -m pip install --upgrade pip setuptools && \
+#     pip install -U openmim &&  \
+#     mim install mmcv-full
+#
+## build adaflow
+#ADD . /build/adaflow/
+#RUN rm -rf adaflow/build && mkdir -p adaflow/build && cd adaflow/build && \
+#    cmake \
+#        -DCMAKE_BUILD_TYPE=$ADAFLOW_BUILD_TYPE \
+#        -DCMAKE_INSTALL_PREFIX=$ADAFLOW_PREFIX \
+#         .. && \
+#    make -j${nproc} && make install && \
+#    cd .. && cd modules/adaflow-python && \
+#    pip3 install .
+#
+#CMD python3 -m unittest discover -s /build/adaflow/modules/adaflow-python/test/ -p *_test.py
