@@ -96,3 +96,19 @@ cd modules/adaflow-python
 pip install -r requirements.txt
 pip install -e .
 ```
+
+## Run integration tests
+
+Default `CMD` for `devel` images is assigned to run python unittest.  So a plain `docker run` will boostrap automation tests.
+
+For CPU-only images:
+
+```shell
+docker run -it --rm ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-devel-cpu:$(arch)-latest
+```
+
+For CUDA-enabled images:
+
+```shell
+docker run -it --rm ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-devel-cuda:latest
+```

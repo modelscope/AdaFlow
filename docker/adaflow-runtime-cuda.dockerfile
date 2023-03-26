@@ -27,13 +27,13 @@ RUN yum remove -y python3 python3-devel &&  \
     yum clean all && \
     rm -rf /var/cache/yum/*
 
-# Install TensorRT 7.2
-RUN wget -q https://viapi-test-bj.oss-accelerate.aliyuncs.com/github/nv-tensorrt-repo-rhel7-cuda11.1-trt7.2.3.4-ga-20210226-1-1.x86_64.rpm && \
-    rpm -Uvh nv-tensorrt-repo-rhel7-cuda11.1-trt7.2.3.4-ga-20210226-1-1.x86_64.rpm && \
-    yum install -y libnvinfer7 libnvparsers7 libnvonnxparsers7 libnvinfer-plugin7 && \
-    rm -rf nv-tensorrt-repo-rhel7-cuda11.1-trt7.2.3.4-ga-20210226-1-1.x86_64.rpm && \
-    yum clean all && \
-    rm -rf /var/cache/yum/*
+# Install TensorRT
+ENV TRT_VERSION=8.4.3.1
+ENV CUDA_VERSION=11.6.2
+RUN v="${TRT_VERSION%.*}-1.cuda${CUDA_VERSION%.*}" &&\
+    yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-rhel7.repo &&\
+    yum -y install libnvinfer8-${v} libnvparsers8-${v} libnvonnxparsers8-${v} libnvinfer-plugin8-${v} \
+        libnvinfer-devel-${v} libnvparsers-devel-${v} libnvonnxparsers-devel-${v} libnvinfer-plugin-devel-${v}
 
 # copy python3, gst and deps, xst and deps
 COPY --from=builder $ADAFLOW_PREFIX $ADAFLOW_PREFIX

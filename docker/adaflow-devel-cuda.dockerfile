@@ -118,7 +118,8 @@ RUN wget -q https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/gstreamer-$
     cd gstreamer-* && \
     meson setup builddir -Dgpl=enabled -Dexamples=disabled -Dtests=disabled -Dges=disabled --prefix=$ADAFLOW_PREFIX && \
     meson compile -C builddir && \
-    meson install -C builddir
+    meson install -C builddir && \
+    python3 -c 'import gi; gi.require_version("Gst", "1.0"); gi.require_version("GstApp", "1.0"); gi.require_version("GstVideo", "1.0"); from gi.repository import Gst, GLib, GObject, GstApp, GstVideo'
 
 
 # hotfix for tf-trt: https://github.com/tensorflow/tensorflow/issues/57679

@@ -1,5 +1,13 @@
 # Official Docker images
 
+## How to choose images
+
+* CPU-only images are made for both `arm64` and `x86_64` platforms with respective tags, while CUDA-enabled images are built against `x86_64` platform only.
+* Major differences between `devel` and `runtime` images:
+  * `devel` images contain toolchain for building from sources.
+  * `devel` images contain all related source code at `/build` folder.
+  * contents mentioned above are slimmed out of `runtime` images with necessary optimization for production environment.
+
 ## Nightly images 
 
 | REPO                                                                   | TAG           | Description                        |

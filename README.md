@@ -22,10 +22,10 @@ conda install
 
 To see more about installation, please refer to [Installation](./docs/user_guide/installation.md) in user guide. 
 
-Run video segmentation task:
+Run Object detection pipeline with video file as input:
 
 ```shell
-# TODO 
+
 ```
 
 

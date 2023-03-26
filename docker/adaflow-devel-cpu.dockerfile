@@ -100,7 +100,7 @@ ENV GST_VERSION=${GST_VERSION:-1.22.1}
 RUN wget -q https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/gstreamer-$GST_VERSION.tar.gz && \
     tar -xzf gstreamer-$GST_VERSION.tar.gz && \
     cd gstreamer-${GST_VERSION} && \
-    meson setup builddir -Dgpl=enabled -Dexamples=disabled -Dtests=disabled --buildtype=release && \
+    meson setup builddir -Dgpl=enabled -Dexamples=disabled -Dtests=disabled --buildtype=release --prefix=$ADAFLOW_PREFIX && \
     meson compile -C builddir && \
     meson install -C builddir && \
     python3 -c 'import gi; gi.require_version("Gst", "1.0"); gi.require_version("GstApp", "1.0"); gi.require_version("GstVideo", "1.0"); from gi.repository import Gst, GLib, GObject, GstApp, GstVideo'
