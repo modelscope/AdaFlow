@@ -7,9 +7,7 @@ FROM centos:centos${OS_VERSION}
 ARG GST_VERSION
 ARG PYTHON_VERSION
 ARG ADAFLOW_PREFIX
-ENV PYTHON_VERSION=${PYTHON_VERSION:-3.7.16}
 ENV ADAFLOW_PREFIX=${ADAFLOW_PREFIX:-/adaflow-install}
-ENV GST_VERSION=${GST_VERSION:-1.22.1}
 
 
 # Install basic packages
@@ -48,6 +46,7 @@ RUN yum remove -y python3 python3-devel &&  \
     rm -rf /var/cache/yum/*
 
 # install python to ADAFLOW_PREFIX: --enable-shared is required for gst
+ENV PYTHON_VERSION=${PYTHON_VERSION:-3.7.16}
 RUN wget -q https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/Python-${PYTHON_VERSION}.tgz && \
     tar -xzf Python-${PYTHON_VERSION}.tgz && \
     cd Python-${PYTHON_VERSION} && \
@@ -90,34 +89,42 @@ RUN wget -q --no-check-certificate https://viapi-test-bj.oss-cn-beijing.aliyuncs
     make -j${nproc} && \
     make install
 
+RUN wget https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/x264-stable.tar.gz && \
+    tar -xzf x264-stable.tar.gz && \
+    cd x264-stable && \
+    ./configure --enable-shared --enable-static --prefix=$ADAFLOW_PREFIX \
+    make -j${nproc} && make install
+
 # build gst
-RUN --mount=type=cache,target=/build/gstreamer-${GST_VERSION}/builddir wget -q https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/gstreamer-$GST_VERSION.tar.gz && \
+ENV GST_VERSION=${GST_VERSION:-1.22.1}
+RUN wget -q https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/gstreamer-$GST_VERSION.tar.gz && \
     tar -xzf gstreamer-$GST_VERSION.tar.gz && \
     cd gstreamer-${GST_VERSION} && \
-    meson setup builddir -Dgpl=enabled -Dexamples=disabled -Dtests=disabled && \
+    meson setup builddir -Dgpl=enabled -Dexamples=disabled -Dtests=disabled --buildtype=release && \
     meson compile -C builddir && \
-    meson install -C builddir
+    meson install -C builddir && \
+    python3 -c 'import gi; gi.require_version("Gst", "1.0"); gi.require_version("GstApp", "1.0"); gi.require_version("GstVideo", "1.0"); from gi.repository import Gst, GLib, GObject, GstApp, GstVideo'
 
-## install modelscope
-#RUN --mount=type=cache,target=/root/.cache/pip pip3 install -U -i https://pypi.tuna.tsinghua.edu.cn/simple numpy chumpy tensorflow==2.11.0 && \
-#      pip3 install torch==1.13.1+cpu torchvision==0.14.1+cpu torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cpu && \
-#      SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL=True pip3 install "modelscope[cv]" -f https://modelscope.oss-cn-beijing.aliyuncs.com/releases/repo.html
-#
-## update pip and setuptools for console-scripts capabilities
-#RUN --mount=type=cache,target=/root/.cache/pip python3 -m pip install --upgrade pip setuptools && \
-#     pip install -U openmim &&  \
-#     mim install mmcv-full
-#
-## build adaflow
-#ADD . /build/adaflow/
-#RUN rm -rf adaflow/build && mkdir -p adaflow/build && cd adaflow/build && \
-#    cmake \
-#        -DCMAKE_BUILD_TYPE=$ADAFLOW_BUILD_TYPE \
-#        -DCMAKE_INSTALL_PREFIX=$ADAFLOW_PREFIX \
-#         .. && \
-#    make -j${nproc} && make install && \
-#    cd .. && cd modules/adaflow-python && \
-#    pip3 install .
+# install tensorflow, pytorch and modelscope
+RUN --mount=type=cache,target=/root/.cache/pip pip3 install -U -i https://pypi.tuna.tsinghua.edu.cn/simple numpy chumpy tensorflow==2.11.0 && \
+      pip3 install torch==1.13.1+cpu torchvision==0.14.1+cpu torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cpu && \
+      SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL=True pip3 install "modelscope[cv]" -f https://modelscope.oss-cn-beijing.aliyuncs.com/releases/repo.html
+
+# update pip and setuptools for console-scripts capabilities
+RUN --mount=type=cache,target=/root/.cache/pip python3 -m pip install --upgrade pip setuptools && \
+     pip install -U openmim &&  \
+     mim install mmcv-full
+
+# build adaflow
+ADD . /build/adaflow/
+RUN rm -rf adaflow/build && mkdir -p adaflow/build && cd adaflow/build && \
+    cmake \
+        -DCMAKE_BUILD_TYPE=$ADAFLOW_BUILD_TYPE \
+        -DCMAKE_INSTALL_PREFIX=$ADAFLOW_PREFIX \
+         .. && \
+    make -j${nproc} && make install && \
+    cd .. && cd modules/adaflow-python && \
+    pip3 install .
 
 
 CMD python3 -m unittest discover -s /build/adaflow/modules/adaflow-python/test/ -p *_test.py
