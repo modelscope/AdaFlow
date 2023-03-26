@@ -28,7 +28,7 @@
           * Cuda 11.6.1
           * TensorRT 8.4.3.1
           * cudnn8
-      * GStreamer 1.22.0
+      * GStreamer 1.22.1
       * Python 3.7.16
     * Devel only system packages:
         * gcc 9.3.1
