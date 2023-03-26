@@ -1,17 +1,17 @@
 # docker buildx build --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-devel-cuda:latest -f ./docker/adaflow-devel-cuda.dockerfile .
 
-# baseimage: nvidia/cuda:11.1.1-cudnn8-devel-centos7
-ARG CUDA_VERSION=11.1.1
+#nvidia/cuda:11.6.2-devel-centos7
+ARG CUDA_VERSION=11.6.2
 ARG OS_VERSION=7
 FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-devel-centos${OS_VERSION}
 
 ARG GST_TAG=1.22.0
 ARG ADAFLOW_PREFIX
 ARG ADAFLOW_BUILD_TYPE=Release
-ARG TRT_VERSION=7.2.3.4
+ARG TRT_VERSION
 ARG PYTHON_VERSION=3.7.16
 ENV ADAFLOW_PREFIX=${ADAFLOW_PREFIX:-/adaflow-install}
-ENV TRT_VERSION=${TRT_VERSION:-7.2.3.4}
+ENV TRT_VERSION=${TRT_VERSION:-8.4.3.1}
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES video,compute,utility
 
@@ -28,7 +28,7 @@ WORKDIR /build
 ENV BASH_ENV="/etc/bashrc"
 ENV PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:/usr/lib64/pkgconfig:/usr/lib/pkgconfig:${ADAFLOW_PREFIX}/lib/pkgconfig:${ADAFLOW_PREFIX}/lib64/pkgconfig"
 ENV GI_TYPELIB_PATH="${ADAFLOW_PREFIX}/lib64/girepository-1.0"
-ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64:/usr/lib:/usr/lib64:${ADAFLOW_PREFIX}/lib:${ADAFLOW_PREFIX}/lib64:/usr/local/cuda-11.1/targets/x86_64-linux/lib/:/usr/local/cuda-11.2/targets/x86_64-linux/lib/:/usr/local/cuda-11.2"
+ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64:/usr/lib:/usr/lib64:${ADAFLOW_PREFIX}/lib:${ADAFLOW_PREFIX}/lib64:/usr/local/cuda/targets/x86_64-linux/lib/:/usr/local/cuda/targets/x86_64-linux/lib/:/usr/local/cuda/lib64"
 ENV LDFLAGS="$LDFLAGS -L$ADAFLOW_PREFIX/lib -L$ADAFLOW_PREFIX/lib64"
 ENV PATH=$PATH:${ADAFLOW_PREFIX}/bin
 ENV NVIDIA_VISIBLE_DEVICES all
@@ -45,11 +45,12 @@ RUN wget -q https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/cmake-3.25.
     make -j$(nproc) && \
     make install
 
+
 # Install TensorRT
-RUN wget -q https://viapi-test-bj.oss-accelerate.aliyuncs.com/github/nv-tensorrt-repo-rhel7-cuda11.1-trt7.2.3.4-ga-20210226-1-1.x86_64.rpm && \
-    rpm -Uvh nv-tensorrt-repo-rhel7-cuda11.1-trt7.2.3.4-ga-20210226-1-1.x86_64.rpm
-RUN yum install -y libnvinfer7 libnvparsers7 libnvonnxparsers7 libnvinfer-plugin7 \
-    libnvinfer-devel-7.2.3 libnvparsers-devel-7.2.3 libnvonnxparsers-devel-7.2.3 libnvinfer-plugin-devel-7.2.3
+RUN v="${TRT_VERSION%.*}-1.cuda${CUDA_VERSION%.*}" &&\
+    yum-config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-rhel7.repo &&\
+    yum -y install libnvinfer8-${v} libnvparsers8-${v} libnvonnxparsers8-${v} libnvinfer-plugin8-${v} \
+        libnvinfer-devel-${v} libnvparsers-devel-${v} libnvonnxparsers-devel-${v} libnvinfer-plugin-devel-${v}
 
 # remove old packages and install deps for gst at best and gst will download other deps using meson
 RUN yum remove -y python3 python3-devel &&  \
@@ -110,8 +111,13 @@ RUN wget -q https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/gstreamer-$
     meson compile -C builddir && \
     meson install -C builddir
 
+
+# hotfix for tf-trt: https://github.com/tensorflow/tensorflow/issues/57679
+RUN pip3 install nvidia-pyindex && pip3 install nvidia-tensorrt==7.2.3.4
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ADAFLOW_PREFIX}/lib/python3.7/site-packages/tensorrt
+
 # install common python packages
-RUN pip3 install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html && \
+RUN pip3 install torch==1.13.1+cu116 torchvision==0.14.1+cu116 torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cu116 && \
     pip3 install opencv-python==4.6.0.66 scipy==1.7.3 tensorflow==2.11.0
 
 # install modelscope
@@ -119,10 +125,12 @@ RUN pip3 install "modelscope[cv]" -f https://modelscope.oss-cn-beijing.aliyuncs.
 
 # build adaflow
 ADD . /build/adaflow/
-RUN --mount=type=cache,target=/build/adaflow/build cd adaflow/build && \
+RUN rm -rf adaflow/build && mkdir -p adaflow/build && cd adaflow/build && \
     cmake \
         -DCMAKE_BUILD_TYPE=$ADAFLOW_BUILD_TYPE \
         -DCMAKE_INSTALL_PREFIX=$ADAFLOW_PREFIX \
          .. && \
-    make -j${nproc} && make install
+    make -j${nproc} && make install && \
+    cd .. && cd modules/adaflow-python && \
+    pip3 install .
 

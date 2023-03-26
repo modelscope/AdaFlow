@@ -1,4 +1,5 @@
-# docker buildx build --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-cpu-devel:$(arch)-latest -f ./docker/adaflow-cpu-devel.dockerfile .
+# docker buildx build --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-devel-cpu:$(arch)-latest -f ./docker/adaflow-devel-cpu.dockerfile .
+# docker run -it --rm ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-devel-cpu:$(arch)-latest /bin/bash
 
 ARG OS_VERSION=7
 FROM centos:centos${OS_VERSION}
@@ -6,9 +7,9 @@ FROM centos:centos${OS_VERSION}
 ARG GST_VERSION
 ARG PYTHON_VERSION
 ARG ADAFLOW_PREFIX
-ENV PYTHON_VERSION=${PYTHON_VERSION:-3.8.14}
-ENV ADAFLOW_PREFIX=${ADAFLOW_PREFIX:-/adaflow}
-ENV GST_VERSION=${GST_VERSION:-1.20.3}
+ENV PYTHON_VERSION=${PYTHON_VERSION:-3.7.16}
+ENV ADAFLOW_PREFIX=${ADAFLOW_PREFIX:-/adaflow-install}
+ENV GST_VERSION=${GST_VERSION:-1.22.0}
 
 
 # Install basic packages
@@ -49,7 +50,7 @@ RUN yum remove -y python3 python3-devel &&  \
 # install python to ADAFLOW_PREFIX: --enable-shared is required for gst
 RUN wget -q https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/github/Python-${PYTHON_VERSION}.tgz && \
     tar -xzf Python-${PYTHON_VERSION}.tgz && \
-    cd Python-3.8.14 && \
+    cd Python-${PYTHON_VERSION} && \
     ./configure --enable-optimizations --enable-shared --prefix=${ADAFLOW_PREFIX} && \
     make install
 
@@ -96,4 +97,20 @@ RUN --mount=type=cache,target=/build/gstreamer-${GST_VERSION}/builddir wget -q h
     meson setup builddir -Dgpl=enabled -Dexamples=disabled -Dtests=disabled --prefix=$ADAFLOW_PREFIX && \
     meson compile -C builddir && \
     meson install -C builddir
+
+# install modelscope
+RUN pip3 install -U -i https://pypi.tuna.tsinghua.edu.cn/simple numpy chumpy tensorflow==2.11.0 && \
+      pip3 install torch==1.13.1+cpu torchvision==0.14.1+cpu torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cpu && \
+      SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL=True pip3 install "modelscope[cv]" -f https://modelscope.oss-cn-beijing.aliyuncs.com/releases/repo.html
+
+# build adaflow
+ADD . /build/adaflow/
+RUN rm -rf adaflow/build && mkdir -p adaflow/build && cd adaflow/build && \
+    cmake \
+        -DCMAKE_BUILD_TYPE=$ADAFLOW_BUILD_TYPE \
+        -DCMAKE_INSTALL_PREFIX=$ADAFLOW_PREFIX \
+         .. && \
+    make -j${nproc} && make install && \
+    cd .. && cd modules/adaflow-python && \
+    pip3 install .
 
