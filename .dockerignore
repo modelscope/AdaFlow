@@ -5,3 +5,5 @@ build
 .idea
 cmake-build-*
 ossutil_output
+docker
+docs
