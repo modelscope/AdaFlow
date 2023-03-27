@@ -5,7 +5,7 @@
 """
 from adaflow.av.data.av_data_packet import AVDataPacket
 from gi.repository import Gst, GObject, GstBase
-import imp
+import sys
 import yaml
 import gi
 
@@ -139,18 +139,16 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
         :param data: yaml data
         :return:True
         """
-
-        function = imp.load_source('flow', self.maas_module)
-        import flow
+        function = self.load_module_from_file('flow', self.maas_module)
 
         if self.maas_class is not None:
-            class_name = getattr(flow, self.maas_class)
+            class_name = getattr(function, self.maas_class)
             class_name_re = class_name()
             func_name = getattr(class_name_re, self.maas_function)
             self.maas_post_processor = func_name(avdatapacket, data)
 
         else:
-            func_name = getattr(flow, self.maas_function)
+            func_name = getattr(function, self.maas_function)
             self.maas_post_processor = func_name(avdatapacket, data)
 
         return True
@@ -170,6 +168,34 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
         except Gst.MapError as e:
             Gst.error("Mapping error: %s" % e)
             return Gst.FlowReturn.ERROR
+
+
+    def load_module_from_file(self, module_name, module_path):
+        """Loads a python module from the path of the corresponding file.
+        Args:
+            module_name (str): namespace where the python module will be loaded,
+                e.g. ``foo.bar``
+            module_path (str): path of the python file containing the module
+        Returns:
+            A valid module object
+        Raises:
+            ImportError: when the module can't be loaded
+            FileNotFoundError: when module_path doesn't exist
+        """
+        if sys.version_info[0] == 3 and sys.version_info[1] >= 5:
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(module_name, module_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+        elif sys.version_info[0] == 3 and sys.version_info[1] < 5:
+            import importlib.machinery
+            loader = importlib.machinery.SourceFileLoader(module_name, module_path)
+            module = loader.load_module()
+        elif sys.version_info[0] == 2:
+            import imp
+            module = imp.load_source(module_name, module_path)
+
+        return module
 
 GObject.type_register(FlowMassModelPostprocess)
 __gstelementfactory__ = (FlowMassModelPostprocess.GST_PLUGIN_NAME,
