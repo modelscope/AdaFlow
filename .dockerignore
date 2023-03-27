@@ -6,3 +6,4 @@ build
 cmake-build-*
 ossutil_output
 docker
+docs

@@ -1,4 +1,8 @@
+# To build this image
 # docker buildx build --pull --build-arg DEVEL_TAG=$(arch)-latest --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-runtime-cpu:$(arch)-latest -f ./docker/adaflow-runtime-cpu.dockerfile .
+
+# to run this image with interactive shell
+# docker run -it --rm ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-runtime-cpu:$(arch)-latest /bin/bash
 
 ARG ADAFLOW_PREFIX
 ARG DEVEL_TAG
