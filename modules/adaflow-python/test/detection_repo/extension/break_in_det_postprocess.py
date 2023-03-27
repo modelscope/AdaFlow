@@ -8,9 +8,17 @@ import os
 import json
 from adaflow.av.utils import NumpyArrayEncoder
 
+
 class BreakInDetPostprocess:
     def __init__(self):
-        pass
+        self.is_video = None
+        self.region_polygon = None
+        self.vis_flag = None
+        self.frame_rate = None
+        self.det_thres = None
+        self.output_path = None
+        self.outyaml = None
+
     def postprocess(self, frames: AVDataPacket, kwargs):
         """
         Post-processing the detection results.
@@ -18,7 +26,7 @@ class BreakInDetPostprocess:
         :param kwargs:parameters of user-defined functions
         :return:
         """
-        ##user parameter
+        # user parameter
         self.outyaml = 'mass_break_in_res.yaml'
         self.output_path = kwargs['output_path']
         self.vis_flag = kwargs['vis_flag']
@@ -27,16 +35,16 @@ class BreakInDetPostprocess:
         self.frame_rate = kwargs['deploy']['rules']['frame_rate']
         self.det_thres = kwargs['deploy']['rules']['det_thres']
 
-        ##frame by frame
+        # frame by frame
         idx = 0
         for frame in frames:
-            ## interval processing
-            if idx % self.frame_rate ==0:
+            # interval processing
+            if idx % self.frame_rate == 0:
                 self.meta_data = frame.get_json_meta('modelout')
                 self.image = frame.data()
                 scores = self.meta_data['scores']
                 self.meta_data['alarms'] = []
-                #private-postprocess
+                # private-postprocess
                 for i, score in enumerate(scores):
                     if score >= self.det_thres:
                         box = self.meta_data['boxes'][i]
@@ -50,17 +58,17 @@ class BreakInDetPostprocess:
                 if (self.vis_flag):
                     self._visualize(self.meta_data, self.image)
 
-                ##write_result_json
-                res = {
-                      0: self.meta_data
-                }
+                # write_result_json
+                # res = {
+                #     0: self.meta_data
+                # }
 
-                #self._write_result_yaml(self.output_path, res, self.frame_rate)
+                # self._write_result_yaml(self.output_path, res, self.frame_rate)
 
-                ##add new meta with key
+                # add new meta with key
                 frame.add_json_meta(self.meta_data, 'BreakInDetPost')
 
-            idx+=1
+            idx += 1
 
             return True
 

@@ -4,11 +4,14 @@ reid person in detection post process
 from adaflow.av.data.av_data_packet import AVDataPacket
 import numpy as np
 import logging
+
 logging.basicConfig(level=logging.DEBUG)
+
 
 class ReidPersonPostprocess:
     def __init__(self):
         pass
+
     def postprocess(self, frames: AVDataPacket, kwargs):
         """
         Post-processing the reid person results.
@@ -16,7 +19,7 @@ class ReidPersonPostprocess:
         :param kwargs:parameters of user-defined functions
         :return
         """
-        ##frame by frame
+        # frame by frame
         for frame in frames:
             feat_1 = frame.get_json_meta('model1')['img_embedding'][0]
             feat_2 = frame.get_json_meta('model2')['img_embedding'][0]

@@ -5,7 +5,13 @@ visualization after realtime detector
 from adaflow.av.data.av_data_packet import AVDataPacket
 import cv2
 
+
 class RealDetectorPost:
+    def __init__(self):
+        self.image = None
+        self.meta_data = None
+        self.color = None
+
     def postprocess(self, frames: AVDataPacket, kwargs):
 
         self.color = kwargs['color']
@@ -23,8 +29,6 @@ class RealDetectorPost:
                 label = str(labels[idx])
                 cv2.rectangle(self.image, (int(x1), int(y1)), (int(x2), int(y2)), self.color, 2)
                 cv2.putText(self.image, label, (int(x1), int(y1) - 10),
-                        cv2.FONT_HERSHEY_PLAIN, 1, self.color)
+                            cv2.FONT_HERSHEY_PLAIN, 1, self.color)
                 cv2.putText(self.image, score, (int(x1), int(y2) + 10),
-                        cv2.FONT_HERSHEY_PLAIN, 1, self.color)
-
-
+                            cv2.FONT_HERSHEY_PLAIN, 1, self.color)

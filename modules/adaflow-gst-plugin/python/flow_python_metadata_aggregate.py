@@ -7,23 +7,23 @@ from PIL import Image
 import numpy as np
 import json
 
-gi.require_version('Gst', '1.0')
 gi.require_version('GstBase', '1.0')
+gi.require_version('Gst', '1.0')
 gi.require_version('GObject', '2.0')
 
 from gi.repository import Gst, GObject, GstBase, GLib
-from adaflow.av.metadata.flow_json_meta import flow_meta_add, flow_meta_get, flow_meta_remove
+from adaflow.av.metadata.flow_json_meta import flow_meta_add, flow_meta_get
 from adaflow.av.utils import gst_video_format_from_string, get_num_channels, NumpyArrayEncoder
 
 
 class BlendData:
-    def __init__(self,outimg):
+    def __init__(self, outimg):
         self.outimg = outimg
         self.pts = 0
         self.eos = True
 
-class GstMetaAgg(GstBase.Aggregator):
 
+class GstMetaAgg(GstBase.Aggregator):
     SINK_CAPS = 'video/x-raw,format=RGB,width=[1,{max_int}],height=[1,{max_int}]'
     SINK_CAPS = Gst.Caps.from_string(SINK_CAPS.format(max_int=GLib.MAXINT))
     SRC_CAPS = 'video/x-raw,format=RGB,width=[1,{max_int}],height=[1,{max_int}]'
@@ -50,33 +50,34 @@ class GstMetaAgg(GstBase.Aggregator):
     __gproperties__ = {
 
         "frame-num": (GObject.TYPE_INT64,  # type
-                   "frame number pass",  # nick
-                   "frame number pass",  # blurb
-                   1,  # min
-                   GLib.MAXINT,  # max
-                   1,  # default
-                   GObject.ParamFlags.READWRITE  # flags
-                   )
+                      "frame number pass",  # nick
+                      "frame number pass",  # blurb
+                      1,  # min
+                      GLib.MAXINT,  # max
+                      1,  # default
+                      GObject.ParamFlags.READWRITE  # flags
+                      )
     }
-
 
     def __init__(self):
 
         super(GstMetaAgg, self).__init__()
 
+        self.databuf = None
+        self.buf = None
         self.vid_pad = None
         self.vid_caps = None
         self.width = 720
         self.height = 360
         self.channel = 3
         self.frame_num = 1
+        self.size = self.width * self.height * self.channel
 
     def ensure_pads_found(self):
         if self.vid_pad and self.inf_pad:
             return
         for pad in self.sinkpads:
             caps = pad.get_current_caps()
-            feature = caps.get_features(0).get_nth(0)
             struct = caps.get_structure(0)
 
             self.width = struct.get_int("width").value
@@ -89,21 +90,22 @@ class GstMetaAgg(GstBase.Aggregator):
 
         return True
 
-    def do_fixate_src_caps (self, caps):
+    def do_fixate_src_caps(self, caps):
         self.ensure_pads_found()
         self.size = self.height * self.width * self.channel
         return self.vid_caps
 
     def mix_buffers(self, agg, pad, bdata):
 
-        if(GstBase.AggregatorPad.has_buffer(pad)):
+        if GstBase.AggregatorPad.has_buffer(pad):
             self.buf = pad.pop_buffer()
             detection_info = flow_meta_get(self.buf)
             self.metadata.append(detection_info)
             with self.buf.map(Gst.MapFlags.READ) as info:
-                img = np.ndarray(shape = (self.height, self.width, self.channel), dtype = np.uint8, buffer = info.data)
-                if(self.frame_num>1):
-                    self.databuf = np.ndarray(shape = self.size * (self.frame_num-1), dtype = np.uint8, buffer = info.data, offset = self.size)
+                img = np.ndarray(shape=(self.height, self.width, self.channel), dtype=np.uint8, buffer=info.data)
+                if self.frame_num > 1:
+                    self.databuf = np.ndarray(shape=self.size * (self.frame_num - 1), dtype=np.uint8, buffer=info.data,
+                                              offset=self.size)
 
             bdata.outimg = img
             bdata.pts = self.buf.pts
@@ -120,12 +122,12 @@ class GstMetaAgg(GstBase.Aggregator):
         outbuf = Gst.Buffer.new_allocate(None, self.size * self.frame_num, None)
         data = bdata.outimg.tobytes()
         outbuf.fill(0, data)
-        if(self.frame_num>1):
+        if self.frame_num > 1:
             outbuf.fill(self.size, self.databuf.tobytes())
 
         outbuf.pts = bdata.pts
 
-        if(self.metadata):
+        if self.metadata:
             json_key_v = dict()
             for i in range(len(self.metadata)):
                 get_message = json.loads(self.metadata[i])
@@ -143,7 +145,6 @@ class GstMetaAgg(GstBase.Aggregator):
 
         return Gst.FlowReturn.OK
 
-
     def do_get_property(self, prop: GObject.GParamSpec):
 
         if prop.name == 'frame-num':
@@ -160,7 +161,5 @@ class GstMetaAgg(GstBase.Aggregator):
             raise AttributeError('unknown property %s' % prop.name)
 
 
-
 GObject.type_register(GstMetaAgg)
 __gstelementfactory__ = ("flow_metadata_aggregate", Gst.Rank.NONE, GstMetaAgg)
-

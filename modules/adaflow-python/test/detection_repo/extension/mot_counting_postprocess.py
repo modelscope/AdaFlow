@@ -3,9 +3,20 @@
 """
 from adaflow.av.data.av_data_packet import AVDataPacket
 import cv2
+import logging
 
 
 class MotCountingPostprocess:
+
+    def __init__(self):
+        self.in_flag = None
+        self.line = None
+        self.coord = None
+        self.horizontal = None
+        self.is_video = None
+        self.vis_flag = None
+        self.input_path = None
+        self.output_path = None
 
     def postprocess(self, frames: AVDataPacket, kwargs):
         """
@@ -22,13 +33,13 @@ class MotCountingPostprocess:
         self.coord = kwargs['deploy']['rules']['coord']
         self.in_flag = kwargs['deploy']['rules']['in_flag']
         self.line = kwargs['deploy']['rules']
-        ##frame by frame
+        # frame by frame
         for frame in frames:
             mot_res = frame.get_json_meta('mot')
             res = dict()
             res['mot_res'] = mot_res
             res['final_res'] = self._count(mot_res)
-            if(self.vis_flag):
+            if self.vis_flag:
                 self._visualize(self.input_path, res, self.output_path)
 
             return True

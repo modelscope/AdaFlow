@@ -10,10 +10,12 @@ from .base import CLICommand
 
 logging.basicConfig(level=logging.DEBUG)
 
+
 def subparser_func(args):
     """ Fuction which will be called for a specific sub parser.
     """
     return LaunchCMD(args)
+
 
 class LaunchCMD(CLICommand):
     name = 'launch'
@@ -48,7 +50,7 @@ class LaunchCMD(CLICommand):
         if self.args.task_path is not None or self.args.task is not None:
 
             if self.args.task_path is not None:
-                ##open task-id
+                # open task-id
                 with open(self.args.task_path) as j:
                     j.seek(0)
                     task_content = json.load(j)
@@ -57,13 +59,13 @@ class LaunchCMD(CLICommand):
 
                 task_content = json.loads(self.args.task)
 
-            ##add sources
+            # add sources
             if "sources" in task_content:
                 sources_sinks = task_content["sources"]
                 for i in range(len(sources_sinks)):
                     builder.source(sources_sinks[i])
 
-            ##add sinks
+            # add sinks
             if "sinks" in task_content:
                 task_sinks = task_content["sinks"]
                 for i in range(len(task_sinks)):
@@ -72,7 +74,7 @@ class LaunchCMD(CLICommand):
         else:
             logging.info("please make sure: complete pipeline description in pipeline JSON file")
 
-        ##run pipeline
+        # run pipeline
         with GstContext():
             with builder.build() as pipeline:
                 logging.info(pipeline.command)

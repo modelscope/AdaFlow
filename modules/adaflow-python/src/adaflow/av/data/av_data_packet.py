@@ -1,13 +1,9 @@
-from adaflow.av.utils import gst_video_format_from_string, get_num_channels, NumpyArrayEncoder
-from adaflow.av.metadata.flow_json_meta import flow_meta_add, flow_meta_get, flow_meta_remove
+from adaflow.av.utils import gst_video_format_from_string, get_num_channels
 from .av_data_frame import AVDataFrame
 
 import gi
+from gi.repository import Gst
 gi.require_version('Gst', '1.0')
-gi.require_version("GstVideo", "1.0")
-gi.require_version('GObject', '2.0')
-
-from gi.repository import GObject, Gst, GstVideo
 
 
 class AVDataPacket:
@@ -48,6 +44,3 @@ class AVDataPacket:
 
     def __len__(self):
         return self.frame_num
-
-
-
