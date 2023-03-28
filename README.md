@@ -20,7 +20,7 @@ docker run -it --rm -v $PWD/modules/adaflow-python/test/detection_repo:/detectio
   adaflow launch /detection_repo real_detector --task_path /detection_repo/task/real_detector/task.json
 ```
 
-As requested in [task.json](./modules/adaflow-python/test/detection_repo/task/real_detector/task.json), detection results are visualized with colored bounding boxes drawn on original frames and encoded as a new MP4 file.
+As requested in [task.json](./modules/adaflow-python/test/detection_repo/task/real_detector/task.json), detection results are visualized with colored bounding boxes drawn on original frames and encoded as a new MP4 file at `modules/adaflow-python/test/detection_repo/resource/data/MOT17-03-partial_detector_vis.mp4`.
 
 Install full AdaFlow package using [Conda](https://conda.io/).
 
