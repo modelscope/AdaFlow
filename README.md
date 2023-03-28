@@ -39,11 +39,11 @@ To see more about installation, please refer to [Installation](./docs/user_guide
 
 * Get started
   * [Installation](./docs/user_guide/installation.md)
-  * [Pipeline and other concepts](./docs/user_guide/concept.md)
+  * [Composing a Pipeline](./docs/user_guide/composing_a_pipeline.md)
   * [Official Docker images](./docs/user_guide/docker_images.md)
 * To write a re-usable pipeline
-  * [Composing a Pipeline](./docs/user_guide/composing_a_pipeline.md)
   * [Built-in elements](./docs/user_guide/built_in_elements.md)
+  * [Pipeline and other concepts](./docs/user_guide/concept.md)
 * To run pipelines in production
   * [Serve pipelines as REST services](./docs/user_guide/pipeline_server.md)
   * [Using command line interface](./docs/user_guide/cli.md)
