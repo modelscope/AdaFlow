@@ -14,8 +14,8 @@ gi.require_version('Gst', '1.0')
 gi.require_version('GstBase', '1.0')
 gi.require_version('GstVideo', '1.0')
 
-class MetaDataSink(GstBase.BaseSink):
 
+class MetaDataSink(GstBase.BaseSink):
     GST_PLUGIN_NAME = 'flow_metadata_sink'
 
     __gstmetadata__ = (GST_PLUGIN_NAME,
@@ -37,18 +37,18 @@ class MetaDataSink(GstBase.BaseSink):
                    ),
 
         "filepath": (GObject.TYPE_STRING,
-                   "FilePath",
-                   "Absolute path to output file for publishing inferences",
-                   "",
-                   GObject.ParamFlags.READWRITE
-                   ),
-
-        "fileformat": (GObject.TYPE_STRING,
-                     "FileFormat",
-                     "Structure of JSON objects in the file",
-                     "json",
+                     "FilePath",
+                     "Absolute path to output file for publishing inferences",
+                     "",
                      GObject.ParamFlags.READWRITE
                      ),
+
+        "fileformat": (GObject.TYPE_STRING,
+                       "FileFormat",
+                       "Structure of JSON objects in the file",
+                       "json",
+                       GObject.ParamFlags.READWRITE
+                       ),
 
     }
 
@@ -81,11 +81,10 @@ class MetaDataSink(GstBase.BaseSink):
     def do_render(self, buffer):
         metadata = flow_meta_get(buffer)
         metadata = json.loads(metadata)
-        if(self.method == "file"):
+        if self.method == "file":
             self._write_result_yaml(self.filepath, metadata)
 
         return Gst.FlowReturn.OK
-
 
     def _write_result_yaml(self, json_path, res):
         """
@@ -95,11 +94,11 @@ class MetaDataSink(GstBase.BaseSink):
         :return: bool
         """
 
-        if(os.path.exists(json_path)):
+        if os.path.exists(json_path):
             with open(json_path, 'a') as f:
-                if(self.fileformat == "json"):
+                if self.fileformat == "json":
                     json.dump(res, f, cls=NumpyArrayEncoder)
-                elif(self.fileformat == "json-lines"):
+                elif self.fileformat == "json-lines":
                     json.dump(res, f, indent=1, cls=NumpyArrayEncoder)
                 else:
                     logging.error("Unsupported fileformat, please set fileformat: json or json-lines\n")
@@ -107,9 +106,9 @@ class MetaDataSink(GstBase.BaseSink):
 
         else:
             with open(json_path, 'w') as f:
-                if(self.fileformat == "json"):
+                if self.fileformat == "json":
                     json.dump(res, f, cls=NumpyArrayEncoder)
-                elif(self.fileformat == "json-lines"):
+                elif self.fileformat == "json-lines":
                     json.dump(res, f, indent=1, cls=NumpyArrayEncoder)
                 else:
                     logging.error("Unsupported fileformat, please set fileformat: json or json-lines\n")
@@ -117,6 +116,6 @@ class MetaDataSink(GstBase.BaseSink):
 
         return True
 
+
 GObject.type_register(MetaDataSink)
 __gstelementfactory__ = (MetaDataSink.GST_PLUGIN_NAME, Gst.Rank.NONE, MetaDataSink)
-

@@ -6,18 +6,17 @@ from modelscope.pipelines import pipeline
 from modelscope.outputs import OutputKeys
 from adaflow.av.utils import gst_video_format_from_string, get_num_channels
 from adaflow.av.metadata.flow_json_meta import flow_meta_add_key
-from gi.repository import Gst, GObject, GstBase, GstVideo
+from gi.repository import Gst, GObject, GstVideo
 import logging
 import numpy as np
 
 import gi
 
 gi.require_version('Gst', '1.0')
-gi.require_version('GstBase', '1.0')
 gi.require_version('GstVideo', '1.0')
 
-class FlowMassModelPlugin(Gst.Element):
 
+class FlowMassModelPlugin(Gst.Element):
     GST_PLUGIN_NAME = 'flow_modelscope_pipeline'
 
     __gstmetadata__ = (GST_PLUGIN_NAME,
@@ -36,7 +35,6 @@ class FlowMassModelPlugin(Gst.Element):
 
     _sinkpadtemplate = __gsttemplates__[1]
     _srcpadtemplate = __gsttemplates__[0]
-
 
     __gproperties__ = {
         "task": (GObject.TYPE_STRING,  # type
@@ -93,8 +91,8 @@ class FlowMassModelPlugin(Gst.Element):
         self.add_pad(self.srcpad)
         self.maas_pipeline = None
 
-
     def do_get_property(self, prop: GObject.GParamSpec):
+
         if prop.name == 'task':
             return self.task
         elif prop.name == 'id':
@@ -113,7 +111,7 @@ class FlowMassModelPlugin(Gst.Element):
             self.task = value
         elif prop.name == 'id':
             self.id = value
-            ##init model
+            # init model
             if self.id and self.task:
                 self.maas_pipeline = pipeline(self.task, model=self.id)
 
@@ -127,21 +125,21 @@ class FlowMassModelPlugin(Gst.Element):
             raise AttributeError('unknown property %s' % prop.name)
 
     def eventfunc(self, pad, parent, event):
-        # #check pars
+        # check pars
         if self.task is None or self.id is None:
             raise ValueError(f'id = {self.id} or task = {self.task} is error ')
 
         return self.srcpad.push_event(event)
 
     def chainfunc(self, pad: Gst.Pad, parent, buffer: Gst.Buffer) -> Gst.FlowReturn:
-        ##buffer-in-info
+        # buffer-in-info
         incaps = self.sinkpad.get_current_caps()
         struct = incaps.get_structure(0)
         width_in = struct.get_int("width").value
         height_in = struct.get_int("height").value
         video_format = gst_video_format_from_string(struct.get_value('format'))
         channel_in = get_num_channels(video_format)
-        ##make buffer writable after tee
+        # make buffer writable after tee
         buffer = Gst.Buffer.copy_deep(buffer)
 
         with buffer.map(Gst.MapFlags.READ | Gst.MapFlags.WRITE) as info:
@@ -154,25 +152,26 @@ class FlowMassModelPlugin(Gst.Element):
             else:
                 infer_res = self.maas_pipeline(image)
 
-            if(self.add_meta):
+            if self.add_meta:
                 flow_meta_add_key(buffer, infer_res, self.meta_key)
                 return self.srcpad.push(buffer)
             else:
                 infer_image = infer_res[OutputKeys.OUTPUT_IMG]
-                ##set new outcaps
+                # set new outcaps
                 height_out, width_out, channel_out = infer_image.shape
-                if(height_out!=height_in or width_out!=width_in):
+                if height_out != height_in or width_out != width_in:
                     outcaps = self.srcpad.get_current_caps()
-                    VideoInfo = GstVideo.VideoInfo.new_from_caps(outcaps)
-                    VideoInfo.width = width_out
-                    VideoInfo.height = height_out
-                    outcaps = GstVideo.VideoInfo.to_caps(VideoInfo)
+                    videoinfo = GstVideo.videoinfo.new_from_caps(outcaps)
+                    videoinfo.width = width_out
+                    videoinfo.height = height_out
+                    outcaps = GstVideo.videoinfo.to_caps(videoinfo)
                     self.srcpad.set_caps(outcaps)
 
                 infer_data = infer_image.tobytes()
                 newbuf = Gst.Buffer.new_allocate(None, len(infer_data), None)
                 newbuf.fill(0, infer_data)
                 return self.srcpad.push(newbuf)
+
 
 GObject.type_register(FlowMassModelPlugin)
 __gstelementfactory__ = (FlowMassModelPlugin.GST_PLUGIN_NAME,

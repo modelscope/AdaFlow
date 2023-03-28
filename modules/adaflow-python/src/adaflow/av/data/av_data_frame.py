@@ -1,21 +1,14 @@
 import logging
-
 import numpy
 import json
-
 import numpy as np
 
 from adaflow.av.utils import gst_video_format_from_string, get_num_channels, NumpyArrayEncoder
 from adaflow.av.metadata.flow_json_meta import flow_meta_add, flow_meta_get, flow_meta_remove
-
-
-
 import gi
-gi.require_version('Gst', '1.0')
-gi.require_version("GstVideo", "1.0")
-gi.require_version('GObject', '2.0')
+from gi.repository import Gst
 
-from gi.repository import GObject, Gst, GstVideo
+gi.require_version('Gst', '1.0')
 
 
 class AVDataFrame:
@@ -54,13 +47,13 @@ class AVDataFrame:
         """
         get_message_str = flow_meta_get(self.__buffer)
         if get_message_str == "NULL":
-            self.log.error(f'AVDataFrame has not %s metadata'% (meta_key))
+            self.log.error('AVDataFrame has not %s metadata' % meta_key)
             return "NULL"
 
         else:
             get_message_json = json.loads(get_message_str)
             if meta_key not in get_message_json:
-                self.log.error(f'AVDataFrame has not %s metadata'% (meta_key))
+                self.log.error('AVDataFrame has not %s metadata' % meta_key)
 
             get_message = get_message_json[meta_key][0]
 
@@ -85,7 +78,7 @@ class AVDataFrame:
         else:
             get_message = json.loads(get_message_str)
             if meta_key in get_message:
-                self.log.error(f'%s is duplicate definition, change a new key '% (meta_key))
+                self.log.error('%s is duplicate definition, change a new key ' % meta_key)
             else:
                 get_message[meta_key] = []
                 get_message[meta_key].append(message)
@@ -114,4 +107,3 @@ class AVDataFrame:
                 offset=self.__offset
             )
             return image
-

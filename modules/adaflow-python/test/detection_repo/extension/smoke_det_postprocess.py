@@ -10,9 +10,19 @@ import os
 import json
 from adaflow.av.utils import NumpyArrayEncoder
 
+
 class SmokeDetPostprocess:
     def __init__(self):
-        pass
+        self.image = None
+        self.frame_rate = None
+        self.is_video = None
+        self.vis_flag = None
+        self.metric_func = None
+        self.metric_thred = None
+        self.metric_com_func = None
+        self.output_path = None
+        self.outyaml = None
+
     def postprocess(self, frames: AVDataPacket, kwargs):
         """
         Post-processing the detection results.
@@ -20,7 +30,7 @@ class SmokeDetPostprocess:
         :param kwargs:parameters of user-defined functions
         :return
         """
-        ##user parameter
+        # user parameter
         self.outyaml = 'mass_smoke_det_res.yaml'
         self.output_path = kwargs['output_path']
         self.vis_flag = kwargs['vis_flag']
@@ -31,11 +41,11 @@ class SmokeDetPostprocess:
         self.metric_thred = kwargs['deploy']['rules']['threshold']
         self.metric_com_func = operator.le if metric_type == 'dist' else operator.ge
 
-        ##frame by frame
+        # frame by frame
         idx = 0
         for frame in frames:
-            ## interval processing
-            if idx % self.frame_rate ==0:
+            # interval processing
+            if idx % self.frame_rate == 0:
                 human_det_res = frame.get_json_meta('human')
                 cigs_det_res = frame.get_json_meta('cigare')
                 self.image = frame.data()
@@ -46,16 +56,16 @@ class SmokeDetPostprocess:
                         dict(human_res=human_det_res,
                              cigs_res=cigs_det_res,
                              smoke_res=smoke_det_res),  # frame index with 0
-                    }
+                }
 
-                #self._write_result_yaml(self.output_path, res, self.frame_rate)
-                if (self.vis_flag):
+                # self._write_result_yaml(self.output_path, res, self.frame_rate)
+                if self.vis_flag:
                     self._visualize(self.image, res)
 
-                ##add new meta with key
+                # add new meta with key
                 frame.add_json_meta(smoke_det_res, 'SmokeDetPost')
 
-            idx+=1
+            idx += 1
 
             return True
 
@@ -121,7 +131,6 @@ class SmokeDetPostprocess:
                 smoke_det_dict['smoke'].append(dict(flag=False, cigs=None))
 
         return smoke_det_dict
-
 
     def _write_result_yaml(self, output_path, res, interval):
         json_path = os.path.join(output_path, self.outyaml)

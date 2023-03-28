@@ -6,10 +6,12 @@ from .base import CLICommand
 
 logging.basicConfig(level=logging.DEBUG)
 
+
 def subparser_func(args):
     """ Fuction which will be called for a specific sub parser.
     """
     return InitCMD(args)
+
 
 class InitCMD(CLICommand):
     name = 'init'
@@ -33,7 +35,7 @@ class InitCMD(CLICommand):
     def init_repo(self):
 
         if os.path.exists(self.args.repo_name):
-            logging.info("%s exists"%self.args.repo_name)
+            logging.info("%s exists" % self.args.repo_name)
 
         else:
             os.makedirs(self.args.repo_name)
@@ -41,17 +43,12 @@ class InitCMD(CLICommand):
             os.makedirs(os.path.join(self.args.repo_name, "task"))
             os.makedirs(os.path.join(self.args.repo_name, "extension"))
             os.makedirs(os.path.join(self.args.repo_name, "resource"))
-            logging.info("successfully create %s"%self.args.repo_name)
+            logging.info("successfully create %s" % self.args.repo_name)
 
             if self.args.pipeline is not None:
                 os.makedirs(os.path.join(self.args.repo_name, "pipelines", self.args.pipeline))
                 os.makedirs(os.path.join(self.args.repo_name, "task", self.args.pipeline))
-                logging.info("successfully create %s"%self.args.pipeline)
-
+                logging.info("successfully create %s" % self.args.pipeline)
 
     def execute(self):
         self.init_repo()
-
-
-
-

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 
+
 class CLICommand(ABC):
     """
     Base class for command line tool.

@@ -1,11 +1,10 @@
 import math
-
-import gi
-gi.require_version('Gst', '1.0')
-gi.require_version('GstVideo', '1.0')
-from gi.repository import Gst, GstVideo  # noqa:F401,F402
 import json
 import numpy as np
+
+import gi
+gi.require_version('GstVideo', '1.0')
+from gi.repository import GstVideo
 
 BITS_PER_BYTE = 8
 
@@ -15,7 +14,6 @@ _ALL_VIDEO_FORMATS = [GstVideo.VideoFormat.from_string(
 
 def has_flag(value: GstVideo.VideoFormatFlags,
              flag: GstVideo.VideoFormatFlags) -> bool:
-
     # in VideoFormatFlags each new value is 1 << 2**{0...8}
     return bool(value & (1 << max(1, math.ceil(math.log2(int(flag))))))
 
@@ -24,12 +22,12 @@ def _get_num_channels(fmt: GstVideo.VideoFormat) -> int:
     """
         -1: means complex format (YUV, ...)
     """
+
     frmt_info = GstVideo.VideoFormat.get_info(fmt)
-    
     # temporal fix
     if fmt == GstVideo.VideoFormat.BGRX:
         return 4
-    
+
     if has_flag(frmt_info.flags, GstVideo.VideoFormatFlags.ALPHA):
         return 4
 
@@ -60,8 +58,3 @@ class NumpyArrayEncoder(json.JSONEncoder):
         elif isinstance(obj, np.float32):
             return float(obj)
         return json.JSONEncoder.default(self, obj)
-
-
-
-
-

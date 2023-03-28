@@ -3,6 +3,7 @@
     Provides a callback to execute user-defined Python functions on every frame.
     Can be used for metadata conversion, inference post-processing, and other tasks.
 """
+
 from adaflow.av.data.av_data_packet import AVDataPacket
 from gi.repository import Gst, GObject, GstBase
 import sys
@@ -15,8 +16,8 @@ gi.require_version('GstVideo', '1.0')
 
 FORMATS = "{RGB, RGBA, I420, NV12, NV21}"
 
-class FlowMassModelPostprocess(GstBase.BaseTransform):
 
+class FlowMassModelPostprocess(GstBase.BaseTransform):
     GST_PLUGIN_NAME = 'flow_python_extension'
 
     __gstmetadata__ = (GST_PLUGIN_NAME,
@@ -28,48 +29,46 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
                                             Gst.PadDirection.SRC,
                                             Gst.PadPresence.ALWAYS,
                                             # Set to RGB format
-                                            Gst.Caps.from_string(
-                                                f"video/x-raw,format={FORMATS}")),
+                                            Gst.Caps.from_string(f"video/x-raw,format={FORMATS}")),
                         Gst.PadTemplate.new("sink",
                                             Gst.PadDirection.SINK,
                                             Gst.PadPresence.ALWAYS,
                                             # Set to RGB format
-                                            Gst.Caps.from_string(
-                                                f"video/x-raw,format={FORMATS}")))
+                                            Gst.Caps.from_string(f"video/x-raw,format={FORMATS}")))
 
     __gproperties__ = {
 
         "input": (GObject.TYPE_STRING,  # type
-                                  "input",  # nick
-                                  "input file or file name",  # blurb
-                                  "",  # default
-                                  GObject.ParamFlags.READWRITE  # flags
-                                  ),
+                  "input",  # nick
+                  "input file or file name",  # blurb
+                  "",  # default
+                  GObject.ParamFlags.READWRITE  # flags
+                  ),
         "output": (GObject.TYPE_STRING,  # type
-                                   "output",  # nick
-                                   "out file or file name",  # blurb
-                                   "",  # default
-                                   GObject.ParamFlags.READWRITE  # flags
-                                   ),
-        "module": (GObject.TYPE_STRING,  # type
-                                    "Python module name",  # nick
-                                    "Python module name",  # blurb
-                                     "",  # default
-                                     GObject.ParamFlags.READWRITE  # flags
-                                    ),
-        "class": (GObject.TYPE_STRING,  # type
-                   "(optional) Python class name",  # nick
-                   "Python class name",  # blurb
+                   "output",  # nick
+                   "out file or file name",  # blurb
                    "",  # default
                    GObject.ParamFlags.READWRITE  # flags
                    ),
-
-        "function": (GObject.TYPE_STRING,  # type
-                   "Python function name",  # nick
-                   "Python function name",  # blurb
-                   "postprocess",  # default
+        "module": (GObject.TYPE_STRING,  # type
+                   "Python module name",  # nick
+                   "Python module name",  # blurb
+                   "",  # default
                    GObject.ParamFlags.READWRITE  # flags
                    ),
+        "class": (GObject.TYPE_STRING,  # type
+                  "(optional) Python class name",  # nick
+                  "Python class name",  # blurb
+                  "",  # default
+                  GObject.ParamFlags.READWRITE  # flags
+                  ),
+
+        "function": (GObject.TYPE_STRING,  # type
+                     "Python function name",  # nick
+                     "Python function name",  # blurb
+                     "postprocess",  # default
+                     GObject.ParamFlags.READWRITE  # flags
+                     ),
 
     }
 
@@ -122,7 +121,8 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
 
         return True
 
-    def parse_input(self, yaml_path: str):
+    @staticmethod
+    def parse_input(yaml_path: str):
         """
         Parsing parameters of user-defined functions.
         :param yaml_path: user-defined parameter file path
@@ -155,11 +155,11 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
 
     def do_transform_ip(self, buffer: Gst.Buffer) -> Gst.FlowReturn:
         try:
-            avdatapacket = AVDataPacket(buffer, caps= self.caps)
+            avdatapacket = AVDataPacket(buffer, caps=self.caps)
             if self.input is not None:
                 data = self.parse_input(self.input)
             else:
-                data =[]
+                data = []
 
             self._run_maas_post_processor(avdatapacket, data)
 
@@ -169,8 +169,8 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
             Gst.error("Mapping error: %s" % e)
             return Gst.FlowReturn.ERROR
 
-
-    def load_module_from_file(self, module_name, module_path):
+    @staticmethod
+    def load_module_from_file(module_name, module_path):
         """Loads a python module from the path of the corresponding file.
         Args:
             module_name (str): namespace where the python module will be loaded,
@@ -196,6 +196,7 @@ class FlowMassModelPostprocess(GstBase.BaseTransform):
             module = imp.load_source(module_name, module_path)
 
         return module
+
 
 GObject.type_register(FlowMassModelPostprocess)
 __gstelementfactory__ = (FlowMassModelPostprocess.GST_PLUGIN_NAME,

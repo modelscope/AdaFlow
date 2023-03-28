@@ -6,11 +6,6 @@ from adaflow.av.pipeline.pipeline_factory import PipelineFactory
 from adaflow.av.pipeline.dialects.gst_context import GstContext
 from pathlib import Path
 
-import gi
-gi.require_version('Gst', '1.0')
-
-from gi.repository import Gst
-
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -100,9 +95,6 @@ class DetectionPipelinesTest(unittest.TestCase):
                 logging.info(pipeline.command)
                 while not pipeline.is_done:
                     time.sleep(1)
-    
-
-    
 
 
 if __name__ == '__main__':
