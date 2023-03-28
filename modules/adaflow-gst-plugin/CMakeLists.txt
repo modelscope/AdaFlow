@@ -55,7 +55,7 @@ install(FILES ${PYTHON_PLUGIN_SRCS} DESTINATION ${CMAKE_INSTALL_LIBDIR}/gstreame
 set(FLOW_META_DY_LIB_TARGET_NAME flowmetadata)
 list(APPEND FLOW_META_SOURCE_FILES
         metadata/flow_json_meta.h
-        metadata/flow_json_meta.cpp
+        metadata/flow_json_meta.cc
         )
 add_library(${FLOW_META_DY_LIB_TARGET_NAME} SHARED ${FLOW_META_SOURCE_FILES})
 
