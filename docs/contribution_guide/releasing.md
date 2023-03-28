@@ -92,19 +92,10 @@ To build a conda package from source root
 ```shell
 # local build
 conda build . -c conda-forge --no-include-recipe
-
-# upload to remote
-ossutil sync /root/miniconda3/envs/gst/conda-bld oss://viapi-test-bj/conda/linux-x86_64/
 ```
 
 To test with a local build:
 
 ```shell
 conda install adaflow -c $HOME/miniconda3/envs/${ENV_NAME}/conda-bld
-```
-
-or
-
-```shell
-conda install adaflow -c http://viapi-test-bj.oss-accelerate.aliyuncs.com/conda/linux-x86_64
 ```
