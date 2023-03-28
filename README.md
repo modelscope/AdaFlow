@@ -12,21 +12,27 @@ Highlight features:
 
 
 ## Quick start
- 
+
+Run [Object detection with visualization](./modules/adaflow-python/test/detection_repo/pipelines/real_detector/pipeline.json) using [docker image](./docs/user_guide/docker_images.md):
+
+```shell
+docker run -it --rm -v $PWD/modules/adaflow-python/test/detection_repo:/detection_repo ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-runtime-cpu:$(arch)-latest \
+  adaflow launch /detection_repo real_detector --task_path /detection_repo/task/real_detector/task.json
+```
+
+As requested in [task.json](./modules/adaflow-python/test/detection_repo/task/real_detector/task.json), detection results are visualized with colored bounding boxes drawn on original frames and encoded as a new MP4 file.
+
 Install full AdaFlow package using [Conda](https://conda.io/).
 
 ```
-conda install 
-# TODO: replace with official conda-forge package
+# TODO: replace with conda-forge and pip package after open-sourced 
+conda install adaflow -c https://viapi-test-bj.oss-accelerate.aliyuncs.com/conda/adaflow
+pip3 install https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/pip/adaflow/adaflow-0.0.1-py3-none-any.whl
 ```
+
+**Current packages are only built for linux-x86_64 platform.**
 
 To see more about installation, please refer to [Installation](./docs/user_guide/installation.md) in user guide. 
-
-Run Object detection pipeline with video file as input:
-
-```shell
-
-```
 
 
 ## Developer Guide
