@@ -29,7 +29,7 @@ Common options for source object:
 Examples:
 
 ```text
-{{F.adaptive_source('src1')}} ! mass_model task=domain-specific-object-detection id = damo/cv_tinynas_human-detection_damoyolo ! mass_model_post input=./data/break_in_count_deploy.yaml module=./test_pipelines/extensions/break_in_det_postprocess.py ! videoconvert ! appsink name=sink1
+{{F.adaptive_source('src1')}} ! flow_modelscope_pipeline task=domain-specific-object-detection id = damo/cv_tinynas_human-detection_damoyolo ! flow_python_extension input=./data/break_in_count_deploy.yaml module=./test_pipelines/extensions/break_in_det_postprocess.py class= BreakInDetPostprocess ! videoconvert ! appsink name=sink1
 ```
 
 ## Destination object
@@ -45,7 +45,7 @@ Examples:
 Examples:
 
 ```text
-{{F.source('src1')}} ! decodebin ! videoconvert ! videoscale ! video/x-raw,format=RGB ! mass_model task=domain-specific-object-detection id = damo/cv_tinynas_human-detection_damoyolo ! mass_model_post input=./data/break_in_count_deploy.yaml module=./test_pipelines/extensions/break_in_det_postprocess.py ! videoconvert ! {{F.sink('sink1')}}
+{{F.source('src1')}} ! decodebin ! videoconvert ! videoscale ! video/x-raw,format=RGB ! flow_modelscope_pipeline task=domain-specific-object-detection id = damo/cv_tinynas_human-detection_damoyolo ! flow_python_extension input=./data/break_in_count_deploy.yaml module=./test_pipelines/extensions/break_in_det_postprocess.py class= BreakInDetPostprocess ! videoconvert ! {{F.sink('sink1')}}
 ```
 
 ## Pipeline Parameters
@@ -56,7 +56,7 @@ Examples:
 {
 	"name": "...",
   "backend": "GStreamer",
-  "dialect": "{{F.source('src1')}} ! decodebin ! videoconvert ! videoscale ! video/x-raw,format=RGB ! mass_model task=domain-specific-object-detection id = damo/cv_tinynas_human-detection_damoyolo ! mass_model_post input={{paramters.foo}} module=./test_pipelines/extensions/break_in_det_postprocess.py ! videoconvert ! {{F.sink('sink1')}}",
+  "dialect": "{{F.source('src1')}} ! decodebin ! videoconvert ! videoscale ! video/x-raw,format=RGB ! flow_modelscope_pipeline task=domain-specific-object-detection id = damo/cv_tinynas_human-detection_damoyolo ! flow_python_extension input={{paramters.foo}} module=./test_pipelines/extensions/break_in_det_postprocess.py class= BreakInDetPostprocess ! videoconvert ! {{F.sink('sink1')}}",
   "parameters": {
     "type": "object",
     "properties": {

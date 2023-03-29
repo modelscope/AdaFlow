@@ -55,10 +55,10 @@ There are lots of built-in elements can be used in `dialect`. We will talk more 
 Finally, to launch an ad-hoc execution for this pipeline:
 
 ```shell
-adaflow launch my_pipelines foobar -d `{"sources": [{"name": "src1", "type": "file", "location": "file.mp4"}], "sinks": [{"name": "sink1", "type": "gst", "element": "filesink", "properties": {"location": "output.mp4"}}]}`
+adaflow launch my_pipelines foobar --task `{"sources": [{"name": "src1", "type": "file", "location": "file.mp4"}], "sinks": [{"name": "sink1", "type": "gst", "element": "filesink", "properties": {"location": "output.mp4"}}]}`
 ```
 
-* we pass the actual task data using `-d` parameter, which accepts JSON string.
+* we pass the actual task data using `--task` parameter, which accepts JSON string.
 * In the task data:
   * a single file source is assigned with input from `file.mp4`
   * a single file sink is assigned, whose output is written to `output.mp4`.
