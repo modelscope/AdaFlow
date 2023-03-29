@@ -7,13 +7,6 @@ All C codes of Adaflow are required to use K&R with 2-space indenting.
 We only require .c files to be indented, headers may be indented differently 
 for better readability. Please use spaces for indenting, not tabs, even in header files.
 
-When you push your commits, apply gst-indent to .c files before you submit 
-a commit with style change. 
-
-```bash
-./tools/development/gst-indent <file-name>
-```
-
 ## C headers (.h)
 You may indent differently from what gst-indent does. You may also break the 80-column rule with header files.
 
