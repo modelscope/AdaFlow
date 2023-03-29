@@ -1,3 +1,9 @@
+/*******************************************************************************
+ * Copyright (c) Alibaba, Inc. and its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0
+ ******************************************************************************/
+
 /**
 * @file flow_video_aggregate.h
 * @brief flow_video_aggregate is a plugin to aggregate the frame using GstAdapter

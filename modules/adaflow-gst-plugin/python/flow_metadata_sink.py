@@ -1,3 +1,4 @@
+# Copyright (c) Alibaba, Inc. and its affiliates.
 """
     AdaFlow python plugin: flow_metadata_sink.
     Publishes the JSON metadata to files.

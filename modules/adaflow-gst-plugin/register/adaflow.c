@@ -1,3 +1,9 @@
+/*******************************************************************************
+* Copyright (c) Alibaba, Inc. and its affiliates.
+*
+* Licensed under the Apache License, Version 2.0
+******************************************************************************/
+
 /**
 * @file	 adaflow.c
 * @brief Registers all adaflow C-plugins for gstreamer so that we can have a single big binary

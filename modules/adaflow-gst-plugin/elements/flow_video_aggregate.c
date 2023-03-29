@@ -1,3 +1,9 @@
+/*******************************************************************************
+* Copyright (c) Alibaba, Inc. and its affiliates.
+*
+* Licensed under the Apache License, Version 2.0
+******************************************************************************/
+
 #include "flow_video_aggregate.h"
 
 #define gst_flowaggregator_parent_class parent_class

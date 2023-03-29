@@ -1,3 +1,4 @@
+# Copyright (c) Alibaba, Inc. and its affiliates.
 import queue
 
 from .delegate_gstreamer_pipeline import DelegateGStreamerPipeline

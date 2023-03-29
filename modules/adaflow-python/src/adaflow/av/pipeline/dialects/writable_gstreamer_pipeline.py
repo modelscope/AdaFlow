@@ -1,3 +1,4 @@
+# Copyright (c) Alibaba, Inc. and its affiliates.
 from .delegate_gstreamer_pipeline import DelegateGStreamerPipeline
 from .gstreamer_pipeline import GStreamerPipeline, GStreamerPipelineBuilder
 from adaflow.av.data.av_data_packet import AVDataPacket

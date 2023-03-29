@@ -1,3 +1,4 @@
+# Copyright (c) Alibaba, Inc. and its affiliates.
 from adaflow.av.utils import gst_video_format_from_string, get_num_channels
 from .av_data_frame import AVDataFrame
 

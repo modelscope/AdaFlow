@@ -1,7 +1,7 @@
+# Copyright (c) Alibaba, Inc. and its affiliates.
 import math
 import json
 import numpy as np
-
 import gi
 gi.require_version('GstVideo', '1.0')
 from gi.repository import GstVideo

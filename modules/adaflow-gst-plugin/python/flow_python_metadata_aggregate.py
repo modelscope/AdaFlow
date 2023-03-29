@@ -1,3 +1,4 @@
+# Copyright (c) Alibaba, Inc. and its affiliates.
 """
     AdaFlow python plugin: flow_meta_aggregator.
     Aggregates inference results from multiple pipeline branches.

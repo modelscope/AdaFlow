@@ -1,3 +1,9 @@
+/*******************************************************************************
+* Copyright (c) Alibaba, Inc. and its affiliates.
+*
+* Licensed under the Apache License, Version 2.0
+******************************************************************************/
+
 /**
  * @file flow_json_meta.h
  * @brief This file contains helper functions to control GstFLOWJSONMeta instances

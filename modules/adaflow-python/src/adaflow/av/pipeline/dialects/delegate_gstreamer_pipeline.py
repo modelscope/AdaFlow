@@ -1,3 +1,4 @@
+# Copyright (c) Alibaba, Inc. and its affiliates.
 import gi
 from .base_pipeline import BasePipeline
 from .gstreamer_pipeline import GStreamerPipeline

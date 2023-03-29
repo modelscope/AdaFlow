@@ -1,3 +1,4 @@
+# Copyright (c) Alibaba, Inc. and its affiliates.
 import json
 from typing import Dict, TypeVar
 import networkx as nx

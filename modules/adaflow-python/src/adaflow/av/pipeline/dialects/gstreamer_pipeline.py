@@ -1,3 +1,4 @@
+# Copyright (c) Alibaba, Inc. and its affiliates.
 import sys
 import threading
 from typing import Dict, Callable, List

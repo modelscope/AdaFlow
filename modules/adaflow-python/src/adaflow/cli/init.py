@@ -1,3 +1,4 @@
+# Copyright (c) Alibaba, Inc. and its affiliates.
 from argparse import ArgumentParser
 import logging
 import os

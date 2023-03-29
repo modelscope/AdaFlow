@@ -1,3 +1,4 @@
+# Copyright (c) Alibaba, Inc. and its affiliates.
 import typing as typ
 from fractions import Fraction
 from enum import Enum

@@ -1,3 +1,4 @@
+# Copyright (c) Alibaba, Inc. and its affiliates.
 """
     AdaFlow python plugin: flow_modelscope_pipeline.
     Run modelscope pipeline and produce result data.

@@ -1,3 +1,4 @@
+# Copyright (c) Alibaba, Inc. and its affiliates.
 import threading, logging
 import gi
 from gi.repository import Gst, GLib

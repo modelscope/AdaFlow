@@ -1,3 +1,4 @@
+# Copyright (c) Alibaba, Inc. and its affiliates.
 """
     AdaFlow python plugin: flow_python_extension.
     Provides a callback to execute user-defined Python functions on every frame.

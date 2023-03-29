@@ -1,3 +1,4 @@
+# Copyright (c) Alibaba, Inc. and its affiliates.
 import argparse
 
 from .launch import LaunchCMD
