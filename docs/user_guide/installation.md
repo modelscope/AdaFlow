@@ -45,7 +45,6 @@ TODO: submit to docker hub and remove this section
 Read-only account for our registry:
 
 * Username: `ali_cr_internal_readonly@aliyun-dha`
-* Password: `gWXPChfZWqVZ64`
 * Endpoint: ivpd-registry-vpc.cn-hangzhou.cr.aliyuncs.com
 
 Please log in first using following command.

@@ -19,7 +19,7 @@ class PipelineComposerTest(unittest.TestCase):
     def test_composing(self):
         c = PipelineComposer("test-piepline")
         # update metadata
-        c.maintainer("long.qul", "long.qul@alibaba-inc.com")
+        c.maintainer("long.qul", "email")
         c.description("fire in the hole")
 
         # route one
