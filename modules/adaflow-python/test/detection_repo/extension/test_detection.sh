@@ -5,7 +5,7 @@ decodebin ! videoconvert ! videoscale ! video/x-raw,format=RGB ! \
 flow_modelscope_pipeline task=domain-specific-object-detection id = damo/cv_tinynas_human-detection_damoyolo ! \
 flow_python_extension input=../resource/config/break_in_count_deploy.yaml module=break_in_det_postprocess.py class= BreakInDetPostprocess function = postprocess ! \
 videoconvert ! jpegenc ! filesink location=../resource/data/break_walk_res.jpg
-#
+
 #reid-person
 gst-launch-1.0 filesrc location=../resource/data/image_reid_person.jpg ! \
 decodebin ! videoconvert ! videoscale ! video/x-raw,format=RGB ! \

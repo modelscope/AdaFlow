@@ -1,3 +1,4 @@
+# Copyright (c) Alibaba, Inc. and its affiliates.
 import os
 import unittest
 from adaflow.av.pipeline.dialects.gstreamer_pipeline import GStreamerPipeline
