@@ -1,0 +1,4 @@
+{
+    "sources": [{"name": "src1", "type": "file", "location": "./detection_repo/resource/data/image_reid_person.jpg"}, {"name": "src2", "type": "file", "location": "./detection_repo/resource/data/image_reid_person.jpg"}],
+    "sinks": [{ "name": "sink1", "type": "fakesink"}]
+}

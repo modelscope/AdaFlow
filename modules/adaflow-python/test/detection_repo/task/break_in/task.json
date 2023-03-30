@@ -1,0 +1,4 @@
+{
+  "sources": [{"name": "src1", "type": "file", "location": "./detection_repo/resource/data/test_walker1.jpeg"}],
+  "sinks": [{ "name": "sink1", "type": "file", "location": "./detection_repo/resource/data/break_walk_res.jpg"}]
+}
