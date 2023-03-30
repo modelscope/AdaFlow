@@ -1,0 +1,9 @@
+.git
+build
+.vscode
+.DS_Store
+.idea
+cmake-build-*
+ossutil_output
+docker
+docs

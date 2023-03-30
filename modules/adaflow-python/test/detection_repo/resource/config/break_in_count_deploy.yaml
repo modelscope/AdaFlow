@@ -1,0 +1,22 @@
+_BASE_: [
+  '../base.yaml',
+]
+
+input_path:
+  'test/data/videos/MOT17-03-partial.mp4'
+
+
+output_path:
+  '../resource/data/'
+
+vis_flag: True
+
+deploy:
+  type: BreakInCounting
+  model_id: 'damo/cv_tinynas_human-detection_damoyolo'
+  rules:
+    is_video: False
+    region_polygon: [[580,152],[620,152],[650,605],[530, 605]]  # 图片规则区域
+    #region_polygon: [[710, 0],[1172,0],[1638,1080],[805, 1080]]  # 视频规则区域
+    frame_rate: 1  # 抽帧频率>=1
+    det_thres: 0.5  # 人体检测阈值

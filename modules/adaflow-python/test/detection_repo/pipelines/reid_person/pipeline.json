@@ -1,0 +1,6 @@
+{
+    "name": "reid_person",
+    "description": "reid person in detection post process",
+    "backend": "GStreamer",
+    "dialect": "{{F.source('src1')}} ! videoconvert ! videoscale ! video/x-raw,format=RGB ! flow_modelscope_pipeline task=image-reid-person id = damo/cv_passvitb_image-reid-person_market meta-key=model1 ! flow_metadata_aggregate name = mixer ! flow_python_extension module=./detection_repo/extension/reid_person_postprocess.py class= ReidPersonPostprocess ! {{F.sink('sink1')}} {{F.source('src2')}} ! videoconvert ! videoscale ! video/x-raw,format=RGB ! flow_modelscope_pipeline task=image-reid-person id = damo/cv_passvitb_image-reid-person_market meta-key=model2 ! mixer."
+  }

@@ -1,0 +1,77 @@
+{
+  "type": "object",
+  "description": "JSON schema for Universal Pipeline Definition",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "maintainer": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        }
+      }
+    },
+    "backend": {
+      "$ref": "#/definitions/backendType"
+    },
+    "pipeline": {
+      "type": "object",
+      "$ref": "#/definitions/pipeline"
+    }
+  },
+  "definitions": {
+    "pipeline": {
+      "type": "object",
+        "descriptor": {
+          "type": "object",
+          "properties": {
+            "^([a-zA-Z0-9_-]+)+$": {
+              "type": "object",
+              "$ref": "/#definitions/pipelineNode"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+  "pipelineNode": {
+    "type": "object",
+    "properties": {
+      "attributes": {
+        "^([a-zA-Z0-9_-]+)+$": {
+          "allOf": [
+            {"type":  "string"},
+            {"type":  "integer"},
+            {"type":  "number"},
+            {"type":  "boolean"}
+          ]
+        }
+      },
+      "component": {
+        "$ref": "/#definitions/componentId"
+      },
+      "next": {
+        "$ref": "/#definitions/componentId"
+      }
+    }
+  },
+  "componentId": {
+    "type": "string",
+    "pattern": "^([a-zA-Z0-9_-]+)+$"
+  },
+  "backendType": {
+    "type": "string",
+    "enum": [
+      "GStreamer"
+    ]
+  }
+}

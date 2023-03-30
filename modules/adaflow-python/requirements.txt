@@ -1,0 +1,7 @@
+numpy
+networkx
+PyGObject
+jinja2
+matplotlib
+jsonschema
+pyyaml

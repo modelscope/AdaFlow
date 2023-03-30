@@ -1,0 +1,8 @@
+{
+  "name": "mux_as_x264_mp4",
+  "backend": "GStreamer",
+  "dialect": [
+    "{{F.source('src1')}}",
+    "{{F.sink('sink1')}}"
+  ]
+}
