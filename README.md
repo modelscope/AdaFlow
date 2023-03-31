@@ -16,7 +16,7 @@ Highlight features:
 Run [Object detection with visualization](./modules/adaflow-python/test/detection_repo/pipelines/real_detector/pipeline.json) using [docker image](./docs/user_guide/docker_images.md):
 
 ```shell
-docker run -it --rm -v $PWD/modules/adaflow-python/test/detection_repo:/detection_repo ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-runtime-cpu:$(arch)-latest \
+docker run -it --rm -v $PWD/modules/adaflow-python/test/detection_repo:/detection_repo adaflow/adaflow-runtime-cpu:$(arch)-latest \
   adaflow launch /detection_repo real_detector --task_path /detection_repo/task/real_detector/task.json
 ```
 
