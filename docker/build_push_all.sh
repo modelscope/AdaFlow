@@ -59,5 +59,5 @@ if [[ -n $tag ]]; then
 
   docker buildx build --push -t adaflow/adaflow-devel-cuda:$tag -f $PROJECT_ROOT/docker/adaflow-devel-cuda.dockerfile $PROJECT_ROOT
 
-  docker buildx build --pull --push -t adaflow/adaflow-devel-cpu:$tag -f $PROJECT_ROOT/docker/adaflow-runtime-cuda.dockerfile $PROJECT_ROOT
+  docker buildx build --pull --push -t adaflow/adaflow-runtime-cuda:$tag -f $PROJECT_ROOT/docker/adaflow-runtime-cuda.dockerfile $PROJECT_ROOT
 fi
