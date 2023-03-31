@@ -34,28 +34,16 @@ pip3 install https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/pip/adaflow/adafl
 
 ## Using Dokcer
 
-Base images are available for cloud environment. Login credentials are required for image registry.
+Docker repositories are hosted on Dockerhub:  
 
-### Credentials for internal registry
+* [adaflow/adaflow-runtime-cuda](https://hub.docker.com/repository/docker/adaflow/adaflow-runtime-cuda/general)
+* [adaflow/adaflow-devel-cuda](https://hub.docker.com/repository/docker/adaflow/adaflow-devel-cuda/general)
+* [adaflow/adaflow-runtime-cpu](https://hub.docker.com/repository/docker/adaflow/adaflow-runtime-cpu/general)
+* [adaflow/adaflow-devel-cpu](https://hub.docker.com/repository/docker/adaflow/adaflow-devel-cpu/general)
 
-TODO: submit to docker hub and remove this section
-
-**Password will be reset every month. Please do not use this credential in production!**
-
-Read-only account for our registry:
-
-* Username: `ali_cr_internal_readonly@aliyun-dha`
-* Endpoint: ivpd-registry-vpc.cn-hangzhou.cr.aliyuncs.com
-
-Please log in first using following command.
-
-```shell
-docker login --username=ali_cr_internal_readonly@aliyun-dha ivpd-registry-vpc.cn-hangzhou.cr.aliyuncs.com
-```
 
 Images repos and their tags can be found at [Docker images](./docker_images.md) page. For instance, if we are launching an interactive shell on a CUDA platform:
 
-
 ```shell
-docker run -it --rm --gpus all ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-devel-cuda /bin/bash
+docker run -it --rm --gpus all adaflow/adaflow-devel-cuda /bin/bash
 ```
