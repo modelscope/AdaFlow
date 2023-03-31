@@ -104,11 +104,11 @@ Default `CMD` for `devel` images is assigned to run python unittest.  So a plain
 For CPU-only images:
 
 ```shell
-docker run -it --rm ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-devel-cpu:$(arch)-latest
+docker run -it --rm adaflow/adaflow-devel-cpu:$(arch)-latest
 ```
 
 For CUDA-enabled images:
 
 ```shell
-docker run -it --rm ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-devel-cuda:latest
+docker run -it --rm adaflow/adaflow-devel-cuda:latest
 ```
