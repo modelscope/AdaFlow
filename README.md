@@ -1,15 +1,15 @@
-# AdaFlow
+English | [简体中文](README_zh.md)
+
+# **AdaFlow: Pipeline Frameworks for Deep-Learning Applications**
 
 
-Pipeline frameworks for deep-learning applications.
-
+# Introduction
+AdaFlow is pipeline frameworks for deep-learning applications.
 Highlight features:
-
 * Low-code pipeline definitions and utilities
 * First-class model hub support
 * Highly customizable audio and video processing components
 * Ready-to-use pipeline server and Docker images
-
 
 ## Quick start
 
