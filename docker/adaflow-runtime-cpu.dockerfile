@@ -1,14 +1,8 @@
-# To build this image
-# docker buildx build --pull --build-arg DEVEL_TAG=$(arch)-latest --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-runtime-cpu:$(arch)-latest -f ./docker/adaflow-runtime-cpu.dockerfile .
-
-# to run this image with interactive shell
-# docker run -it --rm ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-runtime-cpu:$(arch)-latest /bin/bash
-
 ARG ADAFLOW_PREFIX
 ARG DEVEL_TAG
 ARG OS_VERSION=7
 
-FROM ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-devel-cpu:$DEVEL_TAG as builder
+FROM adaflow/adaflow-devel-cpu:$DEVEL_TAG as builder
 
 FROM centos:centos${OS_VERSION}
 ENV ADAFLOW_PREFIX=${ADAFLOW_PREFIX:-/adaflow-install}
