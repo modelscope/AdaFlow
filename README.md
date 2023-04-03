@@ -25,9 +25,9 @@ As requested in [task.json](./modules/adaflow-python/test/detection_repo/task/re
 Install full AdaFlow package using [Conda](https://conda.io/).
 
 ```
-# TODO: replace with conda-forge and pip package after open-sourced 
+# TODO: replace with conda-forge after open-sourced 
 conda install adaflow -c https://viapi-test-bj.oss-accelerate.aliyuncs.com/conda/adaflow
-pip3 install https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/pip/adaflow/adaflow-0.0.1-py3-none-any.whl
+python3 -m pip install adaflow
 ```
 
 **Current packages are only built for linux-x86_64 platform.**

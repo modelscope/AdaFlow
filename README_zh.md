@@ -26,9 +26,9 @@ docker run -it --rm -v $PWD/modules/adaflow-python/test/detection_repo:/detectio
 使用[Conda](https://conda.io/)可安装完整的AdaFlow包。
 
 ```
-# TODO: replace with conda-forge and pip package after open-sourced 
+# TODO: replace with conda-forge after open-sourced 
 conda install adaflow -c https://viapi-test-bj.oss-accelerate.aliyuncs.com/conda/adaflow
-pip3 install https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/pip/adaflow/adaflow-0.0.1-py3-none-any.whl
+python3 -m pip install adaflow
 ```
 
 **当前的包只适合linux-x86_64平台.**
