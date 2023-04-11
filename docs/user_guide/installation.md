@@ -28,8 +28,7 @@ conda install adaflow -c https://viapi-test-bj.oss-accelerate.aliyuncs.com/conda
 and then install pip package:
 
 ```shell
-# TODO replace with pypi package after open-sourced
-pip3 install https://viapi-test-bj.oss-cn-beijing.aliyuncs.com/pip/adaflow/adaflow-0.0.1-py3-none-any.whl
+python3 -m pip install adaflow
 ```
 
 ## Using Dokcer
