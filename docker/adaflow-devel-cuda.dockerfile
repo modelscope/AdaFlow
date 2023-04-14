@@ -1,6 +1,3 @@
-# docker buildx build --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-devel-cuda:latest -f ./docker/adaflow-devel-cuda.dockerfile .
-
-#nvidia/cuda:11.6.2-devel-centos7
 ARG CUDA_VERSION=11.6.2
 ARG OS_VERSION=7
 FROM nvidia/cuda:${CUDA_VERSION}-cudnn8-devel-centos${OS_VERSION}
