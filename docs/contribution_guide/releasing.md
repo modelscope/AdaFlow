@@ -25,13 +25,13 @@ Supported Build args for CPU-only and CUDA image:
 Build the latest devel image for architecture of current host: 
 
 ```shell
-docker buildx build --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-cpu-devel:$(arch)-latest -f ./docker/adaflow-cpu-devel.dockerfile .
+docker buildx build --push -t adaflow/adaflow-cpu-devel:$(arch)-latest -f ./docker/adaflow-cpu-devel.dockerfile .
 ```
 
 Build the latest runtime image for architecture of current host:
 
 ```shell
-docker buildx build --pull --build-arg DEVEL_TAG=$(arch)-latest --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-runtime-cpu:$(arch)-latest -f ./docker/adaflow-runtime-cpu.dockerfile .
+docker buildx build --pull --build-arg DEVEL_TAG=$(arch)-latest --push -t adaflow/adaflow-runtime-cpu:$(arch)-latest -f ./docker/adaflow-runtime-cpu.dockerfile .
 ```
 
 
@@ -40,13 +40,13 @@ docker buildx build --pull --build-arg DEVEL_TAG=$(arch)-latest --push -t ivpd-r
 Build development image for CUDA-enabled X86_64 machines:
 
 ```shell
-docker buildx build --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-devel-cuda:latest -f ./docker/adaflow-devel-cuda.dockerfile .
+docker buildx build --push -t adaflow/adaflow-devel-cuda:latest -f ./docker/adaflow-devel-cuda.dockerfile .
 ```
 
 Build runtime image for CUDA-enabled X86_64 machines:
 
 ```shell
-docker buildx build --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-runtime-cuda:latest -f ./docker/adaflow-runtime-cuda.dockerfile .
+docker buildx build --push -t adaflow/adaflow-runtime-cuda:latest -f ./docker/adaflow-runtime-cuda.dockerfile .
 ```
 
 

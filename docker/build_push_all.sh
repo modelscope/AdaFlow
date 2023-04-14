@@ -53,12 +53,11 @@ if [[ -n $tag ]]; then
   SCRIPT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
   PROJECT_ROOT=${SCRIPT_ROOT}/..
 
-  docker buildx build --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-devel-cpu:$(arch)-$tag -f $PROJECT_ROOT/docker/adaflow-devel-cpu.dockerfile $PROJECT_ROOT
+  docker buildx build --push -t adaflow/adaflow-devel-cpu:$(arch)-$tag -f $PROJECT_ROOT/docker/adaflow-devel-cpu.dockerfile $PROJECT_ROOT
 
-  docker buildx build  --build-arg DEVEL_TAG=$(arch)-$tag --pull --push  -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-runtime-cpu:$(arch)-$tag -f $PROJECT_ROOT/docker/adaflow-runtime-cpu.dockerfile $PROJECT_ROOT
+  docker buildx build  --build-arg DEVEL_TAG=$(arch)-$tag --pull --push  -t adaflow/adaflow-runtime-cpu:$(arch)-$tag -f $PROJECT_ROOT/docker/adaflow-runtime-cpu.dockerfile $PROJECT_ROOT
 
+  docker buildx build --push -t adaflow/adaflow-devel-cuda:$tag -f $PROJECT_ROOT/docker/adaflow-devel-cuda.dockerfile $PROJECT_ROOT
 
-  docker buildx build --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-devel-cuda:$tag -f $PROJECT_ROOT/docker/adaflow-devel-cuda.dockerfile $PROJECT_ROOT
-
-  docker buildx build --pull --push -t ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-runtime-cuda:$tag -f $PROJECT_ROOT/docker/adaflow-runtime-cuda.dockerfile $PROJECT_ROOT
+  docker buildx build --pull --push -t adaflow/adaflow-devel-cpu:$tag -f $PROJECT_ROOT/docker/adaflow-runtime-cuda.dockerfile $PROJECT_ROOT
 fi
