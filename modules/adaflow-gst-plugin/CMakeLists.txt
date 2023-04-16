@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(adaflow-gst-plugin VERSION 1.0.1)
+project(adaflow-gst-plugin VERSION 0.0.1)
 
 # search for external dependencies
 find_package(PkgConfig)
