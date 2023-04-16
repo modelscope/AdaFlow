@@ -31,9 +31,7 @@ GST_PLUGIN_DEFINE(GST_VERSION_MAJOR,
                   "adaflow plugins",
                   plugin_init,
                   // VERSION
-                  "1.0.1",
-                  // LICENSE
-                  // FIXME(long.qul) which license?
-                  "LGPL",
+                  "0.0.1",
+                  "Apache License 2.0",
                   "adaflow",
-                  "https://github.com/alibaba/adaflow");
+                  "https://github.com/modelscope/AdaFlow");
