@@ -56,14 +56,16 @@ adaflow launch ./modules/adaflow-python/test/detection_repo real_detector --task
 ## 📖开发指南
 
 - 入门教程
-  * [创建和运行第一个pipeline](./docs/user_guide/start_a_pipeline.md)
+  * [基础教程1:创建和运行第一个pipeline](docs/user_guide/tutorials/basic_tutorial_1.md)
+  * [基础教程2:单模型pipeline搭建](docs/user_guide/tutorials/basic_tutorial_2.md)
+  * [基础教程3:多模型并联pipeline搭建](docs/user_guide/tutorials/basic_tutorial_3.md)
 - 进阶教程
-  * [Built-in elements](./docs/user_guide/built_in_elements.md)
-  * [Composing a Pipeline](./docs/user_guide/composing_a_pipeline.md)
-  * [Pipeline and other concepts](./docs/user_guide/concept.md)
-  * [Serve pipelines as REST services](./docs/user_guide/pipeline_server.md)
-  * [Using command line interface](./docs/user_guide/cli.md)
-  * [Python Extension](./docs/user_guide/python_extension.md)
+  * [AdaFlow插件详解](./docs/user_guide/built_in_elements.md)
+  * [pipeline的构建](./docs/user_guide/composing_a_pipeline.md)
+  * [CLI工具](./docs/user_guide/cli.md)
+  * [编写扩展代码](./docs/user_guide/python_extension.md)
+  * [pipeline和其他概念](./docs/user_guide/concept.md)
+  * [pipeline服务化](./docs/user_guide/pipeline_server.md)
 
 
 ## 🙌贡献指南
