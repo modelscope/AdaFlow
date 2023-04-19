@@ -3,55 +3,69 @@ English | [简体中文](README.md)
 # **AdaFlow: Pipeline Frameworks for Deep-Learning Applications**
 
 
-# Introduction
-AdaFlow is pipeline frameworks for deep-learning applications.
-Highlight features:
-* Low-code pipeline definitions and utilities
-* First-class model hub support
-* Highly customizable audio and video processing components
-* Ready-to-use pipeline server and Docker images
+# 📘Introduction
+AdaFlow is cross-modal, cross-platform pipeline frameworks, which provides a unified solution for 
+NN model inference, construction, and deployment.
 
-## Quick start
+## ✨Highlight Features:
+- flexible plug-in design
+  * users can easily arrange custom multiple neural network models pipelines by combining different plug-in components
+- highly customizable audio and video processing plug-ins
+  * hundreds other [GStreamer* plugins](https://gstreamer.freedesktop.org/documentation/plugins_doc.html) built on various open-source libraries for media input and output, muxing and demuxing, decode and encode
+- ModelScope support
+  * first-class model hub support, set the model ID to pull and run the modelscope model in the pipeline
+- easy to use
+  * low-code pipeline definitions and utilities, ready-to-use pipeline server and Docker images
 
-Run [Object detection with visualization](./modules/adaflow-python/test/detection_repo/pipelines/real_detector/pipeline.json) using [docker image](./docs/user_guide/docker_images.md):
+# ⚡️Quick Start
+## 🛠️ Environment Setup
+AdaFlow supports multiple ways of environment setup, and developers can choose any installation method according to their needs.
 
-```shell
-docker run -it --rm -v $PWD/modules/adaflow-python/test/detection_repo:/detection_repo ivpd-registry.cn-hangzhou.cr.aliyuncs.com/adaflow/adaflow-runtime-cpu:$(arch)-latest \
-  adaflow launch /detection_repo real_detector --task_path /detection_repo/task/real_detector/task.json
-```
+### 1.Docker Images 
+AdaFlow provides an official docker image, easy to get started.  
+[Docker image version and address](./docs/user_guide/docker_images.md)
 
-As requested in [task.json](./modules/adaflow-python/test/detection_repo/task/real_detector/task.json), detection results are visualized with colored bounding boxes drawn on original frames and encoded as a new MP4 file at `modules/adaflow-python/test/detection_repo/resource/data/MOT17-03-partial_detector_vis.mp4`.
-
+### 2.Install AdaFlow Package
 Install full AdaFlow package using [Conda](https://conda.io/).
-
 ```
-# TODO: replace with conda-forge after open-sourced 
-conda install adaflow -c https://viapi-test-bj.oss-accelerate.aliyuncs.com/conda/adaflow
+Step 1: conda package installation
+conda install adaflow
+Step 2: python dependency installation
 python3 -m pip install adaflow-python
 ```
-
 **Current packages are only built for linux-x86_64 platform.**
 
-To see more about installation, please refer to [Installation](./docs/user_guide/installation.md) in user guide. 
+To see more about installation, please refer to [Installation](./docs/user_guide/installation.md) in user guide.
+
+### 3.Build From Source
+Developers can install AdaFlow through source code compilation.  
+[Build from source](./docs/contribution_guide/build_from_source.md)
+
+## ⏩Main Functions
+Run [Object detection with visualization](./modules/adaflow-python/test/detection_repo/pipelines/real_detector/pipeline.json)
+
+```shell
+adaflow launch ./modules/adaflow-python/test/detection_repo real_detector --task_path ./modules/adaflow-python/test/detection_repo/task/real_detector/task.json 
+```
+<div align="center"><img src="./docs/user_guide/images/output.gif" width=900/></div>
 
 
-## Developer Guide
+## 📖Developer Guide
 
-* Get started
-  * [Installation](./docs/user_guide/installation.md)
-  * [Composing a Pipeline](./docs/user_guide/composing_a_pipeline.md)
-  * [Official Docker images](./docs/user_guide/docker_images.md)
-* To write a re-usable pipeline
+- Basic Tutorials
+  * [Basic Tutorial 1:compose and run the first pipeline](docs/user_guide/tutorials/basic_tutorial_1_EN.md)
+  * [Basic Tutorial 2:compose a simple single model pipeline](docs/user_guide/tutorials/basic_tutorial_2_EN.md)
+  * [Basic Tutorial 3:compose a multi-model parallel pipeline](docs/user_guide/tutorials/basic_tutorial_3_EN.md)
+- Advanced Tutorials
   * [Built-in elements](./docs/user_guide/built_in_elements.md)
-  * [Pipeline and other concepts](./docs/user_guide/concept.md)
-* To run pipelines in production
-  * [Serve pipelines as REST services](./docs/user_guide/pipeline_server.md)
+  * [Composing a Pipeline](./docs/user_guide/composing_a_pipeline.md)
   * [Using command line interface](./docs/user_guide/cli.md)
-* Extend framework capabilities
   * [Python Extension](./docs/user_guide/python_extension.md)
+  * [Pipeline and other concepts](./docs/user_guide/concept.md)
+  * [Serve pipelines as REST services](./docs/user_guide/pipeline_server.md)
 
 
-## Contribution Guide
+## 🙌Contribution Guide
 
 ### Roadmap
 
@@ -65,8 +79,11 @@ To request a feature or submit a bug, please use GitHub Issues.
 
 ### Contribute to AdaFlow
 
-Please read following guidelines before submitting a PR:
+All contributions are welcome to improve AdaFlow. Please read following guidelines before submitting a PR:
 
 * [Building from source](docs/contribution_guide/build_from_source.md)
 * [Pacakge releasing](./docs/contribution_guide/releasing.md)
 * [Coding Guidelines](./docs/contribution_guide/coding_guidelines.md)
+
+## 📄License
+This project is licensed under the Apache License (Version 2.0).
