@@ -18,7 +18,7 @@ enum {
     PROP_JSON_PATH,
 };
 
-#define PROP_JSON_PATH_DEFAULT ""
+#define PROP_JSON_PATH_DEFAULT " "
 
 G_DEFINE_TYPE(GstFrameconvert, gst_frameconvert, GST_TYPE_ELEMENT);
 GST_ELEMENT_REGISTER_DEFINE(flow_tensor_decode, "flow_tensor_decode", GST_RANK_NONE,
@@ -131,9 +131,8 @@ static GstFlowReturn gst_frameconvert_chain(GstPad* pad, GstObject* parent,
     guint i, j, k, batch, channel, height, width, size, maxsize;
     VARIABLE_TYPE vtype;
 
-    if(filter->json_path)
+    if(filter->json_path != " ")
     {
-
         gchar* json_message = gst_buffer_get_json_info_meta(buf);
 
         json jobject =json::parse(json_message);

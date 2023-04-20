@@ -17,6 +17,8 @@ set(FLOW_GST_BACKEND_TARGET_NAMES ${FLOW_GST_BACKEND_CORE_DY_LIB_NAME})
 set(FLOW_GST_BACKEND_SOURCE_FILES
         elements/flow_video_aggregate.c
         elements/flow_video_aggregate.h
+        elements/flow_tensor_aggregate.c
+        elements/flow_tensor_aggregate.h
         register/adaflow.cpp
         elements/common.c
         elements/common.h
