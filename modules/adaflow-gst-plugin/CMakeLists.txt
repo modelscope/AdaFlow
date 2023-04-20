@@ -24,8 +24,8 @@ set(FLOW_GST_BACKEND_SOURCE_FILES
         metadata/flow_json_meta.cc
         elements/meta_tensor.cpp
         elements/meta_tensor.h
-        elements/flow_frame_convert.c
-        elements/flow_frame_convert.h
+        elements/flow_tensor_decode.cpp
+        elements/flow_tensor_decode.h
         elements/flow_tensor_convert.h
         elements/flow_tensor_convert.c
         elements/flow_tensor_transform.h
@@ -81,8 +81,6 @@ foreach(TARGET_NAME ${FLOW_GST_BACKEND_TARGET_NAMES})
             EXPORT ${TARGET_NAME}_TARGETS
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/gstreamer-1.0
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/gstreamer-1.0
-            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
             RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
             PUBLIC_HEADER DESTINATION include
             )

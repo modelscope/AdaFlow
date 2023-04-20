@@ -6,6 +6,12 @@
 
 #include "meta_tensor.h"
 
+#include "metadata/flow_json_meta.h"
+#include <fstream>
+
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
+
 G_BEGIN_DECLS
 /* */
 GType gst_frameconvert_get_type();
@@ -42,6 +48,9 @@ struct _GstFrameconvert {
     /* properties */
     guint pad_count;
     gboolean initialized;
+
+    char* json_path;
+
 };
 
 /**
@@ -51,7 +60,7 @@ struct _GstFrameconvertClass {
     GstElementClass parent_class;
 };
 
-GST_ELEMENT_REGISTER_DECLARE(flow_frame_convert);
+GST_ELEMENT_REGISTER_DECLARE(flow_tensor_decode);
 
 G_END_DECLS
 /* */
