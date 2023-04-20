@@ -1,4 +1,4 @@
-#include "flow_frame_convert.h"
+#include "flow_tensor_decode.h"
 #include <stdlib.h>
 
 #include "meta_tensor.h"
@@ -15,10 +15,13 @@ static GstStaticPadTemplate src_factory = GST_STATIC_PAD_TEMPLATE(
 
 enum {
     PROP_0,
+    PROP_JSON_PATH,
 };
 
+#define PROP_JSON_PATH_DEFAULT ""
+
 G_DEFINE_TYPE(GstFrameconvert, gst_frameconvert, GST_TYPE_ELEMENT);
-GST_ELEMENT_REGISTER_DEFINE(flow_frame_convert, "flow_frame_convert", GST_RANK_NONE,
+GST_ELEMENT_REGISTER_DEFINE(flow_tensor_decode, "flow_tensor_decode", GST_RANK_NONE,
                             GST_TYPE_FRAMECONVERT);
 
 static void gst_frameconvert_set_property(GObject* object, guint prop_id,
@@ -27,6 +30,10 @@ static void gst_frameconvert_set_property(GObject* object, guint prop_id,
     GstFrameconvert* filter = GST_FRAMECONVERT(object);
 
     switch (prop_id) {
+        case PROP_JSON_PATH:
+            filter->json_path = g_value_dup_string(value);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
             break;
@@ -38,6 +45,9 @@ static void gst_frameconvert_get_property(GObject* object, guint prop_id,
     GstFrameconvert* filter = GST_FRAMECONVERT(object);
 
     switch (prop_id) {
+        case PROP_JSON_PATH:
+            g_value_set_string(value, filter->json_path);
+            break;
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
             break;
@@ -46,7 +56,7 @@ static void gst_frameconvert_get_property(GObject* object, guint prop_id,
 
 static gboolean gst_frameconvert_sink_event(GstPad* pad, GstObject* parent,
                                             GstEvent* event) {
-    GstFrameconvertPad* filterpad = gst_pad_get_element_private(pad);
+    GstFrameconvertPad* filterpad = (GstFrameconvertPad*)gst_pad_get_element_private(pad);
 
     if (GST_EVENT_TYPE(event) == GST_EVENT_CAPS) {
         GstCaps* caps;
@@ -117,9 +127,24 @@ static gboolean gst_frameconvert_sink_event(GstPad* pad, GstObject* parent,
 static GstFlowReturn gst_frameconvert_chain(GstPad* pad, GstObject* parent,
                                             GstBuffer* buf) {
     GstFrameconvert* filter = GST_FRAMECONVERT(parent);
-    GstFrameconvertPad* filterpad = gst_pad_get_element_private(pad);
+    GstFrameconvertPad* filterpad = (GstFrameconvertPad*)gst_pad_get_element_private(pad);
     guint i, j, k, batch, channel, height, width, size, maxsize;
     VARIABLE_TYPE vtype;
+
+    if(filter->json_path)
+    {
+
+        gchar* json_message = gst_buffer_get_json_info_meta(buf);
+
+        json jobject =json::parse(json_message);
+
+        std::ofstream o(filter->json_path);
+
+        o << std::setw(4) << jobject << std::endl;
+
+    }
+
+
 
     // if (!filter->initialized)
     {
@@ -297,7 +322,12 @@ static void gst_frameconvert_class_init(GstFrameconvertClass* klass) {
 
     object_class->set_property = gst_frameconvert_set_property;
 
-    gst_element_class_set_details_simple(element_class, "flow_frame_convert",
+    g_object_class_install_property(
+            object_class, PROP_JSON_PATH,
+            g_param_spec_string("json-path", "json-path", "JSON path used for decode tensor ?",
+                                PROP_JSON_PATH_DEFAULT, G_PARAM_WRITABLE));
+
+    gst_element_class_set_details_simple(element_class, "flow_tensor_decode",
                                          "adaflow", "tensor to video frame",
                                          "AUTHOR_NAME AUTHOR_EMAIL");
 
@@ -314,4 +344,5 @@ static void gst_frameconvert_init(GstFrameconvert* filter) {
     // g_print("[frame convert] init()\n");
     filter->pad_count = 0;
     filter->initialized = FALSE;
+    filter->json_path = PROP_JSON_PATH_DEFAULT;
 }

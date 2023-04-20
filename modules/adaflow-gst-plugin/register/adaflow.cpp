@@ -11,7 +11,7 @@
 
 #include <gst/gst.h>
 #include <elements/flow_video_aggregate.h>
-#include <elements/flow_frame_convert.h>
+#include <elements/flow_tensor_decode.h>
 #include <elements/flow_tensor_convert.h>
 #include <elements/flow_tensor_transform.h>
 
@@ -26,7 +26,7 @@ static gboolean plugin_init(GstPlugin* plugin) {
   gboolean ret = FALSE;
   ret |= GST_ELEMENT_REGISTER(flow_video_aggregate, plugin);
   ret |= GST_ELEMENT_REGISTER(flow_tensor_convert, plugin);
-  ret |= GST_ELEMENT_REGISTER(flow_frame_convert, plugin);
+  ret |= GST_ELEMENT_REGISTER(flow_tensor_decode, plugin);
   ret |= GST_ELEMENT_REGISTER(flow_tensor_transform, plugin);
 
 #if defined(ADAFLOW_USE_TRT)
@@ -50,4 +50,4 @@ GST_PLUGIN_DEFINE(GST_VERSION_MAJOR,
                   // FIXME(long.qul) which license?
                   "LGPL",
                   "adaflow",
-                  "https://github.com/alibaba/adaflow");
+                  "https://github.com/modelscope/AdaFlow");
