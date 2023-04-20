@@ -151,3 +151,5 @@ gboolean gst_buffer_remove_json_info_meta(GstBuffer *buffer)
   // https://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstBuffer.html#gst-buffer-remove-meta
   return gst_buffer_remove_meta(buffer, &meta->meta);
 }
+
+
