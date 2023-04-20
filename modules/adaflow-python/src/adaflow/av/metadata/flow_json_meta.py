@@ -19,9 +19,9 @@ logger = logging.getLogger("JSONMetadata")
 sys_platform = platform.platform().lower()
 
 if "macos" in sys_platform or "darwin" in sys_platform:
-    libgst = CDLL(os.getenv("LIB_GSTREAMER_PATH", "libflowmetadata.dylib"))
+    libgst = CDLL(os.getenv("LIB_GSTREAMER_PATH", "libflow_gst_plugin.dylib"))
 elif "linux" in sys_platform:
-    libgst = CDLL(os.getenv("LIB_GSTREAMER_PATH", "libflowmetadata.so"))
+    libgst = CDLL(os.getenv("LIB_GSTREAMER_PATH", "libflow_gst_plugin.so"))
 else:
     print("other platform")
 

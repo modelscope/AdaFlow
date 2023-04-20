@@ -54,6 +54,11 @@ endif()
 set(FLOW_GST_BACKEND_CORE_DY_LIB_NAME flow_gst_plugin)
 #set(FLOW_GST_BACKEND_STATIC_LIB_NAME flow_gst_backend_static)
 
+# set option
+OPTION(ADAFLOW_USE_CUDA "Build with CUDA" ON)
+OPTION(ADAFLOW_USE_TRT "Build with TRT" ON)
 
 # add sub-modules
 add_subdirectory(modules/adaflow-gst-plugin)
+add_subdirectory(3rdparty/json)
+
