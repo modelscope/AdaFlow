@@ -31,7 +31,9 @@ set(FLOW_GST_BACKEND_SOURCE_FILES
         elements/flow_tensor_convert.h
         elements/flow_tensor_convert.c
         elements/flow_tensor_transform.h
-        elements/flow_tensor_transform.c)
+        elements/flow_tensor_transform.c
+        elements/flow_tensor_compositor.h
+        elements/flow_tensor_compositor.c)
 
 set(FLOW_CORE_LINK_LIBRARIES nlohmann_json::nlohmann_json)
 
