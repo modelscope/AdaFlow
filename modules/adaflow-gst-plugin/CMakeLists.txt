@@ -15,11 +15,13 @@ pkg_search_module(GST_AUDIO REQUIRED gstreamer-audio-1.0)
 
 set(FLOW_GST_BACKEND_TARGET_NAMES ${FLOW_GST_BACKEND_CORE_DY_LIB_NAME})
 set(FLOW_GST_BACKEND_SOURCE_FILES
+        register/adaflow.cpp
+        data/av_data_frame.h
+        data/av_data_packet.h
         elements/flow_video_aggregate.c
         elements/flow_video_aggregate.h
         elements/flow_tensor_aggregate.c
         elements/flow_tensor_aggregate.h
-        register/adaflow.cpp
         elements/common.c
         elements/common.h
         metadata/flow_json_meta.h
