@@ -66,6 +66,8 @@ enum {
     PROP_SR,
     PROP_INPUT_STRING,
     PROP_ADD_META,
+    PROP_META_KEY,
+
 };
 
 G_DEFINE_TYPE(GstTrtinfer, gst_trtinfer, GST_TYPE_ELEMENT);
@@ -80,6 +82,7 @@ GST_ELEMENT_REGISTER_DEFINE(flow_trtinfer, "flow_trtinfer", GST_RANK_NONE,
 #define INPUT_NAME "input"
 #define DEFAULT_SR 1
 #define INPUT_STRING ""
+#define DEFAULT_META_KEY "modelout"
 
 static void gst_trtinfer_set_property(GObject* object, guint prop_id,
                                       const GValue* value, GParamSpec* pspec) {
@@ -125,6 +128,10 @@ static void gst_trtinfer_set_property(GObject* object, guint prop_id,
 
         case PROP_ADD_META:
             filter->add_meta = g_value_get_boolean(value);
+            break;
+
+        case PROP_META_KEY:
+            filter->meta_key = g_value_dup_string(value);
             break;
 
         default:
@@ -176,6 +183,10 @@ static void gst_trtinfer_get_property(GObject* object, guint prop_id,
 
         case PROP_ADD_META:
             g_value_set_boolean(value, filter->add_meta);
+            break;
+
+        case PROP_META_KEY:
+            g_value_set_string(value, filter->meta_key);
             break;
 
         default:
@@ -343,7 +354,7 @@ static GstFlowReturn gst_trtinfer_chain(GstPad* pad, GstObject* parent,
 
         if(filter->add_meta)
         {
-            gst_add_meta_to_buffer(filter->model_trt, buf);
+            gst_add_meta_to_buffer(filter->model_trt, buf, filter->meta_key);
         }
 
         return gst_pad_push(filterpad->srcpad, buf);
@@ -504,6 +515,11 @@ static void gst_trtinfer_class_init(GstTrtinferClass* klass) {
             g_param_spec_boolean("add-meta", "add-meta",
                                 "is to add metadata attach buffer",
                                 false, param_flags));
+    g_object_class_install_property(
+            object_class, PROP_META_KEY,
+            g_param_spec_string("meta-key", "meta-key",
+                                "the keyword of the results which attach to the GstBuffer",
+                                DEFAULT_META_KEY, param_flags));
 
     gst_element_class_set_details_simple(element_class, "flow_trtinfer", "adaflow",
                                          "flow_trtinfer", "AUTHOR_NAME AUTHOR_EMAIL");
@@ -532,9 +548,11 @@ static void gst_trtinfer_init(GstTrtinfer* filter) {
     filter->model_input_name = g_strdup(INPUT_NAME);
     filter->SR = DEFAULT_SR;
     filter->input_string = g_strdup(INPUT_STRING);
+    filter->meta_key = g_strdup(DEFAULT_META_KEY);
+
 }
 
-void gst_add_meta_to_buffer(TrtInfer* model_trt, GstBuffer* buffer)
+void gst_add_meta_to_buffer(TrtInfer* model_trt, GstBuffer* buffer, std::string meta_key)
 {
     json jobject = json::object({});
 
@@ -592,7 +610,11 @@ void gst_add_meta_to_buffer(TrtInfer* model_trt, GstBuffer* buffer)
         jobject.push_back({output_name,jarry});
     }
 
-    std::string message = jobject.dump(1);
+    json jobject_key = json::object({});
+
+    jobject_key.push_back({meta_key, jobject});
+
+    std::string message = jobject_key.dump(1);
 
     GstFLOWJSONMeta *jsonmeta =gst_buffer_add_json_info_meta(buffer, message.c_str());
 

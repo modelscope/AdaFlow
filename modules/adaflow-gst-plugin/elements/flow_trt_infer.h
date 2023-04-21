@@ -18,7 +18,7 @@
 #include <gst/video/video.h>
 
 #include "common.h"
-#include "elements/meta_tensor.h"
+#include "meta_tensor.h"
 #include "ann/trt/trt_infer.h"
 #include "metadata/flow_json_meta.h"
 
@@ -69,6 +69,7 @@ struct _GstTrtinfer {
     gboolean lum_only;
     gboolean flexible;
     gboolean add_meta;
+    gchar* meta_key;
     float SR;
     // GMutex mutex;
     // Model *model;
@@ -94,7 +95,7 @@ struct _GstTrtinferClass {
     GstElementClass parent_class;
 };
 
-void gst_add_meta_to_buffer(TrtInfer* model_trt, GstBuffer* buffer);
+void gst_add_meta_to_buffer(TrtInfer* model_trt, GstBuffer* buffer, std::string meta_key);
 
 GST_ELEMENT_REGISTER_DECLARE(flow_trtinfer);
 
