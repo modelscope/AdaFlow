@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(adaflow-gst-plugin VERSION 0.0.1)
 
+# set cuda version
+set(ADAFLOW_CUDA_VERSION "11.6" CACHE STRING "cuda runtime version of current system. defaults to 11.6")
+
 # search for external dependencies
 find_package(PkgConfig)
 pkg_search_module(GLIB REQUIRED glib-2.0)
@@ -11,7 +14,63 @@ pkg_search_module(GST_VIDEO REQUIRED gstreamer-video-1.0)
 pkg_search_module(GST_AUDIO REQUIRED gstreamer-audio-1.0)
 
 set(FLOW_GST_BACKEND_TARGET_NAMES ${FLOW_GST_BACKEND_CORE_DY_LIB_NAME})
-set(FLOW_GST_BACKEND_SOURCE_FILES elements/flow_video_aggregate.c elements/flow_video_aggregate.h register/adaflow.c)
+set(FLOW_GST_BACKEND_SOURCE_FILES
+        register/adaflow.cpp
+        data/av_data_frame.h
+        data/av_data_packet.h
+        elements/flow_video_aggregate.c
+        elements/flow_video_aggregate.h
+        elements/flow_tensor_aggregate.c
+        elements/flow_tensor_aggregate.h
+        elements/common.c
+        elements/common.h
+        metadata/flow_json_meta.h
+        metadata/flow_json_meta.cc
+        elements/meta_tensor.cpp
+        elements/meta_tensor.h
+        elements/flow_tensor_decode.cpp
+        elements/flow_tensor_decode.h
+        elements/flow_tensor_convert.h
+        elements/flow_tensor_convert.c
+        elements/flow_tensor_transform.h
+        elements/flow_tensor_transform.c
+        elements/flow_tensor_compositor.h
+        elements/flow_tensor_compositor.c
+        elements/flow_tensor_resize.h
+        elements/flow_tensor_resize.cpp)
+
+# add extension
+list(APPEND FLOW_GST_BACKEND_SOURCE_FILES
+        # subplugin
+        subplugin/flow_c_extension.c
+        subplugin/flow_c_extension.h
+        subplugin/flow_extension_common.h
+        subplugin/flow_extension_util.c
+        subplugin/flow_extension_util.h
+        subplugin/src_plugins/flow_subplugin.c
+        subplugin/src_plugins/flow_subplugin.h
+        )
+
+set(FLOW_CORE_LINK_LIBRARIES nlohmann_json::nlohmann_json)
+
+# configure cuda
+IF (ADAFLOW_USE_CUDA)
+    message(STATUS "Enable CUDA")
+    add_compile_definitions(ADAFLOW_USE_CUDA)
+    pkg_search_module(CUDA REQUIRED cudart-${ADAFLOW_CUDA_VERSION})
+    list(APPEND FLOW_CORE_LINK_LIBRARIES ${CUDA_LIBRARIES})
+    list(APPEND FLOW_CORE_EXTRA_INCLUDE_DIRS ${CUDA_INCLUDE_DIRS})
+ENDIF ()
+
+# configure trt
+IF (ADAFLOW_USE_TRT)
+    message(STATUS "Enable TensorRT")
+    add_compile_definitions(ADAFLOW_USE_TRT)
+    list(APPEND FLOW_GST_BACKEND_SOURCE_FILES ann/trt/trt_infer.cpp ann/trt/trt_infer.h)
+    list(APPEND FLOW_GST_BACKEND_SOURCE_FILES elements/flow_trt_infer.cpp elements/flow_trt_infer.h)
+    list(APPEND FLOW_CORE_LINK_LIBRARIES libnvinfer.so libnvonnxparser.so)
+ENDIF ()
+
 add_library(${FLOW_GST_BACKEND_TARGET_NAMES} SHARED ${FLOW_GST_BACKEND_SOURCE_FILES})
 foreach(TARGET_NAME ${FLOW_GST_BACKEND_TARGET_NAMES})
     # add include dirs of local source files
@@ -24,7 +83,8 @@ foreach(TARGET_NAME ${FLOW_GST_BACKEND_TARGET_NAMES})
             ${GST_VIDEO_INCLUDE_DIRS}
             ${GST_AUDIO_INCLUDE_DIRS}
             ${GST_APP_INCLUDE_DIRS}
-            ${GLIB_INCLUDE_DIRS})
+            ${GLIB_INCLUDE_DIRS}
+            ${FLOW_CORE_EXTRA_INCLUDE_DIRS})
 
 
     # link libraries AND their dependencies
@@ -34,7 +94,8 @@ foreach(TARGET_NAME ${FLOW_GST_BACKEND_TARGET_NAMES})
             ${GST_VIDEO_LIBRARIES}
             ${GST_AUDIO_LIBRARIES}
             ${GST_APP_LIBRARIES}
-            ${GLIB_LIBRARIES})
+            ${GLIB_LIBRARIES}
+            ${FLOW_CORE_LINK_LIBRARIES})
 
     install(TARGETS ${TARGET_NAME}
             EXPORT ${TARGET_NAME}_TARGETS
@@ -48,37 +109,5 @@ endforeach()
 
 
 # install gst plugins written in python
-set(PYTHON_PLUGIN_SRCS python/flow_metadata_sink.py python/flow_modelscope_pipeline.py python/flow_python_extension.py python/flow_python_metadata_aggregate.py)
+set(PYTHON_PLUGIN_SRCS python/flow_metadata_sink.py python/flow_modelscope_pipeline.py python/flow_python_extension.py python/flow_python_metadata_aggregate.py python/flow_c2python.py)
 install(FILES ${PYTHON_PLUGIN_SRCS} DESTINATION ${CMAKE_INSTALL_LIBDIR}/gstreamer-1.0/python)
-
-
-set(FLOW_META_DY_LIB_TARGET_NAME flowmetadata)
-list(APPEND FLOW_META_SOURCE_FILES
-        metadata/flow_json_meta.h
-        metadata/flow_json_meta.cc
-        )
-add_library(${FLOW_META_DY_LIB_TARGET_NAME} SHARED ${FLOW_META_SOURCE_FILES})
-
-target_include_directories(${FLOW_META_DY_LIB_TARGET_NAME}  SYSTEM PUBLIC
-        ${GST_INCLUDE_DIRS}
-        ${GST_BASE_INCLUDE_DIRS}
-        ${GST_VIDEO_INCLUDE_DIRS}
-        ${GST_AUDIO_INCLUDE_DIRS}
-        ${GST_APP_INCLUDE_DIRS}
-        ${GLIB_INCLUDE_DIRS})
-target_link_libraries(${FLOW_META_DY_LIB_TARGET_NAME} PUBLIC
-        ${GST_LIBRARIES}
-        ${GST_BASE_LIBRARIES}
-        ${GST_VIDEO_LIBRARIES}
-        ${GST_AUDIO_LIBRARIES}
-        ${GST_APP_LIBRARIES}
-        ${GLIB_LIBRARIES}
-        ${XST_META_LINK_LIBRARIES})
-
-install(TARGETS ${FLOW_META_DY_LIB_TARGET_NAME}
-        EXPORT ${FLOW_META_DY_LIB_TARGET_NAME}_TARGETS
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-        PUBLIC_HEADER DESTINATION include
-        )
