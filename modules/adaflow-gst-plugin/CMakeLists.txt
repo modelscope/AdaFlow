@@ -39,6 +39,18 @@ set(FLOW_GST_BACKEND_SOURCE_FILES
         elements/flow_tensor_resize.h
         elements/flow_tensor_resize.cpp)
 
+# add extension
+list(APPEND FLOW_GST_BACKEND_SOURCE_FILES
+        # subplugin
+        subplugin/flow_c_extension.c
+        subplugin/flow_c_extension.h
+        subplugin/flow_extension_common.h
+        subplugin/flow_extension_util.c
+        subplugin/flow_extension_util.h
+        subplugin/src_plugins/flow_subplugin.c
+        subplugin/src_plugins/flow_subplugin.h
+        )
+
 set(FLOW_CORE_LINK_LIBRARIES nlohmann_json::nlohmann_json)
 
 # configure cuda

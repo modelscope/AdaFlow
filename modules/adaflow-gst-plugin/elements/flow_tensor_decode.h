@@ -1,3 +1,9 @@
+/*******************************************************************************
+* Copyright (c) Alibaba, Inc. and its affiliates.
+*
+* Licensed under the Apache License, Version 2.0
+******************************************************************************/
+
 #ifndef ADAFLOW_FLOW_FRAME_CONVERT_H
 #define ADAFLOW_FLOW_FRAME_CONVERT_H
 

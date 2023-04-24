@@ -17,6 +17,7 @@
 #include <elements/flow_tensor_transform.h>
 #include <elements/flow_tensor_compositor.h>
 #include <elements/flow_tensor_resize.h>
+#include <subplugin/flow_c_extension.h>
 
 #if defined(ADAFLOW_USE_TRT)
 #include <elements/flow_trt_infer.h>
@@ -34,6 +35,7 @@ static gboolean plugin_init(GstPlugin* plugin) {
   ret |= GST_ELEMENT_REGISTER(flow_tensor_transform, plugin);
   ret |= GST_ELEMENT_REGISTER(flow_tensor_compositor, plugin);
   ret |= GST_ELEMENT_REGISTER(flow_tensor_resize, plugin);
+  ret |= GST_ELEMENT_REGISTER(flow_c_extension, plugin);
 
 #if defined(ADAFLOW_USE_TRT)
   ret |= GST_ELEMENT_REGISTER(flow_trtinfer, plugin);

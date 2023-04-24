@@ -8,6 +8,8 @@
 * @file av_data_packet.h
 * @brief This file contains ADA::AVDataFrame class to control particular inferenced frame and attached
 */
+#ifndef __AV_DATA_PACKET_H__
+#define __AV_DATA_PACKET_H__
 
 #include "data/av_data_frame.h"
 
@@ -65,3 +67,4 @@ namespace ADA {
     };
 
 } // namespace ADA
+#endif
