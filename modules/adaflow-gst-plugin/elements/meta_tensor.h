@@ -1,3 +1,9 @@
+/*******************************************************************************
+* Copyright (c) Alibaba, Inc. and its affiliates.
+*
+* Licensed under the Apache License, Version 2.0
+******************************************************************************/
+
 #ifndef ADAFLOW_META_TENSOR_H
 #define ADAFLOW_META_TENSOR_H
 
@@ -100,6 +106,12 @@ typedef struct _TensorWindow
   bool window_defined;   /**< True if input windownation is defined */
 } TensorWindow;
 
+typedef struct _TensorMemory
+{
+  float *data;
+  uint32_t size;
+} TensorMemory;
+
 typedef struct _TensorInfo TensorInfo;
 typedef struct _TensorInfo
 {
@@ -124,6 +136,14 @@ typedef struct _TensorInfo
   int rate_d;
 
 } _TensorInfo;
+
+
+typedef struct _TensorConfig TensorConfig;
+typedef struct _TensorConfig {
+  TensorInfo info;
+  int rate_n;
+  int rate_d;
+} _TensorConfig;
 
 typedef struct
 {

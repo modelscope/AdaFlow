@@ -8,8 +8,9 @@
 * @file av_data_frame.h
 * @brief This file contains ADA::AVDataFrame class to control particular inferenced frame and attached
 */
+#ifndef __AV_DATA_FRAME_H__
+#define __AV_DATA_FRAME_H__
 
-#pragma once
 
 #include "metadata/flow_json_meta.h"
 #include "elements/meta_tensor.h"
@@ -29,6 +30,7 @@
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
+
 
 namespace ADA {
 
@@ -135,3 +137,5 @@ namespace ADA {
    };
 
 } // namespace ADA
+
+#endif
