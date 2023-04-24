@@ -34,6 +34,11 @@ else()
     set(BUILD_ON_LINUX ON)
 endif()
 
+# set option
+OPTION(ADAFLOW_USE_CUDA "Build with CUDA" ON)
+OPTION(ADAFLOW_USE_TRT "Build with TRT" ON)
+
+
 # setup compiler flags
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     message(STATUS "------- Linux -------")
@@ -45,6 +50,8 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
     elseif(BUILD_ON_MACOSX_INTEL)
         message(STATUS "------- Intel Mac -------")
     endif()
+    set(ADAFLOW_USE_CUDA OFF)
+    set(ADAFLOW_USE_TRT OFF)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Windows") # IF(WIN32) or IF(MSVC)
     message(FATAL_ERROR "------- Windows is not supported right now -------")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Android")
@@ -54,9 +61,6 @@ endif()
 set(FLOW_GST_BACKEND_CORE_DY_LIB_NAME flow_gst_plugin)
 #set(FLOW_GST_BACKEND_STATIC_LIB_NAME flow_gst_backend_static)
 
-# set option
-OPTION(ADAFLOW_USE_CUDA "Build with CUDA" ON)
-OPTION(ADAFLOW_USE_TRT "Build with TRT" ON)
 
 # add sub-modules
 add_subdirectory(modules/adaflow-gst-plugin)
