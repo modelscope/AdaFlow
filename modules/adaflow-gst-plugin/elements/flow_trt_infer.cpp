@@ -67,7 +67,7 @@ enum {
     PROP_INPUT_STRING,
     PROP_ADD_META,
     PROP_META_KEY,
-
+    PROP_NCHW,
 };
 
 G_DEFINE_TYPE(GstTrtinfer, gst_trtinfer, GST_TYPE_ELEMENT);
@@ -134,6 +134,10 @@ static void gst_trtinfer_set_property(GObject* object, guint prop_id,
             filter->meta_key = g_value_dup_string(value);
             break;
 
+        case PROP_NCHW:
+            filter->is_nchw = g_value_get_boolean(value);
+            break;
+
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
             break;
@@ -187,6 +191,10 @@ static void gst_trtinfer_get_property(GObject* object, guint prop_id,
 
         case PROP_META_KEY:
             g_value_set_string(value, filter->meta_key);
+            break;
+
+        case PROP_NCHW:
+            g_value_set_boolean(value, filter->is_nchw);
             break;
 
         default:
@@ -267,7 +275,7 @@ static GstFlowReturn gst_trtinfer_chain(GstPad* pad, GstObject* parent,
 
         filter->model_trt = new TrtInfer();
         filter->model_trt->init_model(filter->onnx_path, filter->trt_path,
-                                      filter->flexible, filter->model_input_name, width, height, filter->SR, 1, true, input_channel);
+                                      filter->flexible, filter->model_input_name, width, height, filter->SR, 1, filter->is_nchw, input_channel);
 
         filter->m_net_in_n = filter->model_trt->input_batch_num();
         filter->m_net_in_c = filter->model_trt->input_channel_num();
@@ -521,6 +529,12 @@ static void gst_trtinfer_class_init(GstTrtinferClass* klass) {
                                 "the keyword of the results which attach to the GstBuffer",
                                 DEFAULT_META_KEY, param_flags));
 
+    g_object_class_install_property(
+            object_class, PROP_NCHW,
+            g_param_spec_boolean("is-nchw", "is-nchw",
+                                 "nchw data",
+                                 true, param_flags));
+
     gst_element_class_set_details_simple(element_class, "flow_trtinfer", "adaflow",
                                          "flow_trtinfer", "AUTHOR_NAME AUTHOR_EMAIL");
 
@@ -549,8 +563,117 @@ static void gst_trtinfer_init(GstTrtinfer* filter) {
     filter->SR = DEFAULT_SR;
     filter->input_string = g_strdup(INPUT_STRING);
     filter->meta_key = g_strdup(DEFAULT_META_KEY);
+    filter->is_nchw = true;
 
 }
+
+
+json parse_int32_result(int i, TrtInfer* model_trt)
+{
+
+    int32_t* p = (int32_t*)model_trt->m_cpu_buffers[i];
+    json sjarry = json::array();
+    json jarry = json::array({});
+    int shape_dim = model_trt->m_buffer_shape[i].nbDims;
+
+    if(shape_dim==1)
+    {
+        for(int i_0=0; i_0<model_trt->m_buffer_shape[i].d[0]; i_0++)
+        {
+            sjarry.push_back(p[i_0]);
+        }
+        jarry.push_back(sjarry);
+
+    }else if(shape_dim==2)
+    {
+        for(int i_0=0; i_0<model_trt->m_buffer_shape[i].d[0]; i_0++)
+        {
+            sjarry ={};
+            int i_offset = i_0*model_trt->m_buffer_shape[i].d[1];
+            for(int i_1=0; i_1<model_trt->m_buffer_shape[i].d[1]; i_1++)
+            {
+                sjarry.push_back(p[i_offset+i_1]);
+            }
+            jarry.push_back(sjarry);
+        }
+
+    }else if(shape_dim==3)
+    {
+        for(int i_0=0; i_0<model_trt->m_buffer_shape[i].d[0]; i_0++)
+        {
+            int i_offset_0 = i_0*model_trt->m_buffer_shape[i].d[1]*model_trt->m_buffer_shape[i].d[2];
+            for(int i_1=0; i_1<model_trt->m_buffer_shape[i].d[1]; i_1++)
+            {
+                sjarry ={};
+                int i_offset_1 = i_1*model_trt->m_buffer_shape[i].d[2];
+                for(int i_2=0; i_2<model_trt->m_buffer_shape[i].d[2]; i_2++)
+                {
+                    sjarry.push_back(p[i_offset_0+i_offset_1+i_2]);
+                }
+                jarry.push_back(sjarry);
+            }
+        }
+
+    }
+
+    return jarry;
+
+
+}
+
+json parse_float_result(int i, TrtInfer* model_trt)
+{
+
+    float* p = (float*)model_trt->m_cpu_buffers[i];
+    json sjarry = json::array();
+    json jarry = json::array({});
+    int shape_dim = model_trt->m_buffer_shape[i].nbDims;
+
+    if(shape_dim==1)
+    {
+        for(int i_0=0; i_0<model_trt->m_buffer_shape[i].d[0]; i_0++)
+        {
+            sjarry.push_back(p[i_0]);
+        }
+        jarry.push_back(sjarry);
+
+    }else if(shape_dim==2)
+    {
+        for(int i_0=0; i_0<model_trt->m_buffer_shape[i].d[0]; i_0++)
+        {
+            sjarry ={};
+            int i_offset = i_0*model_trt->m_buffer_shape[i].d[1];
+            for(int i_1=0; i_1<model_trt->m_buffer_shape[i].d[1]; i_1++)
+            {
+                sjarry.push_back(p[i_offset+i_1]);
+            }
+            jarry.push_back(sjarry);
+        }
+
+    }else if(shape_dim==3)
+    {
+        for(int i_0=0; i_0<model_trt->m_buffer_shape[i].d[0]; i_0++)
+        {
+            int i_offset_0 = i_0*model_trt->m_buffer_shape[i].d[1]*model_trt->m_buffer_shape[i].d[2];
+            for(int i_1=0; i_1<model_trt->m_buffer_shape[i].d[1]; i_1++)
+            {
+                sjarry ={};
+                int i_offset_1 = i_1*model_trt->m_buffer_shape[i].d[2];
+                for(int i_2=0; i_2<model_trt->m_buffer_shape[i].d[2]; i_2++)
+                {
+                    sjarry.push_back(p[i_offset_0+i_offset_1+i_2]);
+                }
+                jarry.push_back(sjarry);
+            }
+        }
+
+    }
+
+    return jarry;
+
+}
+
+
 
 void gst_add_meta_to_buffer(TrtInfer* model_trt, GstBuffer* buffer, std::string meta_key)
 {
@@ -561,49 +684,17 @@ void gst_add_meta_to_buffer(TrtInfer* model_trt, GstBuffer* buffer, std::string 
     for(int i=1; i<nbBindings; i++)
     {
         const char* output_name = model_trt->m_buffer_name[i];
-        float *p = (float*)model_trt->m_cpu_buffers[i];
 
-        json sjarry = json::array();
+        nvinfer1::DataType dtype = model_trt->m_buffer_datatype[i];
+
         json jarry = json::array({});
-        int shape_dim = model_trt->m_buffer_shape[i].nbDims;
 
-        if(shape_dim==1)
+        if(dtype == nvinfer1::DataType::kINT32)
         {
-            for(int i_0=0; i_0<model_trt->m_buffer_shape[i].d[0]; i_0++)
-            {
-                sjarry.push_back(p[i_0]);
-            }
-            jarry.push_back(sjarry);
+            jarry = parse_int32_result(i, model_trt);
 
-        }else if(shape_dim==2)
-        {
-            for(int i_0=0; i_0<model_trt->m_buffer_shape[i].d[0]; i_0++)
-            {
-                sjarry ={};
-                int i_offset = i_0*model_trt->m_buffer_shape[i].d[1];
-                for(int i_1=0; i_1<model_trt->m_buffer_shape[i].d[1]; i_1++)
-                {
-                    sjarry.push_back(p[i_offset+i_1]);
-                }
-                jarry.push_back(sjarry);
-            }
-
-        }else if(shape_dim==3)
-        {
-            for(int i_0=0; i_0<model_trt->m_buffer_shape[i].d[0]; i_0++)
-            {
-                int i_offset_0 = i_0*model_trt->m_buffer_shape[i].d[1]*model_trt->m_buffer_shape[i].d[2];
-                for(int i_1=0; i_1<model_trt->m_buffer_shape[i].d[1]; i_1++)
-                {
-                    sjarry ={};
-                    int i_offset_1 = i_1*model_trt->m_buffer_shape[i].d[2];
-                    for(int i_2=0; i_2<model_trt->m_buffer_shape[i].d[2]; i_2++)
-                    {
-                        sjarry.push_back(p[i_offset_0+i_offset_1+i_2]);
-                    }
-                    jarry.push_back(sjarry);
-                }
-            }
+        }else if(dtype == nvinfer1::DataType::kFLOAT){
+            jarry = parse_float_result(i, model_trt);
 
         }
 
@@ -621,5 +712,3 @@ void gst_add_meta_to_buffer(TrtInfer* model_trt, GstBuffer* buffer, std::string 
     printf("successful add json meta\n");
 
 }
-
-

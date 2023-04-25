@@ -70,6 +70,7 @@ struct _GstTrtinfer {
     gboolean flexible;
     gboolean add_meta;
     gchar* meta_key;
+    gboolean is_nchw;
     float SR;
     // GMutex mutex;
     // Model *model;
