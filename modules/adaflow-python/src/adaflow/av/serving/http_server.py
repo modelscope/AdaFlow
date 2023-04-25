@@ -5,9 +5,10 @@ import os, pathlib
 from ..pipeline.pipeline_factory import PipelineFactory
 from ..pipeline.dialects.gst_context import GstContext
 
-app = Flask(__name__)
+http_pipeline_server = Flask(__name__)
 
-repo_path = os.environ.get("REPO_PATH")
+repo_path = os.environ.get("REPO_PATH", os.getcwd())
+assert repo_path, "repo_path cannot be empty"
 pipeline_factory = PipelineFactory.create(repository_path=pathlib.Path(repo_path))
 
 
@@ -15,12 +16,12 @@ def validate_task_data(task_data: [str, any]):
     return task_data and "sinks" in task_data and "sources" in task_data
 
 
-@app.route("/health")
+@http_pipeline_server.route("/health")
 def health():
     return "ok"
 
 
-@app.route("/pipelines/<pipeline_id>/launch", methods=["POST"])
+@http_pipeline_server.route("/pipelines/<pipeline_id>/launch", methods=["POST"])
 def initialize_pipeline(pipeline_id):
     task_data = request.get_json(force=True)
     if validate_task_data(task_data):
