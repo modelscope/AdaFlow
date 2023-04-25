@@ -3,8 +3,6 @@
     AdaFlow python plugin: flow_modelscope_pipeline.
     Run modelscope pipeline and produce result data.
 """
-from modelscope.pipelines import pipeline
-from modelscope.outputs import OutputKeys
 from adaflow.av.utils import gst_video_format_from_string, get_num_channels
 from adaflow.av.metadata.flow_json_meta import flow_meta_add_key
 from gi.repository import Gst, GObject, GstVideo
@@ -15,7 +13,6 @@ import gi
 
 gi.require_version('Gst', '1.0')
 gi.require_version('GstVideo', '1.0')
-
 
 class FlowMassModelPlugin(Gst.Element):
     GST_PLUGIN_NAME = 'flow_modelscope_pipeline'
@@ -114,6 +111,7 @@ class FlowMassModelPlugin(Gst.Element):
             self.id = value
             # init model
             if self.id and self.task:
+                from modelscope.pipelines import pipeline
                 self.maas_pipeline = pipeline(self.task, model=self.id)
 
         elif prop.name == 'input':
@@ -157,6 +155,7 @@ class FlowMassModelPlugin(Gst.Element):
                 flow_meta_add_key(buffer, infer_res, self.meta_key)
                 return self.srcpad.push(buffer)
             else:
+                from modelscope.outputs import OutputKeys
                 infer_image = infer_res[OutputKeys.OUTPUT_IMG]
                 # set new outcaps
                 height_out, width_out, channel_out = infer_image.shape
@@ -177,3 +176,4 @@ class FlowMassModelPlugin(Gst.Element):
 GObject.type_register(FlowMassModelPlugin)
 __gstelementfactory__ = (FlowMassModelPlugin.GST_PLUGIN_NAME,
                          Gst.Rank.NONE, FlowMassModelPlugin)
+
