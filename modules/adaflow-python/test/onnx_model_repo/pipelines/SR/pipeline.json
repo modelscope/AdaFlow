@@ -1,0 +1,6 @@
+{
+  "name": "SR",
+  "description": "video super resolution based on TensorRT",
+  "backend": "TensorRT",
+  "dialect": "{{F.source('src1')}} ! videoconvert ! videoscale ! video/x-raw,height=360,width=720,format=RGB ! flow_tensor_convert ! flow_tensor_transform way=arithmetic option=div:255.0 ! flow_tensor_transform way=dimchg option=nchw ! flow_trtinfer onnx=./onnx_model_repo/resource/models/SR_sample.onnx trt=./onnx_model_repo/resource/models/SR_sample.trt sr=2 flexible=1 ! flow_tensor_transform way=dimchg option=nhwc ! flow_tensor_transform way=arithmetic option=mul:255.0 ! flow_tensor_transform way=clamp option=0:255 ! flow_tensor_decode ! videoconvert ! jpegenc ! {{F.sink('sink1')}}"
+}

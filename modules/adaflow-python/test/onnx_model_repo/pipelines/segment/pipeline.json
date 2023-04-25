@@ -1,0 +1,6 @@
+{
+  "name": "segment",
+  "description": "human segment based on TensorRT",
+  "backend": "TensorRT",
+  "dialect": "{{F.source('src1')}} ! videoconvert ! videoscale ! video/x-raw,width=320,height=176,format=RGB ! flow_tensor_convert ! flow_tensor_transform way=dimchg option=nchw ! flow_trtinfer onnx =./onnx_model_repo/resource/models/segment_sample.onnx trt=./onnx_model_repo/resource/models/segment_sample.trt ! flow_tensor_transform way=arithmetic option=mul:255 ! flow_tensor_resize width=1024 height=576 ! flow_tensor_decode ! videoconvert ! jpegenc ! {{F.sink('sink1')}}"
+}
