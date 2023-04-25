@@ -133,8 +133,7 @@ class GstMetaAgg(GstBase.Aggregator):
             for i in range(len(self.metadata)):
                 get_message = json.loads(self.metadata[i])
                 key = list(get_message.keys())[0]
-                json_key_v[key] = []
-                json_key_v[key].append(get_message[key][0])
+                json_key_v[key] = get_message[key]
             json_message = json.dumps(json_key_v, cls=NumpyArrayEncoder)
             flow_meta_add(outbuf, json_message.encode('utf-8'))
             self.finish_buffer(outbuf)
