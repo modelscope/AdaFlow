@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(adaflow-gst-plugin VERSION 0.0.1)
+project(adaflow-gst-plugin VERSION 0.0.2)
 
 # set cuda version
 set(ADAFLOW_CUDA_VERSION "11.6" CACHE STRING "cuda runtime version of current system. defaults to 11.6")
