@@ -59,6 +59,7 @@ adaflow launch ./modules/adaflow-python/test/detection_repo real_detector --task
   * [基础教程1:创建和运行第一个pipeline](docs/user_guide/tutorials/basic_tutorial_1.md)
   * [基础教程2:单模型pipeline搭建](docs/user_guide/tutorials/basic_tutorial_2.md)
   * [基础教程3:多模型并联pipeline搭建](docs/user_guide/tutorials/basic_tutorial_3.md)
+  * [基础教程4:TensorRT模型部署](docs/user_guide/tutorials/basic_tutorial_4.md)
 - 进阶教程
   * [AdaFlow插件详解](./docs/user_guide/built_in_elements.md)
   * [pipeline的构建](./docs/user_guide/composing_a_pipeline.md)

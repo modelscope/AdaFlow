@@ -56,6 +56,7 @@ adaflow launch ./modules/adaflow-python/test/detection_repo real_detector --task
   * [Basic Tutorial 1:compose and run the first pipeline](docs/user_guide/tutorials/basic_tutorial_1_EN.md)
   * [Basic Tutorial 2:compose a simple single model pipeline](docs/user_guide/tutorials/basic_tutorial_2_EN.md)
   * [Basic Tutorial 3:compose a multi-model parallel pipeline](docs/user_guide/tutorials/basic_tutorial_3_EN.md)
+  * [Basic Tutorial 4:model deployment based on TensorRT](docs/user_guide/tutorials/basic_tutorial_4_EN.md)
 - Advanced Tutorials
   * [Built-in elements](./docs/user_guide/built_in_elements.md)
   * [Composing a Pipeline](./docs/user_guide/composing_a_pipeline.md)
