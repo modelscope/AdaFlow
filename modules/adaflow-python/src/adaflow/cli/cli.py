@@ -3,6 +3,7 @@ import argparse
 
 from .launch import LaunchCMD
 from .init import InitCMD
+from .serve import ServeCMD
 
 
 def run_cmd():
@@ -12,6 +13,7 @@ def run_cmd():
 
     LaunchCMD.define_args(subparsers)
     InitCMD.define_args(subparsers)
+    ServeCMD.define_args(subparsers)
 
     args = parser.parse_args()
 
