@@ -63,3 +63,25 @@ init and create standard pipeline repository named `test_repo` include pipline `
 ```bash
 adaflow init test_repo --pipeline testpipeline
 ```
+
+
+## adaflow serve
+
+### Name
+
+`adaflow serve` - start pipeline server with given options
+
+### Synopsis
+
+```
+adaflow serve --repo_path [Repo path] --http-port=[Port number] --http-worker-num=[Worker number of http server]
+```
+
+### Sample
+
+Start a http pipeline server with repository at current working directory, which listens at port `9999` and has two workers. 
+
+```
+adaflow serve --http-worker-num=2 --http-port=9999
+```
+
