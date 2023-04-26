@@ -28,7 +28,6 @@ The specific definitions are as follows:
   "backend": "GStreamer",
   "dialect": [
     "{{F.source('src1')}}",
-    "decodebin",
     "x264enc",
     "mp4mux",
     "{{F.sink('sink1')}}"
@@ -39,7 +38,6 @@ The specific definitions are as follows:
 * `backend` is the identifier for different processing backend. `GStreamer` is chosen here.
 * `dialect` is the description of processing pipeline.
   * elements wrapped in ``{{`` and ```}}``` are runtime resolved elements. It will be dynamically compiled according to task requests. `F.source` and `F.sink` are placeholder function for source elements and sink elements.
-  * `decodebin` element is used for video decoding
   * `x264enc` element is used for X264 video encoding.
   * `mp4mux` element is used to re-mux frames into MP4 format.
 
