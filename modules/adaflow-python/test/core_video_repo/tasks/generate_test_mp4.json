@@ -1,0 +1,20 @@
+{
+  "sources": [
+    {
+      "name": "src1",
+      "type": "gst",
+      "element": "videotestsrc",
+      "filter": "video/x-raw,width=800,height=600,format=RGB,framerate=30/1",
+      "properties": {
+        "num-buffers": 150
+      }
+    }
+  ],
+  "sinks": [
+    {
+      "name": "sink1",
+      "type": "file",
+      "location": "/tmp/output.mp4"
+    }
+  ]
+}

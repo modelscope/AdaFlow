@@ -5,3 +5,5 @@ jinja2
 matplotlib
 jsonschema
 pyyaml
+flask
+gunicorn
