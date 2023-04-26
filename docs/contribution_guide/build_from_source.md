@@ -75,6 +75,9 @@ meson setup builddir -Dgpl=enabled -Dexamples=disabled -Dtests=disabled -Dges=di
 Assuming you are on project root and `adaflow-dev` env is activated, you can make a debug configuration as following: 
 
 ```shell
+# fetch submodules
+git submodule update --init --recursive
+
 # Configure as debug build
 mkdir build && cd build
 cmake \
