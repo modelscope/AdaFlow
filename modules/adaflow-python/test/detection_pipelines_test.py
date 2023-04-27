@@ -12,17 +12,19 @@ logging.basicConfig(level=logging.DEBUG)
 
 class DetectionPipelinesTest(unittest.TestCase):
 
-    factory = PipelineFactory.create(Path(__file__).parent.joinpath("./detection_repo"))
+    repo_path = Path(__file__).parent.joinpath("./detection_repo")
+
+    factory = PipelineFactory.create(repo_path)
 
     def test_break_in(self):
         builder = self.factory.pipeline("break_in").source({
             "name": "src1",
             "type": "file",
-            "location": "./detection_repo/resource/data/test_walker1.jpeg"
+            "location": self.repo_path.joinpath("./resource/data/test_walker1.jpeg")
         }).sink({
             "name": "sink1",
             "type": "file",
-            "location": "./detection_repo/resource/data/break_walk_res.jpg"
+            "location": self.repo_path.joinpath("./resource/data/break_walk_res.jpg")
         })
         with GstContext():
             with builder.build() as pipeline:
@@ -34,11 +36,11 @@ class DetectionPipelinesTest(unittest.TestCase):
         builder = self.factory.pipeline("mot_counting").source({
             "name": "src1",
             "type": "file",
-            "location": "./detection_repo/resource/data/test_walker1.jpeg"
+            "location": self.repo_path.joinpath("./resource/data/test_walker1.jpeg")
         }).sink({
             "name": "sink1",
             "type": "file",
-            "location": "./detection_repo/resource/data/maas_test_detection_ok.jpg"
+            "location": self.repo_path.joinpath("./resource/data/maas_test_detection_ok.jpg")
         })
         with GstContext():
             with builder.build() as pipeline:
@@ -50,14 +52,14 @@ class DetectionPipelinesTest(unittest.TestCase):
         builder = self.factory.pipeline("reid_person").source({
             "name": "src1",
             "type": "file",
-            "location": "./detection_repo/resource/data/image_reid_person.jpg"
+            "location": self.repo_path.joinpath("./resource/data/image_reid_person.jpg")
         }).sink({
             "name": "sink1",
             "type": "fakesink"
         }).source({
             "name": "src2",
             "type": "file",
-            "location": "./detection_repo/resource/data/image_reid_person.jpg"
+            "location": self.repo_path.joinpath("./resource/data/image_reid_person.jpg")
         })
         with GstContext():
             with builder.build() as pipeline:
@@ -69,11 +71,11 @@ class DetectionPipelinesTest(unittest.TestCase):
         builder = self.factory.pipeline("smoke_det").source({
             "name": "src1",
             "type": "file",
-            "location": "./detection_repo/resource/data/smoke_a388.jpg"
+            "location": self.repo_path.joinpath("./resource/data/smoke_a388.jpg")
         }).sink({
             "name": "sink1",
             "type": "file",
-            "location": "./detection_repo/resource/data/smoke_det_res.jpg"
+            "location": self.repo_path.joinpath("./resource/data/smoke_det_res.jpg")
         })
         with GstContext():
             with builder.build() as pipeline:
@@ -85,11 +87,11 @@ class DetectionPipelinesTest(unittest.TestCase):
         builder = self.factory.pipeline("real_detector").source({
             "name": "src1",
             "type": "file",
-            "location": "./detection_repo/resource/data/test_walker1.jpeg"
+            "location": self.repo_path.joinpath("./resource/data/test_walker1.jpeg")
         }).sink({
             "name": "sink1",
             "type": "file",
-            "location": "./detection_repo/resource/data/maas_test_detection_vis.jpg"
+            "location": self.repo_path.joinpath("./resource/data/maas_test_detection_vis.jpg")
         })
         with GstContext():
             with builder.build() as pipeline:
