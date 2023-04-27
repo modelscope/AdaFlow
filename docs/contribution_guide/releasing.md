@@ -78,24 +78,7 @@ To uninstall the test wheel
 pip3 uninstall adaflow-python
 ```
 
-### Conda packages
+### conda-forge packages
 
-TODO move to conda-forge recipe after this project is open-sourced. 
+Please submit PR at [adaflow-feedstock](https://github.com/conda-forge/adaflow-feedstock) for releasing a new version.
 
-```shell
-# use conda-forge
-conda config --append channels conda-forge
-```
-
-To build a conda package from source root
-
-```shell
-# local build
-conda build . -c conda-forge --no-include-recipe
-```
-
-To test with a local build:
-
-```shell
-conda install adaflow -c $HOME/miniconda3/envs/${ENV_NAME}/conda-bld
-```
