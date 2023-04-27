@@ -15,4 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: ls && docker buildx build -t adaflow/adaflow-cpu-devel:$(arch)-latest -f ./docker/adaflow-cpu-devel.dockerfile .
+      run: docker buildx build -t adaflow/adaflow-cpu-devel:$(arch)-$(git rev-parse --short "$GITHUB_SHA") -f ./docker/adaflow-cpu-devel.dockerfile .
