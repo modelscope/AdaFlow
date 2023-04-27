@@ -105,11 +105,12 @@ foreach(TARGET_NAME ${FLOW_GST_BACKEND_TARGET_NAMES})
             PUBLIC_HEADER DESTINATION include
             )
 
-    INSTALL(CODE "execute_process( \
-        COMMAND ${CMAKE_COMMAND} -E create_symlink \
+    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink \
         ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/gstreamer-1.0/$<TARGET_FILE_NAME:${TARGET_NAME}> \
         ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/$<TARGET_FILE_NAME:${TARGET_NAME}>   \
-        )")
+        OUTPUT_FILE CMD_OUTPUT RESULT_VARIABLE CMD_RESULT)
+        MESSAGE( STATUS \"create_symlink result:\" \${CMD_RESULT})
+    ")
 
 endforeach()
 
