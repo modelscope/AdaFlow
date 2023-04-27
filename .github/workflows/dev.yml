@@ -24,7 +24,7 @@ jobs:
       - name: Run unit tests
         run: docker run --rm adaflow/adaflow-builder-cpu:$(arch)-latest-ci
   build_cuda:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gpu]
     steps:
       - uses: actions/checkout@v3
       - name: Fetch submodules
