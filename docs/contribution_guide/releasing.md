@@ -25,7 +25,7 @@ Supported Build args for CPU-only and CUDA image:
 Build the latest devel image for architecture of current host: 
 
 ```shell
-docker buildx build --push -t adaflow/adaflow-cpu-devel:$(arch)-latest -f ./docker/adaflow-cpu-devel.dockerfile .
+docker buildx build --push -t adaflow/adaflow-devel-cpu:$(arch)-latest -f ./docker/adaflow-devel-cpu.dockerfile .
 ```
 
 Build the latest runtime image for architecture of current host:
