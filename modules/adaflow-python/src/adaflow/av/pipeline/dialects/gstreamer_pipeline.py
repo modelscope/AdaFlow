@@ -21,7 +21,7 @@ Gst.init(sys.argv if hasattr(sys, "argv") else None)
 
 
 class GStreamerPipeline(BasePipeline):
-    def __init__(self, pipeline_model: Dict[str, any], task_model: Dict[str, any], log: logging.getLogger("GStreamerPipeline"), pipeline_configure: Callable[[Gst.Pipeline], None] = None) -> None:
+    def __init__(self, pipeline_model: Dict[str, any], task_model: Dict[str, any], log: logging.Logger = None, pipeline_configure: Callable[[Gst.Pipeline], None] = None) -> None:
         """
         Default constructor for a plain GStreamerPipeline
         Args:
@@ -35,7 +35,7 @@ class GStreamerPipeline(BasePipeline):
         self._task_model = task_model
         self._bus = None
         self._gst_pipeline = None
-        self._log = log
+        self._log = log or logging.getLogger("GStreamerPipeline")
         self._terminal_event = threading.Event()
         self._template_env = Environment()
 
@@ -221,6 +221,7 @@ class GStreamerPipelineBuilder:
         super().__init__()
         self._pipeline = {}
         self._task = {}
+        self._logger = None
 
     def pipeline(self, pipeline_model: Dict[str, any]):
         """set pipeline model dict"""
@@ -261,7 +262,7 @@ class GStreamerPipelineBuilder:
             self._task["parameters"] = parameters
         return self
 
-    def logger(self, logger: logging.Logger) -> GStreamerPipeline:
+    def logger(self, logger: logging.Logger):
         self._logger = logger
         return self
 
