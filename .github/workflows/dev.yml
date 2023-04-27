@@ -1,4 +1,4 @@
-name: Docker CI for x86 CPU only
+name: Docker CI Tests
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
       - name: Build the Docker image
-        run: docker buildx build --push -t adaflow/adaflow-builder-cpu:$(arch)-latest-ci -f ./docker/adaflow-builder-cpu.dockerfile .
+        run: docker buildx build --build-arg DEVEL_TAG=$(arch)-latest --push -t adaflow/adaflow-builder-cpu:$(arch)-latest-ci -f ./docker/adaflow-builder-cpu.dockerfile .
       - name: Run unit tests
         run: docker run --rm adaflow/adaflow-builder-cpu:$(arch)-latest-ci
   build_cuda:
@@ -35,6 +35,6 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
       - name: Build the Docker image
-        run: docker buildx build --push -t adaflow/adaflow-builder-cuda:latest-ci -f ./docker/adaflow-builder-cuda.dockerfile .
+        run: docker buildx build --build-arg DEVEL_TAG=latest --push -t adaflow/adaflow-builder-cuda:latest-ci -f ./docker/adaflow-builder-cuda.dockerfile .
       - name: Run unit tests
         run: docker run --rm adaflow/adaflow-builder-cuda:$(arch)-latest-ci
