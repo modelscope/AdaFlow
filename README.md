@@ -2,6 +2,9 @@
 
 # **AdaFlow: Pipeline Frameworks for Deep-Learning Applications**
 
+[![Docker CI Tests](https://github.com/modelscope/AdaFlow/actions/workflows/dev.yml/badge.svg)](https://github.com/modelscope/AdaFlow/actions/workflows/dev.yml) [!Platforms](https://anaconda.org/conda-forge/adaflow/badges/platforms.svg
+) [!License](https://anaconda.org/conda-forge/adaflow/badges/license.svg)
+
 
 # 📘简介
 

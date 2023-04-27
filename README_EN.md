@@ -2,6 +2,8 @@ English | [简体中文](README.md)
 
 # **AdaFlow: Pipeline Frameworks for Deep-Learning Applications**
 
+[![Docker CI Tests](https://github.com/modelscope/AdaFlow/actions/workflows/dev.yml/badge.svg)](https://github.com/modelscope/AdaFlow/actions/workflows/dev.yml) [!Platforms](https://anaconda.org/conda-forge/adaflow/badges/platforms.svg
+) [!License](https://anaconda.org/conda-forge/adaflow/badges/license.svg)
 
 # 📘Introduction
 AdaFlow is cross-modal, cross-platform pipeline frameworks, which provides a unified solution for 
