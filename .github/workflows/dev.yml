@@ -8,10 +8,12 @@ on:
 
 jobs:
 
-  build:
+  build_cpu_only:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Fetch submodules
+      run: git submodule update --init --recursive
     - name: Build the Docker image
       run: docker buildx build -t adaflow/adaflow-builder-cpu:$(arch)-$(git rev-parse --short "$GITHUB_SHA") -f ./docker/adaflow-builder-cpu.dockerfile .
     - name: Run unit tests
