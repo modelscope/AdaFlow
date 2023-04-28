@@ -19,7 +19,7 @@ Then modify `detection_repo/pipelines/smoke_det/pipeline.json` with actual pipel
     "name": "smoke_detection",
     "description": "smoke detection post process",
     "backend": "GStreamer",
-    "dialect": "{{F.source('src1')}} ! decodebin ! videoconvert ! videoscale ! video/x-raw,format=RGB ! 
+    "dialect": "{{F.source('src1')}} ! videoconvert ! videoscale ! video/x-raw,format=RGB ! 
     tee name=mytee mytee. ! queue ! 
     flow_modelscope_pipeline task=domain-specific-object-detection id = damo/cv_tinynas_human-detection_damoyolo meta-key=human ! 
     flow_metadata_aggregate name = mixer ! 

@@ -1,3 +1,4 @@
+# Copyright (c) Alibaba, Inc. and its affiliates.
 import uuid
 import logging
 import flask
@@ -8,12 +9,14 @@ Copied from
 http://blog.mcpolemic.com/2016/01/18/adding-request-ids-to-flask.html
 '''
 
+
 # Generate a new request ID
 def generate_request_id(headers: Headers):
     for key in ["X-Request-Id", "RequestId"]:
         if key in headers:
             return headers.get(key)
     return uuid.uuid4()
+
 
 # Returns the current request ID or a new one if there is none
 # In order of preference:
@@ -30,8 +33,8 @@ def request_id():
 
     return new_uuid
 
-class RequestIdFilter(logging.Filter):
 
+class RequestIdFilter(logging.Filter):
 
     # This is a logging filter that makes the request ID available for use in
     # the logging format. Note that we're checking if we're in a request

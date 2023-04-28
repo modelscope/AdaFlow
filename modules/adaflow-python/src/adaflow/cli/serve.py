@@ -7,6 +7,7 @@ from argparse import ArgumentParser
 import multiprocessing
 import gunicorn.app.base
 
+
 class StandaloneApplication(gunicorn.app.base.BaseApplication):
 
     def __init__(self, app, options=None):
@@ -29,6 +30,7 @@ def subparser_func(args):
     """
     return ServeCMD(args)
 
+
 class ServeCMD(CLICommand):
     """
     Command for starting pipeline server
@@ -42,20 +44,21 @@ class ServeCMD(CLICommand):
     def define_args(parsers: ArgumentParser):
         parser = parsers.add_parser(ServeCMD.name)
         parser.add_argument('--repo-path', type=str, help="path to pipeline repository", default=os.getcwd())
-        parser.add_argument('--server-type', type=str, help='server type for pipeline server. Currently only http is supported', default='http')
+        parser.add_argument('--server-type', type=str,
+                            help='server type for pipeline server. Currently only http is supported', default='http')
         parser.add_argument('--http-port', type=int, help='Port for http server', default=8080)
         parser.add_argument('--http-worker-num', type=int, default=1, help="Worker number for http server")
         parser.set_defaults(func=subparser_func)
 
     def execute(self):
         if os.path.exists(self.args.repo_path):
-            from adaflow import http_pipeline_server
+            from adaflow import create_http_server
             options = {
                 'bind': '%s:%s' % ('127.0.0.1', self.args.http_port),
                 'workers': self.args.http_worker_num,
             }
-            logging.info("Start to serve at port %s with %s worker(s)" % (self.args.http_port, self.args.http_worker_num))
-            StandaloneApplication(http_pipeline_server, options).run()
+            logging.info(
+                "Start to serve at port %s with %s worker(s)" % (self.args.http_port, self.args.http_worker_num))
+            StandaloneApplication(create_http_server(), options).run()
         else:
             logging.error("repo path is not given")
-
