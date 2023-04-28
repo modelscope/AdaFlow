@@ -1,24 +1,104 @@
-name: Release
+name: Releasing Packages
 
 on:
-  create:
+  workflow_dispatch:
+    inputs:
+      git-ref:
+        description: Git Ref, e.g. v0.0.1
+        required: true
+  push:
     tags:
-      - "*"
+      - 'v*.*.*'
+    branches:
+      - release/v*.*.*
 
 jobs:
+  cuda-docker-images:
+    runs-on: [self-hosted, gpu]
+    steps:
+      - name: Clone Repository (Latest Ref)
+        uses: actions/checkout@v3
+        if: github.event.inputs.git-ref == ''
+      - name: Clone Repository (Custom Ref)
+        uses: actions/checkout@v2
+        if: github.event.inputs.git-ref != ''
+        with:
+          ref: ${{ github.event.inputs.git-ref }}
+      - name: Fetch submodules
+        run: git submodule update --init --recursive
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        if: github.event.inputs.git-ref == ''
+      - name: set env (Custom ref)
+        run: echo "RELEASE_VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+        if: github.event.inputs.git-ref != ''
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      - name: Build cuda builder image
+        run: docker buildx build --build-arg DEVEL_TAG=latest --push -t adaflow/adaflow-builder-cuda:${RELEASE_VERSION} -f ./docker/adaflow-builder-cuda.dockerfile .
+      - name: Build cuda runtime image
+        run: docker buildx build --build-arg DEVEL_TAG=${RELEASE_VERSION} --push -t adaflow/adaflow-runtime-cuda:${RELEASE_VERSION} -f ./docker/adaflow-runtime-cuda.dockerfile .
+
+  cpu-only-docker-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Repository (Latest Ref)
+        uses: actions/checkout@v3
+        if: github.event.inputs.git-ref == ''
+      - name: Clone Repository (Custom Ref)
+        uses: actions/checkout@v2
+        if: github.event.inputs.git-ref != ''
+        with:
+          ref: ${{ github.event.inputs.git-ref }}
+      - name: Fetch submodules
+        run: git submodule update --init --recursive
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        if: github.event.inputs.git-ref == ''
+      - name: set env (Custom ref)
+        run: echo "RELEASE_VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+        if: github.event.inputs.git-ref != ''
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      - name: Build adaflow-builder-cpu
+        run: docker buildx build --build-arg DEVEL_TAG=$(arch)-latest --push -t adaflow/adaflow-builder-cpu:$(arch)-${RELEASE_VERSION} -f ./docker/adaflow-builder-cpu.dockerfile .
+      - name: Build adaflow-runtime-cpu
+        run: docker buildx build --build-arg DEVEL_TAG=$(arch)-latest --push -t adaflow/adaflow-runtime-cpu:$(arch)-${RELEASE_VERSION} -f ./docker/adaflow-runtime-cpu.dockerfile .
+
   python-wheel:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@v3
+      - name: Clone Repository (Latest Ref)
+        uses: actions/checkout@v3
+        if: github.event.inputs.git-ref == ''
+      - name: Clone Repository (Custom Ref)
+        uses: actions/checkout@v2
+        if: github.event.inputs.git-ref != ''
+        with:
+          ref: ${{ github.event.inputs.git-ref }}
       - name: Fetch submodules
         run: git submodule update --init --recursive
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        if: github.event.inputs.git-ref == ''
+      - name: set env (Custom ref)
+        run: echo "RELEASE_VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+        if: github.event.inputs.git-ref != ''
+
       - name: Build the Docker image
-        run: docker buildx build --build-arg DEVEL_TAG=$(arch)-latest --push -t adaflow/adaflow-builder-cpu:$(arch)-latest-ci -f ./docker/adaflow-builder-cpu.dockerfile .
+        run: docker buildx build --build-arg DEVEL_TAG=$(arch)-latest -t adaflow/adaflow-builder-cpu:$(arch)-${RELEASE_VERSION} -f ./docker/adaflow-builder-cpu.dockerfile .
       - name: Run python build
-        run: mkdir -p dist && docker run --rm -v $PWD/dist:/build/adaflow/modules/adaflow-python/dist adaflow/adaflow-builder-cpu:$(arch)-latest-ci cd /build/adaflow/modules/adaflow-python && \
-          python -m build .
+        run: mkdir -p dist && docker run --rm -v $PWD/dist:/build/adaflow/modules/adaflow-python/dist adaflow/adaflow-builder-cpu:$(arch)-${RELEASE_VERSION} "cd /build/adaflow/modules/adaflow-python && python -m build ."
       - name: Publish distribution 📦 to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
