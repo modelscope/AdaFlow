@@ -26,7 +26,6 @@ adaflow init my_pipelines --pipeline foobar
   "backend": "GStreamer",
   "dialect": [
     "{{F.source('src1')}}",
-    "decodebin",
     "x264enc",
     "mp4mux",
     "{{F.sink('sink1')}}"
@@ -38,7 +37,6 @@ adaflow init my_pipelines --pipeline foobar
 * `backend` 是不同处理后端的标识，这里选择`GStreamer`
 * `dialect` 是pipeline处理的具体描述
     * ``{{`` 和 ```}}```包含的是运行时解析的插件，它会根据任务请求动态编译。`F.source` 和 `F.sink`分别是输入和输出插件的占位符函数
-    * `decodebin`视频解码
     * `x264enc`X264视频编码插件
     * `mp4mux`重新封装视频帧为MP4格式的插件
 

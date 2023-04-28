@@ -7,13 +7,22 @@ In this tutorial we provide documentation for the use of two categories of eleme
 
 # AdaFlow elements
 
-| **Element**                                                                   | **Description**                                                              |    
-|:------------------------------------------------------------------------------|:-----------------------------------------------------------------------------|
-| [flow_modelscope_pipeline](#flow_modelscope_pipeline)                         | run modelscope pipeline and produce result data.                             | 
-| [flow_python_extension](#flow_python_extension)                               | provides a callback to execute user-defined python functions on every frame. |  
-| [flow_metadata_aggregate](#flow_metadata_aggregate)                           | aggregates inference results from multiple pipeline branches.                |   
-| [flow_video_aggregate](#flow_video_aggregate)                                 | aggregate or dis-aggregate the video frame.                                  |   
-| [flow_metadata_sink](#flow_metadata_sink)                                     | publishes the JSON metadata to files.                                        |  
+| **Element**                                                    | **Description**                                                              |    
+|:---------------------------------------------------------------|:-----------------------------------------------------------------------------|
+| [flow_modelscope_pipeline](#flow_modelscope_pipeline)          | run modelscope pipeline and produce result data.                             | 
+| [flow_python_extension](#flow_python_extension)                | provides a callback to execute user-defined python functions on every frame. |  
+| [flow_metadata_aggregate](#flow_metadata_aggregate)            | aggregates inference results from multiple pipeline branches.                |   
+| [flow_video_aggregate](#flow_video_aggregate)                  | aggregate or dis-aggregate the video frame.                                  |   
+| [flow_metadata_sink](#flow_metadata_sink)                      | publishes the JSON metadata to files.                                        | 
+| [flow_tensor_convert](#flow_tensor_convert)                    | convert video frame to tensor.                                               |  
+| [flow_tensor_decode](#flow_tensor_decode)                      | convert tensor to video frame or metadata to files.                          | 
+| [flow_tensor_transform](#flow_tensor_transform)                | tensor transform: add, mul, div, clamp, linear, zscore.                      |  
+| [flow_tensor_compositor](#flow_tensor_compositor)              | network post-processing：such as segment task.                                | 
+| [flow_tensor_resize](#flow_tensor_resize)                      | resize tensor by bilinear interpolation.                                     |
+| [flow_trtinfer](#flow_trtinfer)                                | run model inference by TensorRT deep learning framework backends.            |  
+| [flow_tensor_aggregate](#flow_tensor_aggregate)                | aggregate or dis-aggregate the tensor.                                       | 
+| [flow_c_extension](#flow_c_extension)                          | provides a callback to execute user-defined C functions on every tensor.     | 
+
 
 
 ## <a id="flow_modelscope_pipeline">flow_modelscope_pipeline</a>
@@ -149,6 +158,185 @@ mqtt/kafka will to be supported in the future.
 ```bash
 ... ! flow_metadata_sink filepath = metasink_json.ymal fileformat=json-lines ! ...
 ```
+
+## <a id="flow_tensor_convert">flow_tensor_convert</a>
+
+### Supported features
+flow_tensor_convert is a plugin to convert video frame to tensor, default is float32.
+
+### Properties
+- is-uint8: is to set output tensor uint8.(Default: 0)
+
+### Usage Examples
+- sample1: convert video frame to float32 tensor
+```bash
+... ! flow_tensor_convert ! ...
+```
+
+- sample2: convert video frame to uint8 tensor
+```bash
+... ! flow_tensor_convert is-uint8 = 1 ! ...
+```
+
+## <a id="flow_tensor_decode">flow_tensor_decode</a>
+
+### Supported features
+flow_tensor_decode is a plugin to convert tensor to video frame or metadata to files.
+
+### Properties
+- json-path: JSON path used for write metadata.
+
+### Usage Examples
+- sample1: only convert tensor to video frame
+```bash
+... ! flow_tensor_decode ! ...
+```
+
+- sample2: convert tensor to video frame and write metadata which get from buffer to files
+```bash
+... ! flow_tensor_decode json-path=your-path.json ! ...
+```
+
+## <a id="flow_tensor_transform">flow_tensor_transform</a>
+### Properties
+- way: way used for transforming tensor. Default: -1, "unknown"
+- (0): arithmetic
+    - A way for arithmetic operations with tensor
+    - An option should be provided as option=add|mul|div:NUMBER...
+    - example1: Element-wise add 25 and multiply 4
+
+    ```bash
+    ... ! flow_tensor_convert ! flow_tensor_transform way=arithmetic option=add:25,mul:4 ! ...
+    ```
+
+    - example2: Element-wise divide 25 and subtract 25
+
+    ```bash
+    ... ! flow_tensor_convert ! flow_tensor_transform way=arithmetic option=div:25,add:-25 ! ...
+    ```
+
+- (1): clamp
+    - Way for clamping all elements of tensor into the range
+    - An option should be provided as option=CLAMP_MIN:CLAMP_MAX
+    - Example: clamp element-wise of tensor into the range of [0, 255]
+
+    ```bash
+    ... ! flow_tensor_convert ! flow_tensor_transform way=clamp option=0:255 ! ...
+    ```
+
+- (2): stand
+    - A way for statistical standardization or normalization of tensor
+    - An option should be provided as option=linear|zscore:false|true, where `linear|zscore` for statistical standardization and `false|true` whether to deal with per-channel
+    - Example: linear normalization of tensor with per-channel
+
+    ```bash
+    ... ! flow_tensor_convert ! flow_tensor_transform way=stand option=linear:true ! ...
+    ```
+
+- (3): dimchg
+    - A way for changing tensor dimensions
+    - An option should be provided as option=nchw|nhwc
+    - Example: Move 1st dim to 2nd dim (i.e., [n][H][W][C] ==> [n][C][H][W])
+
+    ```bash
+    ... ! flow_tensor_convert ! flow_tensor_transform way=dimchg option=nchw ! ...
+    ```
+
+## <a id="flow_tensor_compositor">flow_tensor_compositor</a>
+
+### Supported features
+flow_tensor_compositor is a plugin which network post-processing：such as segment task.
+
+### Properties
+- operator: blending operator to use for blending this pad over the previous ones. Default: segment
+- bgcolor: segment background color
+
+### Usage Examples
+- sample: blend two streams for segment task
+```bash
+... ! tee name=mytee ! queue ! ... ! flow_tensor_compositor name=mix bgcolor=red ! ... !  mix. 
+```
+
+## <a id="flow_tensor_resize">flow_tensor_resize</a>
+
+### Supported features
+flow_tensor_resize is a plugin to resize tensor by bilinear interpolation.
+
+### Properties
+- width: the output resized width
+- height: the output resized height
+
+### Usage Examples
+- sample: tensor bilinear resize with width-1280 and height-720
+```bash
+... ! flow_tensor_convert ! flow_tensor_resize width=1280 height=720 ! ...
+```
+
+## <a id="flow_trtinfer">flow_trtinfer</a>
+
+### Supported features
+flow_trtinfer is a plugin to run model inference by TensorRT deep learning framework backends.
+
+### Properties
+- gpu-id: GPU to use for inference. Default: 0
+- onnx: path to a onnx model file
+- trt: path to save trt model file
+- lum-only: only apply filter on luminance when the format of video is YUV. Default:true
+- flexible: if shape of model is flexible. Default: false
+- input-name: name of model input layer. Default: input
+- sr: size change ratio. Default: 1.0
+- add-meta: is to add metadata attach buffer. Default: false
+- meta-key: the keyword of the results which attach to the GstBuffer. Default: modelout
+- is-nchw: data for inference is NCHW.  Default: true
+
+### Usage Examples
+- sample1: super resolution using TensorRT
+```bash
+... ! flow_trtinfer onnx=./onnx_model_repo/resource/models/SR_sample.onnx trt=./onnx_model_repo/resource/models/SR_sample.trt sr=2 flexible=1 ! ...
+```
+
+- sample2: portrait segmentation using TensorRT
+```bash
+... ! flow_trtinfer onnx =./onnx_model_repo/resource/models/segment_sample.onnx trt=./onnx_model_repo/resource/models/segment_sample.trt ! ...
+```
+
+- sample3: object detection using TensorRT
+```bash
+... ! flow_trtinfer onnx=./onnx_model_repo/resource/models/yolov8s.onnx trt=./onnx_model_repo/resource/models/yolov8s.trt input-name=input add-meta=true meta-key=det ! ...
+```
+
+## <a id="flow_tensor_aggregate">flow_tensor_aggregate</a>
+
+### Supported features
+flow_tensor_aggregate is a plugin to aggregate or dis-aggregate the tensor using GstAdapter.
+
+### Properties
+- frames-in: the number of tensor in incoming buffer. (Default 1)
+- frames-out: the number of tensor in outgoing buffer. (Default 1)
+- frames-flush: the number of tensor to flush. (Default 0)
+
+### Usage Examples
+- sample: process step 5 frames in the video detection
+```bash
+... ! flow_tensor_convert ! flow_tensor_aggregate frames-in=1  frames-out=5 ! ...
+```
+
+## <a id="flow_c_extension">flow_c_extension</a>
+
+### Supported features
+flow_c_extension is a plugin to provides a callback to execute user-defined C functions on every tensor.
+how to make your own C functions to available, please read this tutorial. [SubPlugin API](./subplugin_api.md)
+
+### Properties
+- framework: the path of user-defined C functions(.so) 
+
+### Usage Examples
+- sample: a callback to execute user-defined C functions
+```bash
+... ! flow_c_extension framework = libyolodetect_subplugin.so  ! ...
+```
+
+
 
 # GStreamer handy elements
 

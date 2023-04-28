@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(adaflow-gst-plugin VERSION 0.0.1)
+project(adaflow-gst-plugin VERSION 0.0.2)
 
 # set cuda version
 set(ADAFLOW_CUDA_VERSION "11.6" CACHE STRING "cuda runtime version of current system. defaults to 11.6")
@@ -105,9 +105,18 @@ foreach(TARGET_NAME ${FLOW_GST_BACKEND_TARGET_NAMES})
             PUBLIC_HEADER DESTINATION include
             )
 
+    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink \
+        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/gstreamer-1.0/$<TARGET_FILE_NAME:${TARGET_NAME}> \
+        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/$<TARGET_FILE_NAME:${TARGET_NAME}>   \
+        OUTPUT_FILE CMD_OUTPUT RESULT_VARIABLE CMD_RESULT)
+        MESSAGE( STATUS \"create_symlink result:\" \${CMD_RESULT})
+    ")
+
 endforeach()
 
 
 # install gst plugins written in python
 set(PYTHON_PLUGIN_SRCS python/flow_metadata_sink.py python/flow_modelscope_pipeline.py python/flow_python_extension.py python/flow_python_metadata_aggregate.py)
 install(FILES ${PYTHON_PLUGIN_SRCS} DESTINATION ${CMAKE_INSTALL_LIBDIR}/gstreamer-1.0/python)
+
+
