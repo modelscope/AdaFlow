@@ -2,7 +2,7 @@ ARG ADAFLOW_PREFIX
 ARG DEVEL_TAG
 ARG OS_VERSION=7
 
-FROM adaflow/adaflow-devel-cpu:$DEVEL_TAG as builder
+FROM adaflow/adaflow-builder-cpu:$DEVEL_TAG as builder
 
 FROM centos:centos${OS_VERSION}
 ENV ADAFLOW_PREFIX=${ADAFLOW_PREFIX:-/adaflow-install}
