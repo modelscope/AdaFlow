@@ -22,16 +22,16 @@ Supported Build args for CPU-only and CUDA image:
 
 ### CPU-only image
 
-Build the latest devel image for architecture of current host: 
+Build the latest builder image for architecture of current host: 
 
 ```shell
-docker buildx build --push -t adaflow/adaflow-cpu-devel:$(arch)-latest -f ./docker/adaflow-cpu-devel.dockerfile .
+docker buildx build -t adaflow/adaflow-builder-cpu:$(arch)-latest -f ./docker/adaflow-builder-cpu.dockerfile .
 ```
 
 Build the latest runtime image for architecture of current host:
 
 ```shell
-docker buildx build --pull --build-arg DEVEL_TAG=$(arch)-latest --push -t adaflow/adaflow-runtime-cpu:$(arch)-latest -f ./docker/adaflow-runtime-cpu.dockerfile .
+docker buildx build --pull --build-arg DEVEL_TAG=$(arch)-latest -t adaflow/adaflow-runtime-cpu:$(arch)-latest -f ./docker/adaflow-runtime-cpu.dockerfile .
 ```
 
 
@@ -78,24 +78,7 @@ To uninstall the test wheel
 pip3 uninstall adaflow-python
 ```
 
-### Conda packages
+### conda-forge packages
 
-TODO move to conda-forge recipe after this project is open-sourced. 
+Please submit PR at [adaflow-feedstock](https://github.com/conda-forge/adaflow-feedstock) for releasing a new version.
 
-```shell
-# use conda-forge
-conda config --append channels conda-forge
-```
-
-To build a conda package from source root
-
-```shell
-# local build
-conda build . -c conda-forge --no-include-recipe
-```
-
-To test with a local build:
-
-```shell
-conda install adaflow -c $HOME/miniconda3/envs/${ENV_NAME}/conda-bld
-```
