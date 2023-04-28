@@ -1,4 +1,4 @@
-name: Docker CI for x86 CPU only
+name: Docker CI Tests
 
 on:
   push:
@@ -8,11 +8,33 @@ on:
 
 jobs:
 
-  build:
-
+  build_cpu_only:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: ls && docker buildx build -t adaflow/adaflow-cpu-devel:$(arch)-latest -f ./docker/adaflow-cpu-devel.dockerfile .
+      - uses: actions/checkout@v3
+      - name: Fetch submodules
+        run: git submodule update --init --recursive
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      - name: Build the Docker image
+        run: docker buildx build --build-arg DEVEL_TAG=$(arch)-latest --push -t adaflow/adaflow-builder-cpu:$(arch)-latest-ci -f ./docker/adaflow-builder-cpu.dockerfile .
+      - name: Run unit tests
+        run: docker run --rm adaflow/adaflow-builder-cpu:$(arch)-latest-ci
+  build_cuda:
+    runs-on: [self-hosted, gpu]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Fetch submodules
+        run: git submodule update --init --recursive
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      - name: Build the Docker image
+        run: docker buildx build --build-arg DEVEL_TAG=latest --push -t adaflow/adaflow-builder-cuda:latest-ci -f ./docker/adaflow-builder-cuda.dockerfile .
+      - name: Run unit tests
+        run: docker run --rm adaflow/adaflow-builder-cuda:latest-ci
