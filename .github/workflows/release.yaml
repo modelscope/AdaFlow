@@ -21,17 +21,17 @@ jobs:
         if: github.event.inputs.version == ''
       - name: Clone Repository (Custom Ref)
         uses: actions/checkout@v2
-        if: github.event.inputs.git-ref != ''
+        if: github.event.inputs.version != ''
         with:
           ref: ${{ github.event.inputs.version }}
       - name: Fetch submodules
         run: git submodule update --init --recursive
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*}" >> $GITHUB_ENV
-        if: github.event.inputs.git-ref == ''
-      - name: set env (Custom ref)
+        if: github.event.inputs.version == ''
+      - name: Set env (Custom ref)
         run: echo "RELEASE_VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-        if: github.event.inputs.git-ref != ''
+        if: github.event.inputs.version != ''
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2
@@ -48,20 +48,20 @@ jobs:
     steps:
       - name: Clone Repository (Latest Ref)
         uses: actions/checkout@v3
-        if: github.event.inputs.git-ref == ''
+        if: github.event.inputs.version == ''
       - name: Clone Repository (Custom Ref)
         uses: actions/checkout@v2
-        if: github.event.inputs.git-ref != ''
+        if: github.event.inputs.version != ''
         with:
-          ref: ${{ github.event.inputs.git-ref }}
+          ref: ${{ github.event.inputs.version }}
       - name: Fetch submodules
         run: git submodule update --init --recursive
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*}" >> $GITHUB_ENV
-        if: github.event.inputs.git-ref == ''
+        if: github.event.inputs.version == ''
       - name: set env (Custom ref)
         run: echo "RELEASE_VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-        if: github.event.inputs.git-ref != ''
+        if: github.event.inputs.version != ''
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2
@@ -80,20 +80,20 @@ jobs:
     steps:
       - name: Clone Repository (Latest Ref)
         uses: actions/checkout@v3
-        if: github.event.inputs.git-ref == ''
+        if: github.event.inputs.version == ''
       - name: Clone Repository (Custom Ref)
         uses: actions/checkout@v2
-        if: github.event.inputs.git-ref != ''
+        if: github.event.inputs.version != ''
         with:
-          ref: ${{ github.event.inputs.git-ref }}
+          ref: ${{ github.event.inputs.version }}
       - name: Fetch submodules
         run: git submodule update --init --recursive
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*}" >> $GITHUB_ENV
-        if: github.event.inputs.git-ref == ''
+        if: github.event.inputs.version == ''
       - name: set env (Custom ref)
         run: echo "RELEASE_VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-        if: github.event.inputs.git-ref != ''
+        if: github.event.inputs.version != ''
       - name: Run python build
         run: cd modules/adaflow-python && python -m build .
       - name: Publish distribution 📦 to Test PyPI
