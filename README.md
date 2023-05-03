@@ -2,11 +2,11 @@
 
 # **AdaFlow: Pipeline Frameworks for Deep-Learning Applications**
 
-![Docker CI Tests](https://github.com/modelscope/AdaFlow/actions/workflows/dev.yml/badge.svg) ![Platforms](https://anaconda.org/conda-forge/adaflow/badges/platforms.svg
-) ![License](https://anaconda.org/conda-forge/adaflow/badges/license.svg)
+[![Docker CI Tests](https://github.com/modelscope/AdaFlow/actions/workflows/dev.yml/badge.svg)](https://github.com/modelscope/AdaFlow/actions/workflows/dev.yml) [![Conda version](https://anaconda.org/conda-forge/adaflow/badges/version.svg
+)](https://anaconda.org/conda-forge/adaflow) [![Anaconda-Server Badge](https://anaconda.org/conda-forge/adaflow/badges/platforms.svg)](https://anaconda.org/conda-forge/adaflow) [![Anaconda-Server Badge](https://anaconda.org/conda-forge/adaflow/badges/license.svg)](https://anaconda.org/conda-forge/adaflow)
 
 
-# 📘简介
+# 📘 简介
 
 AdaFlow是一个跨模态、跨平台的流式计算框架，它为NN模型推理、构建、部署提供了统一的解决方案
 
@@ -15,7 +15,7 @@ AdaFlow是一个跨模态、跨平台的流式计算框架，它为NN模型推�
 - 灵活地插件化设计
   * 通过组合不同插件组件，用户可以便捷地编排自定义多模型推理pipeline
 - 强大的音视频处理插件
-  * 数百个可跨平台使用的[GStreamer* plugins](https://gstreamer.freedesktop.org/documentation/plugins_doc.html)，包含音视频编解码、各种分流合流等常用功能插件
+  * 数百个可跨平台使用的 [GStreamer plugins](https://gstreamer.freedesktop.org/documentation/plugins_doc.html)，包含音视频编解码、各种分流合流等常用功能插件
 - 丰富的模型 
   * 基于第一大模型库ModelScope，设置模型ID即可在pipeline里拉取、运行modelscope模型
 - 简单易用
@@ -23,8 +23,8 @@ AdaFlow是一个跨模态、跨平台的流式计算框架，它为NN模型推�
 
 
 
-# ⚡️快速开始
-## 🛠️环境配置
+# ⚡️ 快速开始
+## 🛠️ 环境配置
 AdaFlow支持多种方式的环境配置，开发者可根据自己需求选择任意安装方式
 
 ### 1.docker镜像
@@ -48,7 +48,7 @@ python3 -m pip install adaflow-python
 开发者通过源码编译安装AdaFlow及配置其运行环境  
 [源码编译及环境配置](./docs/contribution_guide/build_from_source.md)
 
-## ⏩主要功能快速体验
+## ⏩ 主要功能快速体验
 [通用目标检测模型及其结果可视化](./modules/adaflow-python/test/detection_repo/pipelines/real_detector/pipeline.json)
 
 ```shell
@@ -72,15 +72,14 @@ adaflow launch ./modules/adaflow-python/test/detection_repo real_detector --task
   * [pipeline服务化](./docs/user_guide/pipeline_server.md)
 
 
-## 🙌贡献指南
+## 🙌 贡献指南
 
 ### 技术路线
 
-| Release train | Feature                                                      | Status       |
-|---------------|--------------------------------------------------------------|--------------|
-| 2023-04       | Native tensor support, TensorRT integration, Pipeline server | WIP          |
-| 2023-05       | MNN integration and Android support                          | WIP          |
-| 2023-06       | OpenXLA and large model deployment support                   | Under Review |
+| Release train                                                | Feature                                                      | Status |
+|--------------------------------------------------------------|--------------------------------------------------------------|--------|
+| [2023-04](https://github.com/modelscope/AdaFlow/milestone/1) | Native tensor support, TensorRT integration, Pipeline server | Done   |
+| [2023-05](https://github.com/modelscope/AdaFlow/milestone/2) | Inference, media processing improvement on GPU platform      | WIP    |
 
 建议使用GitHub Issues来提出建议或者指出问题。
 
@@ -92,5 +91,5 @@ adaflow launch ./modules/adaflow-python/test/detection_repo real_detector --task
 * [包发行](./docs/contribution_guide/releasing.md)
 * [编码准则](./docs/contribution_guide/coding_guidelines.md)
 
-## 📄License
+## 📄 License
 本项目的发布受Apache 2.0 license许可认证。
