@@ -3,8 +3,8 @@ name: Releasing Packages
 on:
   workflow_dispatch:
     inputs:
-      git-ref:
-        description: Git Ref, e.g. v0.0.1
+      version:
+        description: Version, e.g. v0.0.1
         required: true
   push:
     tags:
@@ -18,12 +18,12 @@ jobs:
     steps:
       - name: Clone Repository (Latest Ref)
         uses: actions/checkout@v3
-        if: github.event.inputs.git-ref == ''
+        if: github.event.inputs.version == ''
       - name: Clone Repository (Custom Ref)
         uses: actions/checkout@v2
         if: github.event.inputs.git-ref != ''
         with:
-          ref: ${{ github.event.inputs.git-ref }}
+          ref: ${{ github.event.inputs.version }}
       - name: Fetch submodules
         run: git submodule update --init --recursive
       - name: Set env
