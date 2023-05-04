@@ -13,7 +13,7 @@ NN model inference, construction, and deployment.
 - flexible plug-in design
   * users can easily arrange custom multiple neural network models pipelines by combining different plug-in components
 - highly customizable audio and video processing plug-ins
-  * hundreds other [GStreamer* plugins](https://gstreamer.freedesktop.org/documentation/plugins_doc.html) built on various open-source libraries for media input and output, muxing and demuxing, decode and encode
+  * hundreds other [GStreamer plugins](https://gstreamer.freedesktop.org/documentation/plugins_doc.html) built on various open-source libraries for media input and output, muxing and demuxing, decode and encode
 - ModelScope support
   * first-class model hub support, set the model ID to pull and run the modelscope model in the pipeline
 - easy to use

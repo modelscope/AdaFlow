@@ -7,8 +7,8 @@ RUN rm -rf adaflow/build && mkdir -p adaflow/build && cd adaflow/build && \
     cmake \
         -DCMAKE_BUILD_TYPE=$ADAFLOW_BUILD_TYPE \
         -DCMAKE_INSTALL_PREFIX=$ADAFLOW_PREFIX \
-        -DADAFLOW_USE_CUDA=OFF \
-        -DADAFLOW_USE_TRT=OFF \
+        -DADAFLOW_USE_CUDA=ON \
+        -DADAFLOW_USE_TRT=ON \
          .. && \
     make -j${nproc} && make install && \
     cd .. && cd modules/adaflow-python && \

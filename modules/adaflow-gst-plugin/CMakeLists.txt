@@ -55,20 +55,26 @@ set(FLOW_CORE_LINK_LIBRARIES nlohmann_json::nlohmann_json)
 
 # configure cuda
 IF (ADAFLOW_USE_CUDA)
+    include(FindCUDAToolkit)
     message(STATUS "Enable CUDA")
     add_compile_definitions(ADAFLOW_USE_CUDA)
-    include(FindCUDAToolkit)
     list(APPEND FLOW_CORE_LINK_LIBRARIES CUDA::cudart)
     list(APPEND FLOW_CORE_EXTRA_INCLUDE_DIRS ${CUDAToolkit_INCLUDE_DIRS})
+    message(STATUS "cuda include dirs:"  ${CUDAToolkit_INCLUDE_DIRS})
 ENDIF ()
 
 # configure trt
 IF (ADAFLOW_USE_TRT)
     message(STATUS "Enable TensorRT")
     add_compile_definitions(ADAFLOW_USE_TRT)
+    find_library(NVINFER  NAMES nvinfer)
+    find_library(NVINFERPLUGIN NAMES nvinfer_plugin)
+    find_library(NVPARSERS NAMES nvparsers)
+    find_library(NVONNXPARSER NAMES nvonnxparser)
+    find_library(NVONNXPARSERRUNTIME NAMES nvonnxparser_runtime)
     list(APPEND FLOW_GST_BACKEND_SOURCE_FILES ann/trt/trt_infer.cpp ann/trt/trt_infer.h)
     list(APPEND FLOW_GST_BACKEND_SOURCE_FILES elements/flow_trt_infer.cpp elements/flow_trt_infer.h)
-    list(APPEND FLOW_CORE_LINK_LIBRARIES libnvinfer.so libnvonnxparser.so)
+    list(APPEND FLOW_CORE_LINK_LIBRARIES nvinfer nvinfer_plugin nvparsers nvonnxparser)
 ENDIF ()
 
 add_library(${FLOW_GST_BACKEND_TARGET_NAMES} SHARED ${FLOW_GST_BACKEND_SOURCE_FILES})
@@ -99,15 +105,15 @@ foreach(TARGET_NAME ${FLOW_GST_BACKEND_TARGET_NAMES})
 
     install(TARGETS ${TARGET_NAME}
             EXPORT ${TARGET_NAME}_TARGETS
-            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/gstreamer-1.0
-            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/gstreamer-1.0
+            LIBRARY DESTINATION lib/gstreamer-1.0
+            ARCHIVE DESTINATION lib/gstreamer-1.0
             RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
             PUBLIC_HEADER DESTINATION include
             )
 
     install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink \
-        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/gstreamer-1.0/$<TARGET_FILE_NAME:${TARGET_NAME}> \
-        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/$<TARGET_FILE_NAME:${TARGET_NAME}>   \
+        ${CMAKE_INSTALL_PREFIX}/lib/gstreamer-1.0/$<TARGET_FILE_NAME:${TARGET_NAME}> \
+        ${CMAKE_INSTALL_PREFIX}/lib/$<TARGET_FILE_NAME:${TARGET_NAME}>   \
         OUTPUT_FILE CMD_OUTPUT RESULT_VARIABLE CMD_RESULT)
         MESSAGE( STATUS \"create_symlink result:\" \${CMD_RESULT})
     ")
