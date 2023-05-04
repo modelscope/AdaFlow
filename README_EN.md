@@ -2,23 +2,24 @@ English | [简体中文](README.md)
 
 # **AdaFlow: Pipeline Frameworks for Deep-Learning Applications**
 
-![Docker CI Tests](https://github.com/modelscope/AdaFlow/actions/workflows/dev.yml/badge.svg) ![Platforms](https://anaconda.org/conda-forge/adaflow/badges/platforms.svg) ![License](https://anaconda.org/conda-forge/adaflow/badges/license.svg)
+[![Docker CI Tests](https://github.com/modelscope/AdaFlow/actions/workflows/dev.yml/badge.svg)](https://github.com/modelscope/AdaFlow/actions/workflows/dev.yml) [![Conda version](https://anaconda.org/conda-forge/adaflow/badges/version.svg
+)](https://anaconda.org/conda-forge/adaflow) [![Anaconda-Server Badge](https://anaconda.org/conda-forge/adaflow/badges/platforms.svg)](https://anaconda.org/conda-forge/adaflow) [![Anaconda-Server Badge](https://anaconda.org/conda-forge/adaflow/badges/license.svg)](https://anaconda.org/conda-forge/adaflow)
 
-# 📘Introduction
+# 📘 Introduction
 AdaFlow is cross-modal, cross-platform pipeline frameworks, which provides a unified solution for 
 NN model inference, construction, and deployment.
 
-## ✨Highlight Features:
+## ✨ Highlight Features:
 - flexible plug-in design
   * users can easily arrange custom multiple neural network models pipelines by combining different plug-in components
 - highly customizable audio and video processing plug-ins
-  * hundreds other [GStreamer* plugins](https://gstreamer.freedesktop.org/documentation/plugins_doc.html) built on various open-source libraries for media input and output, muxing and demuxing, decode and encode
+  * hundreds other [GStreamer plugins](https://gstreamer.freedesktop.org/documentation/plugins_doc.html) built on various open-source libraries for media input and output, muxing and demuxing, decode and encode
 - ModelScope support
   * first-class model hub support, set the model ID to pull and run the modelscope model in the pipeline
 - easy to use
   * low-code pipeline definitions and utilities, ready-to-use pipeline server and Docker images
 
-# ⚡️Quick Start
+# ⚡️ Quick Start
 ## 🛠️ Environment Setup
 AdaFlow supports multiple ways of environment setup, and developers can choose any installation method according to their needs.
 
@@ -51,7 +52,7 @@ adaflow launch ./modules/adaflow-python/test/detection_repo real_detector --task
 <div align="center"><img src="./docs/user_guide/images/output.gif" width=900/></div>
 
 
-## 📖Developer Guide
+## 📖 Developer Guide
 
 - Basic Tutorials
   * [Basic Tutorial 1:compose and run the first pipeline](docs/user_guide/tutorials/basic_tutorial_1_EN.md)
@@ -67,15 +68,14 @@ adaflow launch ./modules/adaflow-python/test/detection_repo real_detector --task
   * [Serve pipelines as REST services](./docs/user_guide/pipeline_server.md)
 
 
-## 🙌Contribution Guide
+## 🙌 Contribution Guide
 
 ### Roadmap
 
-| Release train | Feature                                                      | Status       |
-|---------------|--------------------------------------------------------------|--------------|
-| 2023-04       | Native tensor support, TensorRT integration, Pipeline server | WIP          |
-| 2023-05       | MNN integration and Android support                          | WIP          |
-| 2023-06       | OpenXLA and large model deployment support                   | Under Review |
+| Release train                                                | Feature                                                      | Status |
+|--------------------------------------------------------------|--------------------------------------------------------------|--------|
+| [2023-04](https://github.com/modelscope/AdaFlow/milestone/1) | Native tensor support, TensorRT integration, Pipeline server | Done   |
+| [2023-05](https://github.com/modelscope/AdaFlow/milestone/2) | Inference, media processing improvement on GPU platform      | WIP    |
 
 To request a feature or submit a bug, please use GitHub Issues.
 
