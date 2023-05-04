@@ -57,9 +57,9 @@ set(FLOW_CORE_LINK_LIBRARIES nlohmann_json::nlohmann_json)
 IF (ADAFLOW_USE_CUDA)
     message(STATUS "Enable CUDA")
     add_compile_definitions(ADAFLOW_USE_CUDA)
-    pkg_search_module(CUDA REQUIRED cudart-${ADAFLOW_CUDA_VERSION})
-    list(APPEND FLOW_CORE_LINK_LIBRARIES ${CUDA_LIBRARIES})
-    list(APPEND FLOW_CORE_EXTRA_INCLUDE_DIRS ${CUDA_INCLUDE_DIRS})
+    include(FindCUDAToolkit)
+    list(APPEND FLOW_CORE_LINK_LIBRARIES CUDA::cudart)
+    list(APPEND FLOW_CORE_EXTRA_INCLUDE_DIRS ${CUDAToolkit_INCLUDE_DIRS})
 ENDIF ()
 
 # configure trt
