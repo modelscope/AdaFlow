@@ -1,6 +1,7 @@
 [English](basic_tutorial_4_EN.md) | 简体中文
 # 基础教程4:TensorRT模型部署
 本教程主要介绍如何使用TensorRT插件搭建pipeline, 主要包含[超分模型](#超分模型)、[人像分割模型](#人像分割模型)、[物体检测模型](#物体检测模型)，这些模型都已经转换为ONNX。
+( ⚠️初次运行pipeline，会根据实际运行硬件，将onnx转换为trt格式，有一定耗时，后续运行将会直接使用已经存在的trt模型。)
 
 ## 创建本地pipeline仓库
 可参考基础教程1创建一个新的仓库`onnx_model_repo`
@@ -75,9 +76,12 @@ adaflow launch onnx_model_repo segment --task_path ./onnx_model_repo/task/segmen
 ![seg_res](./images/tu4_seg_res.jpg)
 
 ## <a id="物体检测模型">物体检测模型</a>
+
 ### 创建pipeline描述文件`pipeline.json`
 
 ![sdl](./images/tu4_dsl.jpg)
+
+- 检测模型：yolov8s
 
 根据物体检测模型的pipeline的任务填写`onnx_model_repo/pipelines/detection/pipeline.json`文件：
 
@@ -105,7 +109,37 @@ adaflow launch onnx_model_repo segment --task_path ./onnx_model_repo/task/segmen
   * `flow_python_extension`对TensorRT模型的推理结果做自定义的PYTHON后处理，`input`设置后处理的外置参数文件，`module`自定义python后处理
     函数py文件所在的位置，`class`函数类名，`function`具体函数实现名，具体`obj_detection_postprocess.py`内容会在下面介绍。
 
+
+- 检测模型：damoyolo    
+根据物体检测模型的pipeline的任务填写`onnx_model_repo/pipelines/detection/pipeline.json`文件：
+
+```
+{
+  "name": "damoyolo object detection",
+  "description": "object detection based on TensorRT",
+  "backend": "TensorRT",
+  "dialect": "{{F.source('src1')}} ! videoconvert ! videoscale ! 
+  video/x-raw,width=640,height=640,format=RGB ! flow_tensor_convert ! 
+  flow_tensor_transform way=dimchg option=nchw ! 
+  flow_trtinfer onnx=./onnx_model_repo/resource/models/damoyolo_object_det.onnx trt=./onnx_model_repo/resource/models/damoyolo_object_det.trt input-name=images add-meta=true meta-key=det ! 
+  flow_tensor_transform way=dimchg option=nhwc ! flow_tensor_decode ! 
+  flow_python_extension module=./onnx_model_repo/extension/damoyolo_postprocess.py class= ObjDetPost function= postprocess ! 
+  videoconvert ! jpegenc ! {{F.sink('sink1')}}"
+}
+```
+
+* `dialect` 是物体检测pipeline处理的具体描述
+  * `flow_tensor_convert` 将图像/视频帧转换为推理需要的`tensor`数据，默认`float32`
+  * `flow_trtinfer` `TensorRT`推理后端的`AdaFlow`插件，`onnx`指定模型地址，`trt`生成`trt-model`的地址，执行一次，如果`trt`模型已经存在，会自动跳过`onnx转trt`，
+    `input-name` onnx模型输入的名字，默认`input`，`add-meta`需要将推理结果保存为`JSONMETA`附属在`GstBuffer`上，建议在检测识别类任务上使用，
+    `meta-key` `JSONMETA`数据的key，下游插件可通过key获取该推理结果。
+  * `flow_python_extension`对TensorRT模型的推理结果做自定义的PYTHON后处理，`input`设置后处理的外置参数文件，`module`自定义python后处理
+    函数py文件所在的位置，`class`函数类名，`function`具体函数实现名，具体`damoyolo_postprocess.py`内容会在下面介绍。
+
+
 ### 编写扩展代码完成任务的其他操作
+
+- 检测模型：yolov8s  
 AdaFlow提供插件`flow_python_extension`调用用户自定义的后处理函数，本例子使用TensorRT推理模型结束后，需要将检测结果显示在图片上，使用extension实现，
 完整代码在onnx_model_repo/extension/obj_detection_postprocess.py中
 
@@ -118,17 +152,42 @@ bboxes = self.meta_data['bboxes'][:nums]
 labels = self.meta_data['labels'][0][:nums]
 ```
 其中核心一段代码，分别获取物体检测的输出`num_dets`、`scores`、`bboxes`、`labels`。
+
+- 检测模型：damoyolo  
+AdaFlow提供插件`flow_python_extension`调用用户自定义的后处理函数，本例子使用TensorRT推理模型结束后，需要将检测结果显示在图片上，使用extension实现，
+  完整代码在onnx_model_repo/extension/damoyolo_postprocess.py中
+
+```bash
+self.meta_data = frame.get_json_meta('det')
+preds = torch.Tensor(np.array(tuple(self.meta_data.values())))
+bboxes, scores, labels_idx = postprocess_gfocal(preds, 80, 0.6)
+bboxes = bboxes.cpu().numpy()
+scores = scores.cpu().numpy()
+labels_idx = labels_idx.cpu().numpy()
+```
+其中核心一段代码，分别获取物体检测的输出`scores`、`bboxes`。
   
 
 ### 运行pipeline
 运行整个pipeline:
 
+- 检测模型：yolov8s  
 ```bash
 adaflow launch onnx_model_repo detection --task_path ./onnx_model_repo/task/detection/task.json 
 ```
 
+- 检测模型：damoyolo
+```bash
+adaflow launch onnx_model_repo damoyolo --task_path ./onnx_model_repo/task/damoyolo/task.json 
+```
+
 ### pipeline结果
+- 检测模型：yolov8s  
 ![det_res](./images/tu4_det_res.jpg)
+
+- 检测模型：damoyolo  
+![det_res](./images/tu4_damo_res.jpg)
+
 
 > **本章结束，感谢阅览**
 

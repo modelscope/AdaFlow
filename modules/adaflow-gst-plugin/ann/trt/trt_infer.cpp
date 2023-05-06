@@ -153,7 +153,7 @@ bool TrtInfer::init_model(const char* onnx_model_file,
         m_in_net_h = m_buffer_shape[0].d[2];
         m_in_net_w = m_buffer_shape[0].d[3];
 
-        if(m_nbBindings==2)
+        if(m_nbBindings==2 && SR!=1)
         {
             m_out_net_n = m_buffer_shape[1].d[0];
             m_out_net_c = m_buffer_shape[1].d[1];
@@ -174,7 +174,7 @@ bool TrtInfer::init_model(const char* onnx_model_file,
         m_in_net_w = m_buffer_shape[0].d[2];
         m_in_net_c = m_buffer_shape[0].d[3];
 
-        if(m_nbBindings==2)
+        if(m_nbBindings==2 && SR!=1)
         {
             m_out_net_n = m_buffer_shape[1].d[0];
             m_out_net_h = m_buffer_shape[1].d[1];
