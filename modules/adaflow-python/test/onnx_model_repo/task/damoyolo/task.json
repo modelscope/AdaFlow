@@ -1,0 +1,4 @@
+{
+  "sources": [{"name": "src1", "type": "file", "location": "./onnx_model_repo/resource/data/image_detection.jpg"}],
+  "sinks": [{ "name": "sink1", "type": "file", "location": "./onnx_model_repo/resource/data/image_detection_res.jpg"}]
+}

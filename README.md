@@ -28,8 +28,26 @@ AdaFlow是一个跨模态、跨平台的流式计算框架，它为NN模型推�
 AdaFlow支持多种方式的环境配置，开发者可根据自己需求选择任意安装方式
 
 ### 1.docker镜像
-AdaFlow提供了官方镜像，无需配置环境，轻松上手  
+AdaFlow提供了官方镜像，无需配置环境，轻松上手
 [docker镜像版本及地址](./docs/user_guide/docker_images.md)
+```
+第一步：拉取合适的 docker image
+第二步：创建自己的 docker 容器
+第三步：编译AdaFlow
+git clone https://github.com/modelscope/AdaFlow.git
+cd AdaFlow
+mkdir build && cd build
+cmake \
+      -DCMAKE_INSTALL_PREFIX=/adaflow-install/$CONDA_PREFIX \
+      -DCMAKE_BUILD_TYPE=Debug \
+      ..
+make -j${nproc}
+make install
+
+第四步：python依赖安装
+python3 -m pip install adaflow-python
+```
+
 
 ### 2.安装AdaFlow包
 使用[Conda](https://conda.io/)可安装完整的AdaFlow包
