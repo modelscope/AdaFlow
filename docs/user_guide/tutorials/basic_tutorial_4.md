@@ -111,7 +111,7 @@ adaflow launch onnx_model_repo segment --task_path ./onnx_model_repo/task/segmen
 
 
 - 检测模型：damoyolo    
-根据物体检测模型的pipeline的任务填写`onnx_model_repo/pipelines/detection/pipeline.json`文件：
+根据物体检测模型的pipeline的任务填写`onnx_model_repo/pipelines//pipeline.json`文件：
 
 ```
 {
